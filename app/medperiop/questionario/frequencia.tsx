@@ -8,25 +8,26 @@ import { buscarFarmaco } from "@/medperiop/data/farmacos";
 import { cores, espacamento, raio } from "@/theme";
 
 export default function TelaFrequencia() {
-  const { respostas, atualizar } = useQuestionario();
+  const { respostas, atualizar, confirmarMedicamentoAtual } = useQuestionario();
   const [texto, setTexto] = useState(
-    respostas.frequenciaDoseDias !== null ? String(respostas.frequenciaDoseDias) : ""
+    respostas.frequenciaDoseDiasAtual !== null ? String(respostas.frequenciaDoseDiasAtual) : ""
   );
 
   const farmaco = useMemo(
-    () => buscarFarmaco(respostas.classe, respostas.farmacoId),
-    [respostas.farmacoId]
+    () => buscarFarmaco(respostas.classeAtual, respostas.farmacoIdAtual),
+    [respostas.classeAtual, respostas.farmacoIdAtual]
   );
 
   function alterar(valor: string) {
     const limpo = valor.replace(/\D/g, "");
     setTexto(limpo);
     const numero = limpo ? Number(limpo) : null;
-    atualizar({ frequenciaDoseDias: numero });
+    atualizar({ frequenciaDoseDiasAtual: numero });
   }
 
   function avancar() {
-    router.push("/medperiop/questionario/cirurgia");
+    confirmarMedicamentoAtual();
+    router.push("/medperiop/questionario/mais-medicamentos");
   }
 
   return (
@@ -51,7 +52,7 @@ export default function TelaFrequencia() {
           accessibilityLabel="Dias entre doses"
         />
       </Cartao>
-      <Botao titulo="Próximo" onPress={avancar} desabilitado={!respostas.frequenciaDoseDias} />
+      <Botao titulo="Próximo" onPress={avancar} desabilitado={!respostas.frequenciaDoseDiasAtual} />
     </ScrollView>
   );
 }

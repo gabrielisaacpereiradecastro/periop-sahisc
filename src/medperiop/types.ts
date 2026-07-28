@@ -1,8 +1,3 @@
-export interface ItemChecklist {
-  id: string;
-  descricao: string;
-}
-
 export type ClasseTerapeutica =
   | "cardiovascular"
   | "endocrino"
@@ -89,14 +84,19 @@ export interface Farmaco {
   condicaoClinica?: CondicaoClinica;
   racional: string;
   situacoesEspeciais?: string;
-  /** Aponta para REFERENCIAS em src/data/referencias.ts (1 a 8). */
+  /** Aponta para REFERENCIAS em src/medperiop/data/referencias.ts (1 a 8). */
   fonteReferenciaNumero: number;
   fontePagina?: string;
 }
 
-export interface RespostasQuestionario {
-  classe: ClasseTerapeutica | null;
-  farmacoId: string | null;
+/** Um medicamento já confirmado e adicionado à lista da sessão. */
+export interface ItemMedicamento {
+  /** Identificador único do item na lista (não é o id do fármaco — o mesmo
+   * fármaco poderia teoricamente ser adicionado mais de uma vez por engano;
+   * este id é o que permite remover o item certo da lista). */
+  id: string;
+  classe: ClasseTerapeutica;
+  farmacoId: string;
   /** Só relevante se o fármaco tiver `indicacoes`. */
   indicacaoId: string | null;
   /** Só relevante se o fármaco tiver `condicaoClinica`. */
@@ -104,7 +104,21 @@ export interface RespostasQuestionario {
   /** Só relevante se a regra resolvida for "suspender_intervalo_dose" — a cada
    * quantos dias o paciente toma a dose (ex.: 28 para "a cada 4 semanas"). */
   frequenciaDoseDias: number | null;
-  /** AAAA-MM-DD */
+}
+
+export interface RespostasQuestionario {
+  /** Medicamentos já confirmados nesta sessão. */
+  medicamentos: ItemMedicamento[];
+  /** Campos de rascunho do medicamento sendo adicionado agora — só viram um
+   * `ItemMedicamento` em `medicamentos` quando o usuário confirma a etapa. */
+  classeAtual: ClasseTerapeutica | null;
+  farmacoIdAtual: string | null;
+  indicacaoIdAtual: string | null;
+  condicaoAtendidaAtual: "sim" | "nao" | null;
+  frequenciaDoseDiasAtual: number | null;
+  /** Data da cirurgia é opcional — quem só quer consultar a conduta não
+   * precisa informar. AAAA-MM-DD, ou null se o usuário optou por não informar
+   * (ou ainda não passou por essa etapa). */
   dataCirurgia: string | null;
 }
 
@@ -121,7 +135,13 @@ export interface Recomendacao {
   farmaco: Farmaco | null;
   indicacao: Indicacao | null;
   regraAplicada: RegraRecomendacao | null;
-  /** Calculada só quando decisao === "suspender_com_data". AAAA-MM-DD. */
+  /** Período relativo em dias (ex.: "suspender 3 dias antes"), já convertido
+   * de horas quando aplicável. Preenchido sempre que decisao ===
+   * "suspender_com_data", independente de haver data de cirurgia informada —
+   * é o que permite mostrar "suspender N dias antes" mesmo sem data. */
+  diasSuspensao: number | null;
+  /** Calculada só quando decisao === "suspender_com_data" E a data da
+   * cirurgia foi informada. AAAA-MM-DD. */
   dataCorteSuspensao: string | null;
   falhaJanelaSuspensao: boolean;
   motivoIndeterminado?: string;

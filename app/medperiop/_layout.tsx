@@ -21,6 +21,11 @@ export default function RootLayout() {
         <Stack.Screen name="questionario/indicacao" options={{ title: "Indicação de uso" }} />
         <Stack.Screen name="questionario/condicao" options={{ title: "Condição clínica" }} />
         <Stack.Screen name="questionario/frequencia" options={{ title: "Posologia" }} />
+        <Stack.Screen
+          name="questionario/mais-medicamentos"
+          options={{ title: "Mais medicamentos?" }}
+        />
+        <Stack.Screen name="questionario/data" options={{ title: "Data da cirurgia" }} />
         <Stack.Screen name="questionario/cirurgia" options={{ title: "Data da cirurgia" }} />
         <Stack.Screen
           name="resultado"

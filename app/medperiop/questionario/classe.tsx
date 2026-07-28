@@ -11,15 +11,25 @@ export default function TelaClasse() {
   const { respostas, atualizar } = useQuestionario();
 
   function selecionar(classe: ClasseTerapeutica) {
-    atualizar({ classe, farmacoId: null, indicacaoId: null, condicaoAtendida: null, frequenciaDoseDias: null });
+    atualizar({
+      classeAtual: classe,
+      farmacoIdAtual: null,
+      indicacaoIdAtual: null,
+      condicaoAtendidaAtual: null,
+      frequenciaDoseDiasAtual: null,
+    });
     router.push("/medperiop/questionario/farmaco");
   }
 
   return (
     <ScrollView contentContainerStyle={estilos.container}>
-      <Text style={estilos.pergunta}>Qual a classe terapêutica da medicação?</Text>
+      <Text style={estilos.pergunta}>
+        {respostas.medicamentos.length > 0
+          ? `Qual a classe do próximo medicamento? (${respostas.medicamentos.length} já adicionado${respostas.medicamentos.length > 1 ? "s" : ""})`
+          : "Qual a classe terapêutica da medicação?"}
+      </Text>
       {CLASSES_TERAPEUTICAS.map((c) => (
-        <Cartao key={c.valor} style={respostas.classe === c.valor ? estilos.cartaoAtivo : undefined}>
+        <Cartao key={c.valor} style={respostas.classeAtual === c.valor ? estilos.cartaoAtivo : undefined}>
           <Botao titulo={c.rotulo} variante="secundario" onPress={() => selecionar(c.valor)} />
         </Cartao>
       ))}

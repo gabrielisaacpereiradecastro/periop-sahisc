@@ -8,19 +8,24 @@ import { farmacosPorClasse, buscarFarmaco } from "@/medperiop/data/farmacos";
 import { espacamento } from "@/theme";
 
 export default function TelaFarmaco() {
-  const { respostas, atualizar } = useQuestionario();
+  const { respostas, atualizar, confirmarMedicamentoAtual } = useQuestionario();
 
   const farmacos = useMemo(
-    () => (respostas.classe ? farmacosPorClasse(respostas.classe) : []),
-    [respostas.classe]
+    () => (respostas.classeAtual ? farmacosPorClasse(respostas.classeAtual) : []),
+    [respostas.classeAtual]
   );
 
   function selecionar(id: string) {
-    atualizar({ farmacoId: id, indicacaoId: null, condicaoAtendida: null, frequenciaDoseDias: null });
+    atualizar({
+      farmacoIdAtual: id,
+      indicacaoIdAtual: null,
+      condicaoAtendidaAtual: null,
+      frequenciaDoseDiasAtual: null,
+    });
   }
 
   function avancar() {
-    const farmaco = buscarFarmaco(respostas.classe, respostas.farmacoId);
+    const farmaco = buscarFarmaco(respostas.classeAtual, respostas.farmacoIdAtual);
     if (!farmaco) return;
 
     if (farmaco.indicacoes) {
@@ -30,7 +35,8 @@ export default function TelaFarmaco() {
     } else if (farmaco.regra?.tipo === "suspender_intervalo_dose") {
       router.push("/medperiop/questionario/frequencia");
     } else {
-      router.push("/medperiop/questionario/cirurgia");
+      confirmarMedicamentoAtual();
+      router.push("/medperiop/questionario/mais-medicamentos");
     }
   }
 
@@ -38,10 +44,10 @@ export default function TelaFarmaco() {
     <ScrollView contentContainerStyle={estilos.container}>
       <SeletorFarmaco
         farmacos={farmacos}
-        selecionadoId={respostas.farmacoId}
+        selecionadoId={respostas.farmacoIdAtual}
         onSelecionar={selecionar}
       />
-      <Botao titulo="Próximo" onPress={avancar} desabilitado={!respostas.farmacoId} />
+      <Botao titulo="Próximo" onPress={avancar} desabilitado={!respostas.farmacoIdAtual} />
     </ScrollView>
   );
 }

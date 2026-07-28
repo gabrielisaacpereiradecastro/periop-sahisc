@@ -1,5 +1,12 @@
 import { buscarFarmaco } from "@/medperiop/data/farmacos";
-import { Farmaco, Indicacao, Recomendacao, RegraRecomendacao, RespostasQuestionario } from "@/medperiop/types";
+import {
+  Farmaco,
+  Indicacao,
+  ItemMedicamento,
+  Recomendacao,
+  RegraRecomendacao,
+  RespostasQuestionario,
+} from "@/medperiop/types";
 import { dataEhFutura, paraDias, subtrairDias } from "@/medperiop/utils/data";
 
 interface RegraResolvida {
@@ -14,19 +21,23 @@ interface RegraResolvida {
  * necessária (indicação ou condição) ainda não foi respondida — o chamador
  * trata isso como "indeterminado" (não é erro, é questionário incompleto).
  */
-function resolverRegra(farmaco: Farmaco, respostas: RespostasQuestionario): RegraResolvida | null {
+function resolverRegra(
+  farmaco: Farmaco,
+  indicacaoId: string | null,
+  condicaoAtendida: "sim" | "nao" | null
+): RegraResolvida | null {
   if (farmaco.regra) {
     return { regra: farmaco.regra, indicacao: null };
   }
   if (farmaco.indicacoes) {
-    const indicacao = farmaco.indicacoes.find((i) => i.id === respostas.indicacaoId) ?? null;
+    const indicacao = farmaco.indicacoes.find((i) => i.id === indicacaoId) ?? null;
     if (!indicacao) return null;
     return { regra: indicacao.regra, indicacao };
   }
   if (farmaco.condicaoClinica) {
-    if (respostas.condicaoAtendida === null) return null;
+    if (condicaoAtendida === null) return null;
     const regra =
-      respostas.condicaoAtendida === "sim"
+      condicaoAtendida === "sim"
         ? farmaco.condicaoClinica.regraSeSim
         : farmaco.condicaoClinica.regraSeNao;
     return { regra, indicacao: null };
@@ -37,24 +48,24 @@ function resolverRegra(farmaco: Farmaco, respostas: RespostasQuestionario): Regr
 /**
  * A janela de suspensão foi perdida quando a data de corte (data da cirurgia
  * menos o período de suspensão exigido) já ficou no passado. Data de corte
- * igual a hoje ainda é considerada válida.
+ * igual a hoje ainda é considerada válida. Sem data de cirurgia informada,
+ * não há como avaliar falha de janela.
  */
 function houveFalhaDeJanela(dataCorteSuspensao: string | null): boolean {
   return dataCorteSuspensao !== null && !dataEhFutura(dataCorteSuspensao);
 }
 
 /**
- * Motor de decisão único para as 7 classes terapêuticas: função pura que
- * consulta o fármaco selecionado na base de dados (`TODOS_FARMACOS`), resolve
- * a regra aplicável (direta, por indicação ou por condição clínica) e traduz
- * essa regra em uma decisão concreta, calculando a data de corte quando fizer
- * sentido. Não há ramificação de risco tipo GLP1/AntiCoag aqui — a maior
- * parte da complexidade deste app está no volume de fármacos, não na lógica
- * de decisão em si, que é essencialmente uma consulta à tabela do consensus
- * statement correspondente.
+ * Motor de decisão para um único medicamento da lista. `dataCirurgia` é
+ * opcional: quando ausente, a recomendação ainda é gerada normalmente, só
+ * que sem data de corte calculada — o período relativo (`diasSuspensao`)
+ * continua disponível para exibir "suspender N dias antes" sem data exata.
  */
-export function gerarRecomendacao(respostas: RespostasQuestionario): Recomendacao {
-  const farmaco = buscarFarmaco(respostas.classe, respostas.farmacoId);
+export function gerarRecomendacaoItem(
+  item: ItemMedicamento,
+  dataCirurgia: string | null
+): Recomendacao {
+  const farmaco = buscarFarmaco(item.classe, item.farmacoId);
 
   if (!farmaco) {
     return {
@@ -62,6 +73,7 @@ export function gerarRecomendacao(respostas: RespostasQuestionario): Recomendaca
       farmaco: null,
       indicacao: null,
       regraAplicada: null,
+      diasSuspensao: null,
       dataCorteSuspensao: null,
       falhaJanelaSuspensao: false,
       motivoIndeterminado:
@@ -69,13 +81,14 @@ export function gerarRecomendacao(respostas: RespostasQuestionario): Recomendaca
     };
   }
 
-  const resolvido = resolverRegra(farmaco, respostas);
+  const resolvido = resolverRegra(farmaco, item.indicacaoId, item.condicaoAtendida);
   if (!resolvido) {
     return {
       decisao: "indeterminado",
       farmaco,
       indicacao: null,
       regraAplicada: null,
+      diasSuspensao: null,
       dataCorteSuspensao: null,
       falhaJanelaSuspensao: false,
       motivoIndeterminado:
@@ -92,6 +105,7 @@ export function gerarRecomendacao(respostas: RespostasQuestionario): Recomendaca
         farmaco,
         indicacao,
         regraAplicada: regra,
+        diasSuspensao: null,
         dataCorteSuspensao: null,
         falhaJanelaSuspensao: false,
       };
@@ -102,20 +116,20 @@ export function gerarRecomendacao(respostas: RespostasQuestionario): Recomendaca
         farmaco,
         indicacao,
         regraAplicada: regra,
-        dataCorteSuspensao: respostas.dataCirurgia,
+        diasSuspensao: null,
+        dataCorteSuspensao: dataCirurgia,
         falhaJanelaSuspensao: false,
       };
 
     case "suspender_periodo_fixo": {
       const dias = paraDias(regra.valor ?? 0, regra.unidade ?? "dias");
-      const dataCorteSuspensao = respostas.dataCirurgia
-        ? subtrairDias(respostas.dataCirurgia, dias)
-        : null;
+      const dataCorteSuspensao = dataCirurgia ? subtrairDias(dataCirurgia, dias) : null;
       return {
         decisao: "suspender_com_data",
         farmaco,
         indicacao,
         regraAplicada: regra,
+        diasSuspensao: dias,
         dataCorteSuspensao,
         falhaJanelaSuspensao: houveFalhaDeJanela(dataCorteSuspensao),
       };
@@ -123,27 +137,27 @@ export function gerarRecomendacao(respostas: RespostasQuestionario): Recomendaca
 
     case "suspender_intervalo_dose": {
       const numeroIntervalos = regra.numeroIntervalos ?? 1;
-      if (respostas.frequenciaDoseDias === null) {
+      if (item.frequenciaDoseDias === null) {
         return {
           decisao: "indeterminado",
           farmaco,
           indicacao,
           regraAplicada: regra,
+          diasSuspensao: null,
           dataCorteSuspensao: null,
           falhaJanelaSuspensao: false,
           motivoIndeterminado:
             "Falta informar a cada quantos dias o paciente toma a dose deste medicamento, para calcular a data de suspensão (a regra depende da posologia individual, não de um número fixo de dias).",
         };
       }
-      const dias = numeroIntervalos * respostas.frequenciaDoseDias;
-      const dataCorteSuspensao = respostas.dataCirurgia
-        ? subtrairDias(respostas.dataCirurgia, dias)
-        : null;
+      const dias = numeroIntervalos * item.frequenciaDoseDias;
+      const dataCorteSuspensao = dataCirurgia ? subtrairDias(dataCirurgia, dias) : null;
       return {
         decisao: "suspender_com_data",
         farmaco,
         indicacao,
         regraAplicada: regra,
+        diasSuspensao: dias,
         dataCorteSuspensao,
         falhaJanelaSuspensao: houveFalhaDeJanela(dataCorteSuspensao),
       };
@@ -155,6 +169,7 @@ export function gerarRecomendacao(respostas: RespostasQuestionario): Recomendaca
         farmaco,
         indicacao,
         regraAplicada: regra,
+        diasSuspensao: null,
         dataCorteSuspensao: null,
         falhaJanelaSuspensao: false,
       };
@@ -165,8 +180,16 @@ export function gerarRecomendacao(respostas: RespostasQuestionario): Recomendaca
         farmaco,
         indicacao,
         regraAplicada: regra,
+        diasSuspensao: null,
         dataCorteSuspensao: null,
         falhaJanelaSuspensao: false,
       };
   }
+}
+
+/** Gera uma recomendação para cada medicamento adicionado na sessão. */
+export function gerarRecomendacoes(respostas: RespostasQuestionario): Recomendacao[] {
+  return respostas.medicamentos.map((item) =>
+    gerarRecomendacaoItem(item, respostas.dataCirurgia)
+  );
 }

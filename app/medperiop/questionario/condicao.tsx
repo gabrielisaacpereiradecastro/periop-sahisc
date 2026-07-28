@@ -8,15 +8,25 @@ import { buscarFarmaco } from "@/medperiop/data/farmacos";
 import { cores, espacamento } from "@/theme";
 
 export default function TelaCondicao() {
-  const { respostas, atualizar } = useQuestionario();
+  const { respostas, atualizar, confirmarMedicamentoAtual } = useQuestionario();
 
   const farmaco = useMemo(
-    () => buscarFarmaco(respostas.classe, respostas.farmacoId),
-    [respostas.farmacoId]
+    () => buscarFarmaco(respostas.classeAtual, respostas.farmacoIdAtual),
+    [respostas.classeAtual, respostas.farmacoIdAtual]
   );
 
   function avancar() {
-    router.push("/medperiop/questionario/cirurgia");
+    if (!farmaco?.condicaoClinica || !respostas.condicaoAtendidaAtual) return;
+    const regra =
+      respostas.condicaoAtendidaAtual === "sim"
+        ? farmaco.condicaoClinica.regraSeSim
+        : farmaco.condicaoClinica.regraSeNao;
+    if (regra.tipo === "suspender_intervalo_dose") {
+      router.push("/medperiop/questionario/frequencia");
+    } else {
+      confirmarMedicamentoAtual();
+      router.push("/medperiop/questionario/mais-medicamentos");
+    }
   }
 
   if (!farmaco?.condicaoClinica) {
@@ -31,10 +41,10 @@ export default function TelaCondicao() {
           { valor: "sim", rotulo: "Sim" },
           { valor: "nao", rotulo: "Não" },
         ]}
-        selecionado={respostas.condicaoAtendida}
-        onSelecionar={(v) => atualizar({ condicaoAtendida: v })}
+        selecionado={respostas.condicaoAtendidaAtual}
+        onSelecionar={(v) => atualizar({ condicaoAtendidaAtual: v })}
       />
-      <Botao titulo="Próximo" onPress={avancar} desabilitado={!respostas.condicaoAtendida} />
+      <Botao titulo="Próximo" onPress={avancar} desabilitado={!respostas.condicaoAtendidaAtual} />
     </ScrollView>
   );
 }

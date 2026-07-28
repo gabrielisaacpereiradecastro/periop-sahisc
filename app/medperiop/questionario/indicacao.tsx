@@ -8,24 +8,25 @@ import { buscarFarmaco } from "@/medperiop/data/farmacos";
 import { cores, espacamento } from "@/theme";
 
 export default function TelaIndicacao() {
-  const { respostas, atualizar } = useQuestionario();
+  const { respostas, atualizar, confirmarMedicamentoAtual } = useQuestionario();
 
   const farmaco = useMemo(
-    () => buscarFarmaco(respostas.classe, respostas.farmacoId),
-    [respostas.farmacoId]
+    () => buscarFarmaco(respostas.classeAtual, respostas.farmacoIdAtual),
+    [respostas.classeAtual, respostas.farmacoIdAtual]
   );
 
   function selecionar(indicacaoId: string) {
-    atualizar({ indicacaoId, frequenciaDoseDias: null });
+    atualizar({ indicacaoIdAtual: indicacaoId, frequenciaDoseDiasAtual: null });
   }
 
   function avancar() {
-    if (!farmaco?.indicacoes || !respostas.indicacaoId) return;
-    const indicacao = farmaco.indicacoes.find((i) => i.id === respostas.indicacaoId);
+    if (!farmaco?.indicacoes || !respostas.indicacaoIdAtual) return;
+    const indicacao = farmaco.indicacoes.find((i) => i.id === respostas.indicacaoIdAtual);
     if (indicacao?.regra.tipo === "suspender_intervalo_dose") {
       router.push("/medperiop/questionario/frequencia");
     } else {
-      router.push("/medperiop/questionario/cirurgia");
+      confirmarMedicamentoAtual();
+      router.push("/medperiop/questionario/mais-medicamentos");
     }
   }
 
@@ -41,7 +42,7 @@ export default function TelaIndicacao() {
       {farmaco.indicacoes.map((indicacao) => (
         <Cartao
           key={indicacao.id}
-          style={respostas.indicacaoId === indicacao.id ? estilos.cartaoAtivo : undefined}
+          style={respostas.indicacaoIdAtual === indicacao.id ? estilos.cartaoAtivo : undefined}
         >
           <Botao
             titulo={indicacao.descricao}
@@ -50,7 +51,7 @@ export default function TelaIndicacao() {
           />
         </Cartao>
       ))}
-      <Botao titulo="Próximo" onPress={avancar} desabilitado={!respostas.indicacaoId} />
+      <Botao titulo="Próximo" onPress={avancar} desabilitado={!respostas.indicacaoIdAtual} />
     </ScrollView>
   );
 }

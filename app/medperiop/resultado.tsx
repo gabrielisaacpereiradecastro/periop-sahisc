@@ -1,19 +1,136 @@
 import React, { useMemo, useState } from "react";
-import { Alert, Platform, ScrollView, StyleSheet, Text, TextInput } from "react-native";
+import { Alert, Platform, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import { router } from "expo-router";
 import * as Print from "expo-print";
 import * as Sharing from "expo-sharing";
 import { Cartao } from "@/components/Cartao";
 import { Botao } from "@/components/Botao";
 import { useQuestionario } from "@/medperiop/state/QuestionarioContext";
-import { gerarRecomendacao } from "@/medperiop/logic/regras";
+import { gerarRecomendacoes } from "@/medperiop/logic/regras";
 import { gerarHtmlResumo } from "@/medperiop/logic/resumoPdf";
+import { Recomendacao } from "@/medperiop/types";
 import { formatarDataExtenso } from "@/medperiop/utils/data";
 import { cores, espacamento, raio } from "@/theme";
 
+function CartaoDecisao({ recomendacao }: { recomendacao: Recomendacao }) {
+  if (recomendacao.decisao === "indeterminado") {
+    return (
+      <Cartao style={estilos.cartaoPerigo}>
+        <Text style={estilos.tituloPerigo}>Não foi possível gerar uma recomendação</Text>
+        <Text style={estilos.textoPerigo}>{recomendacao.motivoIndeterminado}</Text>
+      </Cartao>
+    );
+  }
+
+  const farmaco = recomendacao.farmaco!;
+
+  return (
+    <Cartao style={estilos.cartaoMedicamento}>
+      <Text style={estilos.tituloCartao}>{farmaco.nomeGenerico}</Text>
+      <Text style={estilos.textoInformativo}>{farmaco.subclasse}</Text>
+      {recomendacao.indicacao && (
+        <Text style={[estilos.textoDecisao, { marginTop: espacamento.xs }]}>
+          Indicação: {recomendacao.indicacao.descricao}
+        </Text>
+      )}
+
+      {recomendacao.decisao === "continuar" && (
+        <View style={[estilos.subCartao, estilos.subCartaoSucesso]}>
+          <Text style={estilos.tituloSucesso}>Continuar normalmente</Text>
+          <Text style={estilos.textoDecisao}>
+            Manter o uso habitual do medicamento, incluindo a dose da manhã da cirurgia.
+          </Text>
+        </View>
+      )}
+
+      {recomendacao.decisao === "suspender_dia_cirurgia" && (
+        <View style={[estilos.subCartao, estilos.subCartaoAlerta]}>
+          <Text style={estilos.tituloAlerta}>Suspender só a dose do dia da cirurgia</Text>
+          <Text style={estilos.textoDecisao}>
+            Manter a terapia crônica normalmente até a véspera. Não tomar a dose da manhã
+            da cirurgia. Retomar o uso habitual assim que possível no pós-operatório.
+          </Text>
+        </View>
+      )}
+
+      {recomendacao.decisao === "suspender_com_data" &&
+        (recomendacao.falhaJanelaSuspensao ? (
+          <View style={[estilos.subCartao, estilos.subCartaoPerigo]}>
+            <Text style={estilos.tituloPerigo}>⚠️ Alerta — não há mais tempo hábil</Text>
+            <Text style={estilos.textoPerigo}>
+              Este medicamento deveria ter sido suspenso a partir de{" "}
+              {recomendacao.dataCorteSuspensao &&
+                formatarDataExtenso(recomendacao.dataCorteSuspensao)}
+              . Como esse prazo já passou, considere adiar o procedimento eletivo até
+              cumprir o intervalo de segurança, ou discutir com a equipe cirúrgica e
+              anestésica uma conduta alternativa se o procedimento não puder esperar.
+            </Text>
+          </View>
+        ) : recomendacao.dataCorteSuspensao ? (
+          <View style={[estilos.subCartao, estilos.subCartaoAlerta]}>
+            <Text style={estilos.tituloAlerta}>Suspender antes da cirurgia</Text>
+            <Text style={estilos.textoDecisao}>
+              Não usar o medicamento a partir de{" "}
+              <Text style={estilos.destaque}>
+                {formatarDataExtenso(recomendacao.dataCorteSuspensao)}
+              </Text>
+              .
+            </Text>
+          </View>
+        ) : (
+          <View style={[estilos.subCartao, estilos.subCartaoAlerta]}>
+            <Text style={estilos.tituloAlerta}>Suspender antes da cirurgia</Text>
+            <Text style={estilos.textoDecisao}>
+              Suspender <Text style={estilos.destaque}>{recomendacao.diasSuspensao} dia
+              {recomendacao.diasSuspensao !== 1 ? "s" : ""} antes</Text> da cirurgia. (Data
+              da cirurgia não informada — sem uma data exata, não é possível calcular o dia
+              exato de corte nem verificar se ainda há tempo hábil.)
+            </Text>
+          </View>
+        ))}
+
+      {recomendacao.decisao === "reduzir_dose" && (
+        <View style={[estilos.subCartao, estilos.subCartaoAlerta]}>
+          <Text style={estilos.tituloAlerta}>Ajustar a dose (não é suspensão)</Text>
+          <Text style={estilos.textoDecisao}>{recomendacao.regraAplicada?.ajusteDose}</Text>
+        </View>
+      )}
+
+      {recomendacao.decisao === "individualizado" && (
+        <View style={[estilos.subCartao, estilos.subCartaoIndividualizado]}>
+          <Text style={estilos.tituloIndividualizado}>Decisão individualizada</Text>
+          <Text style={estilos.textoIndividualizado}>
+            O consensus statement não define um número fixo para este caso — a decisão
+            deve ser compartilhada com o médico prescritor e a equipe anestésica/cirúrgica.
+          </Text>
+          {recomendacao.regraAplicada?.motivoIndividualizado && (
+            <Text style={[estilos.textoIndividualizado, { marginTop: espacamento.sm }]}>
+              {recomendacao.regraAplicada.motivoIndividualizado}
+            </Text>
+          )}
+        </View>
+      )}
+
+      {farmaco.racional && (
+        <View style={estilos.blocoTexto}>
+          <Text style={estilos.subtituloBloco}>Racional</Text>
+          <Text style={estilos.textoInformativo}>{farmaco.racional}</Text>
+        </View>
+      )}
+
+      {farmaco.situacoesEspeciais && (
+        <View style={[estilos.blocoTexto, estilos.blocoAtencao]}>
+          <Text style={estilos.tituloAtencao}>Situações especiais / interações</Text>
+          <Text style={estilos.textoAtencao}>{farmaco.situacoesEspeciais}</Text>
+        </View>
+      )}
+    </Cartao>
+  );
+}
+
 export default function TelaResultado() {
   const { respostas, reiniciar } = useQuestionario();
-  const recomendacao = useMemo(() => gerarRecomendacao(respostas), [respostas]);
+  const recomendacoes = useMemo(() => gerarRecomendacoes(respostas), [respostas]);
   const [nomePaciente, setNomePaciente] = useState("");
   const [gerandoPdf, setGerandoPdf] = useState(false);
 
@@ -26,7 +143,7 @@ export default function TelaResultado() {
   async function baixarPdf() {
     setGerandoPdf(true);
     try {
-      const html = gerarHtmlResumo(respostas, recomendacao, nomePaciente);
+      const html = gerarHtmlResumo(respostas, recomendacoes, nomePaciente);
 
       if (Platform.OS === "web") {
         await Print.printAsync({ html });
@@ -53,119 +170,38 @@ export default function TelaResultado() {
     }
   }
 
-  if (recomendacao.decisao === "indeterminado") {
+  if (recomendacoes.length === 0) {
     return (
       <ScrollView contentContainerStyle={estilos.container}>
         <Cartao style={estilos.cartaoPerigo}>
-          <Text style={estilos.tituloPerigo}>Não foi possível gerar uma recomendação</Text>
-          <Text style={estilos.textoPerigo}>{recomendacao.motivoIndeterminado}</Text>
+          <Text style={estilos.tituloPerigo}>Nenhum medicamento adicionado</Text>
+          <Text style={estilos.textoPerigo}>
+            Volte e adicione ao menos um medicamento antes de ver a recomendação.
+          </Text>
         </Cartao>
         <Botao titulo="Voltar" onPress={() => router.back()} variante="secundario" />
         <Botao titulo="Refazer questionário" onPress={refazer} variante="secundario" />
-        <Botao titulo="Ver bibliografia" onPress={() => router.push("/medperiop/bibliografia")} />
       </ScrollView>
     );
   }
-
-  const farmaco = recomendacao.farmaco!;
 
   return (
     <ScrollView contentContainerStyle={estilos.container}>
       <Cartao style={estilos.cartaoInfo}>
         <Text style={estilos.tituloCartao}>Resumo do caso</Text>
-        <Text style={estilos.textoDecisao}>Medicamento: {farmaco.nomeGenerico}</Text>
-        <Text style={estilos.textoDecisao}>Classe: {farmaco.subclasse}</Text>
-        {recomendacao.indicacao && (
-          <Text style={estilos.textoDecisao}>Indicação: {recomendacao.indicacao.descricao}</Text>
-        )}
-        {respostas.dataCirurgia && (
-          <Text style={estilos.textoDecisao}>
-            Cirurgia prevista: {formatarDataExtenso(respostas.dataCirurgia)}
-          </Text>
-        )}
+        <Text style={estilos.textoDecisao}>
+          {recomendacoes.length} medicamento{recomendacoes.length !== 1 ? "s" : ""} avaliado
+          {recomendacoes.length !== 1 ? "s" : ""}
+        </Text>
+        <Text style={estilos.textoDecisao}>
+          Cirurgia prevista:{" "}
+          {respostas.dataCirurgia ? formatarDataExtenso(respostas.dataCirurgia) : "não informada"}
+        </Text>
       </Cartao>
 
-      {recomendacao.decisao === "continuar" && (
-        <Cartao style={estilos.cartaoSucesso}>
-          <Text style={estilos.tituloSucesso}>Continuar normalmente</Text>
-          <Text style={estilos.textoDecisao}>
-            Manter o uso habitual do medicamento, incluindo a dose da manhã da cirurgia.
-          </Text>
-        </Cartao>
-      )}
-
-      {recomendacao.decisao === "suspender_dia_cirurgia" && (
-        <Cartao style={estilos.cartaoAlerta}>
-          <Text style={estilos.tituloAlerta}>Suspender só a dose do dia da cirurgia</Text>
-          <Text style={estilos.textoDecisao}>
-            Manter a terapia crônica normalmente até a véspera. Não tomar a dose da manhã
-            da cirurgia. Retomar o uso habitual assim que possível no pós-operatório.
-          </Text>
-        </Cartao>
-      )}
-
-      {recomendacao.decisao === "suspender_com_data" &&
-        (recomendacao.falhaJanelaSuspensao ? (
-          <Cartao style={estilos.cartaoPerigo}>
-            <Text style={estilos.tituloPerigo}>⚠️ Alerta — não há mais tempo hábil</Text>
-            <Text style={estilos.textoPerigo}>
-              Este medicamento deveria ter sido suspenso a partir de{" "}
-              {recomendacao.dataCorteSuspensao &&
-                formatarDataExtenso(recomendacao.dataCorteSuspensao)}
-              . Como esse prazo já passou, considere adiar o procedimento eletivo até
-              cumprir o intervalo de segurança, ou discutir com a equipe cirúrgica e
-              anestésica uma conduta alternativa se o procedimento não puder esperar.
-            </Text>
-          </Cartao>
-        ) : (
-          <Cartao style={estilos.cartaoAlerta}>
-            <Text style={estilos.tituloAlerta}>Suspender antes da cirurgia</Text>
-            <Text style={estilos.textoDecisao}>
-              Não usar o medicamento a partir de{" "}
-              <Text style={estilos.destaque}>
-                {recomendacao.dataCorteSuspensao &&
-                  formatarDataExtenso(recomendacao.dataCorteSuspensao)}
-              </Text>
-              .
-            </Text>
-          </Cartao>
-        ))}
-
-      {recomendacao.decisao === "reduzir_dose" && (
-        <Cartao style={estilos.cartaoAlerta}>
-          <Text style={estilos.tituloAlerta}>Ajustar a dose (não é suspensão)</Text>
-          <Text style={estilos.textoDecisao}>{recomendacao.regraAplicada?.ajusteDose}</Text>
-        </Cartao>
-      )}
-
-      {recomendacao.decisao === "individualizado" && (
-        <Cartao style={estilos.cartaoIndividualizado}>
-          <Text style={estilos.tituloIndividualizado}>Decisão individualizada</Text>
-          <Text style={estilos.textoIndividualizado}>
-            O consensus statement não define um número fixo para este caso — a decisão
-            deve ser compartilhada com o médico prescritor e a equipe anestésica/cirúrgica.
-          </Text>
-          {recomendacao.regraAplicada?.motivoIndividualizado && (
-            <Text style={[estilos.textoIndividualizado, { marginTop: espacamento.sm }]}>
-              {recomendacao.regraAplicada.motivoIndividualizado}
-            </Text>
-          )}
-        </Cartao>
-      )}
-
-      {farmaco.racional && (
-        <Cartao>
-          <Text style={estilos.tituloCartao}>Racional</Text>
-          <Text style={estilos.textoInformativo}>{farmaco.racional}</Text>
-        </Cartao>
-      )}
-
-      {farmaco.situacoesEspeciais && (
-        <Cartao style={estilos.cartaoAtencao}>
-          <Text style={estilos.tituloAtencao}>Situações especiais / interações</Text>
-          <Text style={estilos.textoAtencao}>{farmaco.situacoesEspeciais}</Text>
-        </Cartao>
-      )}
+      {recomendacoes.map((recomendacao, i) => (
+        <CartaoDecisao key={recomendacao.farmaco?.id ?? i} recomendacao={recomendacao} />
+      ))}
 
       <Cartao style={estilos.cartaoAviso}>
         <Text style={estilos.avisoTexto}>
@@ -213,25 +249,8 @@ const estilos = StyleSheet.create({
   cartaoInfo: {
     backgroundColor: cores.fundoCartao,
   },
-  cartaoSucesso: {
-    backgroundColor: cores.sucessoFundo,
-    borderColor: cores.sucesso,
-  },
-  tituloSucesso: {
-    fontSize: 18,
-    fontWeight: "800",
-    color: cores.sucesso,
-    marginBottom: espacamento.sm,
-  },
-  cartaoAlerta: {
-    backgroundColor: cores.alertaFundo,
-    borderColor: cores.alerta,
-  },
-  tituloAlerta: {
-    fontSize: 18,
-    fontWeight: "800",
-    color: cores.alerta,
-    marginBottom: espacamento.sm,
+  cartaoMedicamento: {
+    gap: 0,
   },
   cartaoPerigo: {
     backgroundColor: cores.perigoFundo,
@@ -249,27 +268,69 @@ const estilos = StyleSheet.create({
     lineHeight: 20,
     marginTop: espacamento.xs,
   },
-  cartaoIndividualizado: {
+  subCartao: {
+    marginTop: espacamento.md,
+    padding: espacamento.md,
+    borderRadius: raio.md,
+    borderWidth: 1,
+  },
+  subCartaoSucesso: {
+    backgroundColor: cores.sucessoFundo,
+    borderColor: cores.sucesso,
+  },
+  tituloSucesso: {
+    fontSize: 16,
+    fontWeight: "800",
+    color: cores.sucesso,
+    marginBottom: espacamento.xs,
+  },
+  subCartaoAlerta: {
+    backgroundColor: cores.alertaFundo,
+    borderColor: cores.alerta,
+  },
+  tituloAlerta: {
+    fontSize: 16,
+    fontWeight: "800",
+    color: cores.alerta,
+    marginBottom: espacamento.xs,
+  },
+  subCartaoPerigo: {
+    backgroundColor: cores.perigoFundo,
+    borderColor: cores.perigo,
+  },
+  subCartaoIndividualizado: {
     backgroundColor: "#F3F4F6",
     borderColor: cores.textoSecundario,
   },
   tituloIndividualizado: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: "800",
     color: cores.textoSecundario,
-    marginBottom: espacamento.sm,
+    marginBottom: espacamento.xs,
   },
   textoIndividualizado: {
     fontSize: 14,
     color: cores.texto,
     lineHeight: 20,
   },
-  cartaoAtencao: {
+  blocoTexto: {
+    marginTop: espacamento.md,
+  },
+  blocoAtencao: {
+    padding: espacamento.md,
+    borderRadius: raio.md,
+    borderWidth: 1,
     backgroundColor: cores.alertaFundo,
     borderColor: cores.alerta,
   },
+  subtituloBloco: {
+    fontSize: 13,
+    fontWeight: "700",
+    color: cores.texto,
+    marginBottom: espacamento.xs,
+  },
   tituloAtencao: {
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: "700",
     color: "#78350F",
     marginBottom: espacamento.xs,
