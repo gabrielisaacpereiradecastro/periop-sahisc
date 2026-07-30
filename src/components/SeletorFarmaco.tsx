@@ -5,16 +5,21 @@ import { cores, espacamento, raio } from "@/theme";
 
 interface Props {
   farmacos: Farmaco[];
-  selecionadoId: string | null;
-  onSelecionar: (id: string) => void;
+  /** Delega ao chamador decidir se um fármaco está marcado — evita que este
+   * componente precise conhecer o formato da chave de seleção (importa
+   * porque o mesmo `id` pode existir em mais de uma `classe`, ex.: guanfacina
+   * em cardiovascular e em psiquiátrico — a identidade real é classe+id). */
+  isSelecionado: (farmaco: Farmaco) => boolean;
+  onAlternar: (farmaco: Farmaco) => void;
 }
 
 /**
- * Lista de fármacos agrupada por subclasse, com busca — diferente do
- * `SeletorOpcoes` (pills), necessário aqui porque algumas classes chegam a
- * ter ~40 fármacos, inviável como grade de botões.
+ * Lista de fármacos agrupada por subclasse, com busca e seleção múltipla
+ * (checkbox) — diferente do `SeletorOpcoes` (pills, seleção única),
+ * necessário aqui porque algumas classes chegam a ter ~40 fármacos
+ * (inviável como grade de botões) e o usuário pode marcar vários de uma vez.
  */
-export function SeletorFarmaco({ farmacos, selecionadoId, onSelecionar }: Props) {
+export function SeletorFarmaco({ farmacos, isSelecionado, onAlternar }: Props) {
   const [busca, setBusca] = useState("");
 
   const grupos = useMemo(() => {
@@ -58,24 +63,29 @@ export function SeletorFarmaco({ farmacos, selecionadoId, onSelecionar }: Props)
         <View key={subclasse} style={estilos.grupo}>
           <Text style={estilos.tituloGrupo}>{subclasse}</Text>
           {itens.map((f) => {
-            const ativo = f.id === selecionadoId;
+            const marcado = isSelecionado(f);
             return (
               <Pressable
-                key={f.id}
-                onPress={() => onSelecionar(f.id)}
-                style={[estilos.item, ativo && estilos.itemAtivo]}
-                accessibilityRole="radio"
-                accessibilityState={{ selected: ativo }}
+                key={`${f.classe}:${f.id}`}
+                onPress={() => onAlternar(f)}
+                style={[estilos.item, marcado && estilos.itemAtivo]}
+                accessibilityRole="checkbox"
+                accessibilityState={{ checked: marcado }}
                 accessibilityLabel={f.nomeGenerico}
               >
-                <Text style={[estilos.nomeGenerico, ativo && estilos.textoAtivo]}>
-                  {f.nomeGenerico}
-                </Text>
-                {f.nomesComerciais.length > 0 && (
-                  <Text style={[estilos.nomesComerciais, ativo && estilos.textoAtivo]}>
-                    {f.nomesComerciais.join(", ")}
+                <View style={[estilos.caixa, marcado && estilos.caixaMarcada]}>
+                  {marcado && <Text style={estilos.check}>✓</Text>}
+                </View>
+                <View style={estilos.itemTexto}>
+                  <Text style={[estilos.nomeGenerico, marcado && estilos.textoAtivo]}>
+                    {f.nomeGenerico}
                   </Text>
-                )}
+                  {f.nomesComerciais.length > 0 && (
+                    <Text style={[estilos.nomesComerciais, marcado && estilos.textoAtivo]}>
+                      {f.nomesComerciais.join(", ")}
+                    </Text>
+                  )}
+                </View>
               </Pressable>
             );
           })}
@@ -116,16 +126,41 @@ const estilos = StyleSheet.create({
     marginBottom: espacamento.xs,
   },
   item: {
+    flexDirection: "row",
+    alignItems: "flex-start",
     padding: espacamento.sm,
     borderRadius: raio.sm,
     borderWidth: 1,
     borderColor: cores.borda,
     backgroundColor: cores.branco,
     marginBottom: espacamento.xs,
+    gap: espacamento.sm,
   },
   itemAtivo: {
     borderColor: cores.primaria,
     backgroundColor: cores.primariaClara,
+  },
+  caixa: {
+    width: 22,
+    height: 22,
+    borderRadius: 6,
+    borderWidth: 1.5,
+    borderColor: cores.textoSecundario,
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 1,
+  },
+  caixaMarcada: {
+    borderColor: cores.primaria,
+    backgroundColor: cores.primaria,
+  },
+  check: {
+    color: cores.branco,
+    fontSize: 14,
+    fontWeight: "700",
+  },
+  itemTexto: {
+    flex: 1,
   },
   nomeGenerico: {
     fontSize: 15,

@@ -11,7 +11,10 @@ export default function TelaMaisMedicamentos() {
   const { respostas, removerMedicamento } = useQuestionario();
 
   function adicionarOutro() {
-    router.push("/medperiop/questionario/classe");
+    // replace (não push) pra pilha de navegação não crescer sem limite a
+    // cada rodada — mantém "voltar" previsível mesmo depois de várias
+    // classes adicionadas.
+    router.replace("/medperiop/questionario/classe");
   }
 
   function continuar() {
@@ -43,8 +46,8 @@ export default function TelaMaisMedicamentos() {
         );
       })}
 
-      <Text style={estilos.perguntaSecundaria}>Deseja adicionar outro medicamento?</Text>
-      <Botao titulo="Sim, adicionar outro" onPress={adicionarOutro} />
+      <Text style={estilos.perguntaSecundaria}>Deseja adicionar medicamentos de outra classe?</Text>
+      <Botao titulo="Sim, adicionar mais" onPress={adicionarOutro} />
       <Botao
         titulo="Não, ver recomendação"
         variante="secundario"

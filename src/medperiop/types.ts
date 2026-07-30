@@ -106,12 +106,28 @@ export interface ItemMedicamento {
   frequenciaDoseDias: number | null;
 }
 
+/** Referência a um fármaco ainda não confirmado, aguardando uma pergunta
+ * extra (indicação/condição/frequência) antes de virar `ItemMedicamento`. */
+export interface FarmacoPendente {
+  classe: ClasseTerapeutica;
+  farmacoId: string;
+}
+
 export interface RespostasQuestionario {
   /** Medicamentos já confirmados nesta sessão. */
   medicamentos: ItemMedicamento[];
+  /** Fila de fármacos marcados na tela de seleção que ainda precisam de uma
+   * pergunta extra (indicação/condição/frequência) antes de serem
+   * confirmados — preenchida quando o usuário marca vários de uma vez e
+   * mais de um exige informação adicional. Resolvidos um de cada vez. */
+  filaPendente: FarmacoPendente[];
   /** Campos de rascunho do medicamento sendo adicionado agora — só viram um
-   * `ItemMedicamento` em `medicamentos` quando o usuário confirma a etapa. */
-  classeAtual: ClasseTerapeutica | null;
+   * `ItemMedicamento` em `medicamentos` quando o usuário confirma a etapa.
+   * `"todas"` em `classeAtual` significa que a tela de fármaco deve listar
+   * TODOS os medicamentos (opção "Todos os medicamentos"), não só de uma
+   * classe — nunca é gravado em `ItemMedicamento.classe` (lá sempre é a
+   * classe real do fármaco escolhido). */
+  classeAtual: ClasseTerapeutica | "todas" | null;
   farmacoIdAtual: string | null;
   indicacaoIdAtual: string | null;
   condicaoAtendidaAtual: "sim" | "nao" | null;

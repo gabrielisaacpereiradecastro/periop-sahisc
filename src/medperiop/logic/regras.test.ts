@@ -360,6 +360,7 @@ describe("gerarRecomendacoes (lista)", () => {
         item({ id: "1", classe: "cardiovascular", farmacoId: "continua_sempre" }),
         item({ id: "2", classe: "endocrino", farmacoId: "suspende_3_dias" }),
       ],
+      filaPendente: [],
       classeAtual: null,
       farmacoIdAtual: null,
       indicacaoIdAtual: null,
@@ -376,6 +377,7 @@ describe("gerarRecomendacoes (lista)", () => {
   test("lista vazia gera lista vazia", () => {
     const recomendacoes = gerarRecomendacoes({
       medicamentos: [],
+      filaPendente: [],
       classeAtual: null,
       farmacoIdAtual: null,
       indicacaoIdAtual: null,

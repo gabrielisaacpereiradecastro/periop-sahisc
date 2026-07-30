@@ -14,7 +14,10 @@ export default function TelaFrequencia() {
   );
 
   const farmaco = useMemo(
-    () => buscarFarmaco(respostas.classeAtual, respostas.farmacoIdAtual),
+    () =>
+      respostas.classeAtual && respostas.classeAtual !== "todas"
+        ? buscarFarmaco(respostas.classeAtual, respostas.farmacoIdAtual)
+        : null,
     [respostas.classeAtual, respostas.farmacoIdAtual]
   );
 
@@ -26,8 +29,8 @@ export default function TelaFrequencia() {
   }
 
   function avancar() {
-    confirmarMedicamentoAtual();
-    router.push("/medperiop/questionario/mais-medicamentos");
+    const proximo = confirmarMedicamentoAtual();
+    router.push(`/medperiop/questionario/${proximo}`);
   }
 
   return (

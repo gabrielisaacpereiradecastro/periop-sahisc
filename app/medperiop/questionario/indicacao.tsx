@@ -11,7 +11,10 @@ export default function TelaIndicacao() {
   const { respostas, atualizar, confirmarMedicamentoAtual } = useQuestionario();
 
   const farmaco = useMemo(
-    () => buscarFarmaco(respostas.classeAtual, respostas.farmacoIdAtual),
+    () =>
+      respostas.classeAtual && respostas.classeAtual !== "todas"
+        ? buscarFarmaco(respostas.classeAtual, respostas.farmacoIdAtual)
+        : null,
     [respostas.classeAtual, respostas.farmacoIdAtual]
   );
 
@@ -25,8 +28,8 @@ export default function TelaIndicacao() {
     if (indicacao?.regra.tipo === "suspender_intervalo_dose") {
       router.push("/medperiop/questionario/frequencia");
     } else {
-      confirmarMedicamentoAtual();
-      router.push("/medperiop/questionario/mais-medicamentos");
+      const proximo = confirmarMedicamentoAtual();
+      router.push(`/medperiop/questionario/${proximo}`);
     }
   }
 

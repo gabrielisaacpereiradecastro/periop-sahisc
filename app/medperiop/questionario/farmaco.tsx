@@ -1,53 +1,55 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { ScrollView, StyleSheet } from "react-native";
 import { router } from "expo-router";
 import { Botao } from "@/components/Botao";
 import { SeletorFarmaco } from "@/components/SeletorFarmaco";
 import { useQuestionario } from "@/medperiop/state/QuestionarioContext";
-import { farmacosPorClasse, buscarFarmaco } from "@/medperiop/data/farmacos";
+import { farmacosPorClasse, TODOS_FARMACOS } from "@/medperiop/data/farmacos";
+import { Farmaco, FarmacoPendente } from "@/medperiop/types";
 import { espacamento } from "@/theme";
 
 export default function TelaFarmaco() {
-  const { respostas, atualizar, confirmarMedicamentoAtual } = useQuestionario();
+  const { respostas, processarSelecaoFarmacos } = useQuestionario();
+  const [selecionados, setSelecionados] = useState<FarmacoPendente[]>([]);
 
-  const farmacos = useMemo(
-    () => (respostas.classeAtual ? farmacosPorClasse(respostas.classeAtual) : []),
-    [respostas.classeAtual]
-  );
+  const farmacos = useMemo(() => {
+    if (respostas.classeAtual === "todas") return TODOS_FARMACOS;
+    if (respostas.classeAtual) return farmacosPorClasse(respostas.classeAtual);
+    return [];
+  }, [respostas.classeAtual]);
 
-  function selecionar(id: string) {
-    atualizar({
-      farmacoIdAtual: id,
-      indicacaoIdAtual: null,
-      condicaoAtendidaAtual: null,
-      frequenciaDoseDiasAtual: null,
-    });
+  function estaSelecionado(farmaco: Farmaco) {
+    return selecionados.some((s) => s.classe === farmaco.classe && s.farmacoId === farmaco.id);
   }
 
-  function avancar() {
-    const farmaco = buscarFarmaco(respostas.classeAtual, respostas.farmacoIdAtual);
-    if (!farmaco) return;
+  function alternar(farmaco: Farmaco) {
+    setSelecionados((atual) =>
+      estaSelecionado(farmaco)
+        ? atual.filter((s) => !(s.classe === farmaco.classe && s.farmacoId === farmaco.id))
+        : [...atual, { classe: farmaco.classe, farmacoId: farmaco.id }]
+    );
+  }
 
-    if (farmaco.indicacoes) {
-      router.push("/medperiop/questionario/indicacao");
-    } else if (farmaco.condicaoClinica) {
-      router.push("/medperiop/questionario/condicao");
-    } else if (farmaco.regra?.tipo === "suspender_intervalo_dose") {
-      router.push("/medperiop/questionario/frequencia");
-    } else {
-      confirmarMedicamentoAtual();
-      router.push("/medperiop/questionario/mais-medicamentos");
-    }
+  function concluir() {
+    const proximo = processarSelecaoFarmacos(selecionados);
+    router.push(`/medperiop/questionario/${proximo}`);
+  }
+
+  function trocarClasse() {
+    router.replace("/medperiop/questionario/classe");
   }
 
   return (
     <ScrollView contentContainerStyle={estilos.container}>
-      <SeletorFarmaco
-        farmacos={farmacos}
-        selecionadoId={respostas.farmacoIdAtual}
-        onSelecionar={selecionar}
+      <SeletorFarmaco farmacos={farmacos} isSelecionado={estaSelecionado} onAlternar={alternar} />
+      <Botao
+        titulo={
+          selecionados.length > 1 ? `Concluir seleção (${selecionados.length})` : "Concluir seleção"
+        }
+        onPress={concluir}
+        desabilitado={selecionados.length === 0}
       />
-      <Botao titulo="Próximo" onPress={avancar} desabilitado={!respostas.farmacoIdAtual} />
+      <Botao titulo="Trocar classe" variante="secundario" onPress={trocarClasse} />
     </ScrollView>
   );
 }

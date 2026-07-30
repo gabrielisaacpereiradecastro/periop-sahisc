@@ -13,19 +13,19 @@ interface Categoria {
 
 const CATEGORIAS: Categoria[] = [
   {
-    rota: "/anticoag",
+    rota: "/anticoag/questionario/classe",
     titulo: "Anticoagulante / Antiagregante",
     descricao:
       "DOACs, heparina (não fracionada e de baixo peso molecular) e antiplaquetários — suspensão/retomada para bloqueio neuraxial ou de plexo profundo/periférico. Baseado no guideline ASRA Pain Medicine.",
   },
   {
-    rota: "/glp1",
+    rota: "/glp1/questionario/medicamento",
     titulo: "Agonista do GLP-1",
     descricao:
       "Liraglutida, semaglutida, dulaglutida e outros — risco de estase gástrica e manejo pré-operatório. Baseado na Nota SBA.",
   },
   {
-    rota: "/medperiop",
+    rota: "/medperiop/questionario/classe",
     titulo: "Outro medicamento de uso crônico",
     descricao:
       "Cardiovascular, endócrino/diabetes, GI/pulmonar, neurológico, psiquiátrico, reumatológico/HIV (inclui AINEs) e analgésicos. Baseado na série de consensus statements SPAQI.",
