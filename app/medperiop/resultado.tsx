@@ -9,7 +9,6 @@ import { useQuestionario } from "@/medperiop/state/QuestionarioContext";
 import { gerarRecomendacoes } from "@/medperiop/logic/regras";
 import { gerarHtmlResumo } from "@/medperiop/logic/resumoPdf";
 import { Recomendacao } from "@/medperiop/types";
-import { formatarDataExtenso } from "@/medperiop/utils/data";
 import { cores, espacamento, raio } from "@/theme";
 
 function CartaoDecisao({ recomendacao }: { recomendacao: Recomendacao }) {
@@ -53,41 +52,20 @@ function CartaoDecisao({ recomendacao }: { recomendacao: Recomendacao }) {
         </View>
       )}
 
-      {recomendacao.decisao === "suspender_com_data" &&
-        (recomendacao.falhaJanelaSuspensao ? (
-          <View style={[estilos.subCartao, estilos.subCartaoPerigo]}>
-            <Text style={estilos.tituloPerigo}>⚠️ Alerta — não há mais tempo hábil</Text>
-            <Text style={estilos.textoPerigo}>
-              Este medicamento deveria ter sido suspenso a partir de{" "}
-              {recomendacao.dataCorteSuspensao &&
-                formatarDataExtenso(recomendacao.dataCorteSuspensao)}
-              . Como esse prazo já passou, considere adiar o procedimento eletivo até
-              cumprir o intervalo de segurança, ou discutir com a equipe cirúrgica e
-              anestésica uma conduta alternativa se o procedimento não puder esperar.
-            </Text>
-          </View>
-        ) : recomendacao.dataCorteSuspensao ? (
-          <View style={[estilos.subCartao, estilos.subCartaoAlerta]}>
-            <Text style={estilos.tituloAlerta}>Suspender antes da cirurgia</Text>
-            <Text style={estilos.textoDecisao}>
-              Não usar o medicamento a partir de{" "}
-              <Text style={estilos.destaque}>
-                {formatarDataExtenso(recomendacao.dataCorteSuspensao)}
-              </Text>
-              .
-            </Text>
-          </View>
-        ) : (
-          <View style={[estilos.subCartao, estilos.subCartaoAlerta]}>
-            <Text style={estilos.tituloAlerta}>Suspender antes da cirurgia</Text>
-            <Text style={estilos.textoDecisao}>
-              Suspender <Text style={estilos.destaque}>{recomendacao.diasSuspensao} dia
-              {recomendacao.diasSuspensao !== 1 ? "s" : ""} antes</Text> da cirurgia. (Data
-              da cirurgia não informada — sem uma data exata, não é possível calcular o dia
-              exato de corte nem verificar se ainda há tempo hábil.)
-            </Text>
-          </View>
-        ))}
+      {recomendacao.decisao === "suspender_periodo" && (
+        <View style={[estilos.subCartao, estilos.subCartaoAlerta]}>
+          <Text style={estilos.tituloAlerta}>Suspender antes do procedimento</Text>
+          <Text style={estilos.textoDecisao}>
+            Suspender{" "}
+            <Text style={estilos.destaque}>
+              {recomendacao.diasSuspensao} dia{recomendacao.diasSuspensao !== 1 ? "s" : ""}{" "}
+              antes
+            </Text>{" "}
+            da cirurgia, procedimento ou bloqueio de neuroeixo/inserção de cateter
+            peridural.
+          </Text>
+        </View>
+      )}
 
       {recomendacao.decisao === "reduzir_dose" && (
         <View style={[estilos.subCartao, estilos.subCartaoAlerta]}>
@@ -143,7 +121,7 @@ export default function TelaResultado() {
   async function baixarPdf() {
     setGerandoPdf(true);
     try {
-      const html = gerarHtmlResumo(respostas, recomendacoes, nomePaciente);
+      const html = gerarHtmlResumo(recomendacoes, nomePaciente);
 
       if (Platform.OS === "web") {
         await Print.printAsync({ html });
@@ -192,10 +170,6 @@ export default function TelaResultado() {
         <Text style={estilos.textoDecisao}>
           {recomendacoes.length} medicamento{recomendacoes.length !== 1 ? "s" : ""} avaliado
           {recomendacoes.length !== 1 ? "s" : ""}
-        </Text>
-        <Text style={estilos.textoDecisao}>
-          Cirurgia prevista:{" "}
-          {respostas.dataCirurgia ? formatarDataExtenso(respostas.dataCirurgia) : "não informada"}
         </Text>
       </Cartao>
 
@@ -293,10 +267,6 @@ const estilos = StyleSheet.create({
     fontWeight: "800",
     color: cores.alerta,
     marginBottom: espacamento.xs,
-  },
-  subCartaoPerigo: {
-    backgroundColor: cores.perigoFundo,
-    borderColor: cores.perigo,
   },
   subCartaoIndividualizado: {
     backgroundColor: "#F3F4F6",

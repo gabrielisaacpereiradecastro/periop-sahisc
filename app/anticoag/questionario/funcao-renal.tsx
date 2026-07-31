@@ -74,8 +74,8 @@ export default function TelaFuncaoRenal() {
       </Cartao>
 
       <Botao
-        titulo="Próximo"
-        onPress={() => router.push("/anticoag/questionario/procedimento")}
+        titulo="Ver recomendação"
+        onPress={() => router.push("/anticoag/resultado")}
         desabilitado={!podeAvancar}
       />
     </ScrollView>

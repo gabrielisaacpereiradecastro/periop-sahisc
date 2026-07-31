@@ -6,7 +6,6 @@ import {
   observacaoHbpmBaixa,
 } from "@/anticoag/data/heparinas";
 import { Recomendacao, RegraHeparina, RespostasQuestionario } from "@/anticoag/types";
-import { combinarDataHora, dataHoraEhFutura, subtrairHoras } from "@/anticoag/utils/data";
 
 const VAZIO_BASE: Omit<Recomendacao, "classe" | "motivoIndeterminado"> = {
   decisao: "indeterminado",
@@ -18,42 +17,17 @@ const VAZIO_BASE: Omit<Recomendacao, "classe" | "motivoIndeterminado"> = {
   horasSuspensao: null,
   contraindicado: false,
   semRestricao: false,
-  dataHoraCorteSuspensao: null,
   horasAteRetomar: null,
   observacaoRetomada: null,
   nivelResidualAceitavel: null,
-  falhaJanelaSuspensao: false,
 };
-
-function calcularCorte(
-  respostas: RespostasQuestionario,
-  horasSuspensao: number
-): { dataHoraCorteSuspensao: string | null; falhaJanelaSuspensao: boolean } {
-  if (!respostas.dataProcedimento || respostas.horaProcedimento === null) {
-    return { dataHoraCorteSuspensao: null, falhaJanelaSuspensao: false };
-  }
-  const dataHoraProcedimento = combinarDataHora(
-    respostas.dataProcedimento,
-    respostas.horaProcedimento
-  );
-  const dataHoraCorteSuspensao = subtrairHoras(dataHoraProcedimento, horasSuspensao);
-  return {
-    dataHoraCorteSuspensao,
-    falhaJanelaSuspensao: !dataHoraEhFutura(dataHoraCorteSuspensao),
-  };
-}
 
 function montarRecomendacao(
   classe: "hnf" | "hbpm",
   medicamentoNome: string,
   detalhe: string,
-  regra: RegraHeparina,
-  respostas: RespostasQuestionario
+  regra: RegraHeparina
 ): Recomendacao {
-  const { dataHoraCorteSuspensao, falhaJanelaSuspensao } = calcularCorte(
-    respostas,
-    regra.horasSuspensao
-  );
   return {
     ...VAZIO_BASE,
     decisao: "calculada",
@@ -61,11 +35,9 @@ function montarRecomendacao(
     medicamentoNome,
     detalhe,
     horasSuspensao: regra.horasSuspensao,
-    dataHoraCorteSuspensao,
     horasAteRetomar: regra.horasAteRetomar,
     observacaoRetomada: regra.observacaoRetomada ?? null,
     nivelResidualAceitavel: regra.nivelResidualAceitavel,
-    falhaJanelaSuspensao,
   };
 }
 
@@ -87,8 +59,7 @@ export function gerarRecomendacaoHnf(respostas: RespostasQuestionario): Recomend
     "hnf",
     "Heparina não fracionada (HNF)",
     opcao?.rotulo ?? respostas.viaHnf,
-    regra,
-    respostas
+    regra
   );
 }
 
@@ -109,8 +80,7 @@ export function gerarRecomendacaoHbpm(respostas: RespostasQuestionario): Recomen
       "hbpm",
       "Heparina de baixo peso molecular (HBPM)",
       "Dose alta/terapêutica",
-      REGRA_HBPM_ALTA,
-      respostas
+      REGRA_HBPM_ALTA
     );
   }
 
@@ -132,7 +102,6 @@ export function gerarRecomendacaoHbpm(respostas: RespostasQuestionario): Recomen
     `Dose baixa/profilática, ${
       respostas.frequenciaHbpm === "duas_vezes_dia" ? "2x/dia" : "1x/dia"
     }`,
-    regra,
-    respostas
+    regra
   );
 }

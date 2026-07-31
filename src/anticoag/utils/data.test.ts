@@ -4,7 +4,6 @@ import {
   formatarDataHoraExtenso,
   montarDataISO,
   somarHoras,
-  subtrairHoras,
 } from "./data";
 
 describe("montarDataISO", () => {
@@ -28,24 +27,6 @@ describe("combinarDataHora", () => {
 
   test("preenche hora com zero à esquerda", () => {
     expect(combinarDataHora("2026-07-15", 8)).toBe("2026-07-15T08");
-  });
-});
-
-describe("subtrairHoras", () => {
-  test("subtrai horas dentro do mesmo dia", () => {
-    expect(subtrairHoras("2026-07-15T14", 6)).toBe("2026-07-15T08");
-  });
-
-  test("cruza a virada do dia", () => {
-    expect(subtrairHoras("2026-07-15T08", 12)).toBe("2026-07-14T20");
-  });
-
-  test("cruza a virada do mês", () => {
-    expect(subtrairHoras("2026-08-01T02", 4)).toBe("2026-07-31T22");
-  });
-
-  test("intervalo longo (120h = 5 dias), como no dabigatran", () => {
-    expect(subtrairHoras("2026-07-20T10", 120)).toBe("2026-07-15T10");
   });
 });
 

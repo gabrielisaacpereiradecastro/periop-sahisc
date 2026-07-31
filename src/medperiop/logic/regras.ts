@@ -7,7 +7,7 @@ import {
   RegraRecomendacao,
   RespostasQuestionario,
 } from "@/medperiop/types";
-import { dataEhFutura, paraDias, subtrairDias } from "@/medperiop/utils/data";
+import { paraDias } from "@/medperiop/utils/data";
 
 interface RegraResolvida {
   regra: RegraRecomendacao;
@@ -46,25 +46,11 @@ function resolverRegra(
 }
 
 /**
- * A janela de suspensão foi perdida quando a data de corte (data da cirurgia
- * menos o período de suspensão exigido) já ficou no passado. Data de corte
- * igual a hoje ainda é considerada válida. Sem data de cirurgia informada,
- * não há como avaliar falha de janela.
+ * Motor de decisão para um único medicamento da lista. O app não pede data
+ * de cirurgia/procedimento — a recomendação é sempre o período relativo
+ * (`diasSuspensao`), nunca uma data de corte calculada.
  */
-function houveFalhaDeJanela(dataCorteSuspensao: string | null): boolean {
-  return dataCorteSuspensao !== null && !dataEhFutura(dataCorteSuspensao);
-}
-
-/**
- * Motor de decisão para um único medicamento da lista. `dataCirurgia` é
- * opcional: quando ausente, a recomendação ainda é gerada normalmente, só
- * que sem data de corte calculada — o período relativo (`diasSuspensao`)
- * continua disponível para exibir "suspender N dias antes" sem data exata.
- */
-export function gerarRecomendacaoItem(
-  item: ItemMedicamento,
-  dataCirurgia: string | null
-): Recomendacao {
+export function gerarRecomendacaoItem(item: ItemMedicamento): Recomendacao {
   const farmaco = buscarFarmaco(item.classe, item.farmacoId);
 
   if (!farmaco) {
@@ -74,8 +60,6 @@ export function gerarRecomendacaoItem(
       indicacao: null,
       regraAplicada: null,
       diasSuspensao: null,
-      dataCorteSuspensao: null,
-      falhaJanelaSuspensao: false,
       motivoIndeterminado:
         "Este fármaco não consta na base de dados do aplicativo (série de consensus statements SPAQI). Não é possível gerar uma recomendação segura sem essa informação — converse diretamente com o médico prescritor e com o anestesiologista responsável.",
     };
@@ -89,8 +73,6 @@ export function gerarRecomendacaoItem(
       indicacao: null,
       regraAplicada: null,
       diasSuspensao: null,
-      dataCorteSuspensao: null,
-      falhaJanelaSuspensao: false,
       motivoIndeterminado:
         "Faltam informações para gerar a recomendação (indicação de uso do medicamento, ou uma condição clínica, ainda não foi respondida).",
     };
@@ -106,8 +88,6 @@ export function gerarRecomendacaoItem(
         indicacao,
         regraAplicada: regra,
         diasSuspensao: null,
-        dataCorteSuspensao: null,
-        falhaJanelaSuspensao: false,
       };
 
     case "suspender_dia_cirurgia":
@@ -117,21 +97,16 @@ export function gerarRecomendacaoItem(
         indicacao,
         regraAplicada: regra,
         diasSuspensao: null,
-        dataCorteSuspensao: dataCirurgia,
-        falhaJanelaSuspensao: false,
       };
 
     case "suspender_periodo_fixo": {
       const dias = paraDias(regra.valor ?? 0, regra.unidade ?? "dias");
-      const dataCorteSuspensao = dataCirurgia ? subtrairDias(dataCirurgia, dias) : null;
       return {
-        decisao: "suspender_com_data",
+        decisao: "suspender_periodo",
         farmaco,
         indicacao,
         regraAplicada: regra,
         diasSuspensao: dias,
-        dataCorteSuspensao,
-        falhaJanelaSuspensao: houveFalhaDeJanela(dataCorteSuspensao),
       };
     }
 
@@ -144,22 +119,17 @@ export function gerarRecomendacaoItem(
           indicacao,
           regraAplicada: regra,
           diasSuspensao: null,
-          dataCorteSuspensao: null,
-          falhaJanelaSuspensao: false,
           motivoIndeterminado:
-            "Falta informar a cada quantos dias o paciente toma a dose deste medicamento, para calcular a data de suspensão (a regra depende da posologia individual, não de um número fixo de dias).",
+            "Falta informar a cada quantos dias o paciente toma a dose deste medicamento, para calcular o período de suspensão (a regra depende da posologia individual, não de um número fixo de dias).",
         };
       }
       const dias = numeroIntervalos * item.frequenciaDoseDias;
-      const dataCorteSuspensao = dataCirurgia ? subtrairDias(dataCirurgia, dias) : null;
       return {
-        decisao: "suspender_com_data",
+        decisao: "suspender_periodo",
         farmaco,
         indicacao,
         regraAplicada: regra,
         diasSuspensao: dias,
-        dataCorteSuspensao,
-        falhaJanelaSuspensao: houveFalhaDeJanela(dataCorteSuspensao),
       };
     }
 
@@ -170,8 +140,6 @@ export function gerarRecomendacaoItem(
         indicacao,
         regraAplicada: regra,
         diasSuspensao: null,
-        dataCorteSuspensao: null,
-        falhaJanelaSuspensao: false,
       };
 
     case "individualizado":
@@ -181,15 +149,11 @@ export function gerarRecomendacaoItem(
         indicacao,
         regraAplicada: regra,
         diasSuspensao: null,
-        dataCorteSuspensao: null,
-        falhaJanelaSuspensao: false,
       };
   }
 }
 
 /** Gera uma recomendação para cada medicamento adicionado na sessão. */
 export function gerarRecomendacoes(respostas: RespostasQuestionario): Recomendacao[] {
-  return respostas.medicamentos.map((item) =>
-    gerarRecomendacaoItem(item, respostas.dataCirurgia)
-  );
+  return respostas.medicamentos.map((item) => gerarRecomendacaoItem(item));
 }

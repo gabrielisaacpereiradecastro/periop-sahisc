@@ -1,6 +1,5 @@
 import { buscarDoac, buscarIndicacao, rotuloDoac } from "@/anticoag/data/doacs";
 import { FaixaCrCl, Recomendacao, RespostasQuestionario } from "@/anticoag/types";
-import { combinarDataHora, dataHoraEhFutura, subtrairHoras } from "@/anticoag/utils/data";
 
 /** Valor representativo de CrCl usado quando o médico indica função renal
  * normal, sem exame em mãos. Bem acima de qualquer limiar de redução de
@@ -42,11 +41,9 @@ export function gerarRecomendacaoDoac(respostas: RespostasQuestionario): Recomen
     horasSuspensao: null,
     contraindicado: false,
     semRestricao: false,
-    dataHoraCorteSuspensao: null,
     horasAteRetomar: null,
     observacaoRetomada: null,
     nivelResidualAceitavel: null,
-    falhaJanelaSuspensao: false,
   };
 
   if (!doac) {
@@ -93,17 +90,6 @@ export function gerarRecomendacaoDoac(respostas: RespostasQuestionario): Recomen
   const contraindicado =
     regra.contraindicadoAbaixoCrCl !== undefined && crClUsada < regra.contraindicadoAbaixoCrCl;
 
-  let dataHoraCorteSuspensao: string | null = null;
-  let falhaJanelaSuspensao = false;
-  if (respostas.dataProcedimento && respostas.horaProcedimento !== null && horasSuspensao !== null) {
-    const dataHoraProcedimento = combinarDataHora(
-      respostas.dataProcedimento,
-      respostas.horaProcedimento
-    );
-    dataHoraCorteSuspensao = subtrairHoras(dataHoraProcedimento, horasSuspensao);
-    falhaJanelaSuspensao = !dataHoraEhFutura(dataHoraCorteSuspensao);
-  }
-
   return {
     decisao: "calculada",
     classe: "doac",
@@ -115,10 +101,8 @@ export function gerarRecomendacaoDoac(respostas: RespostasQuestionario): Recomen
     horasSuspensao,
     contraindicado,
     semRestricao: false,
-    dataHoraCorteSuspensao,
     horasAteRetomar: regra.horasAteRetomar,
     observacaoRetomada: null,
     nivelResidualAceitavel: regra.nivelResidualAceitavel,
-    falhaJanelaSuspensao,
   };
 }

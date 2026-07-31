@@ -9,7 +9,6 @@ const RESPOSTAS_INICIAIS: RespostasQuestionario = {
   sintomasGI: null,
   fatoresPaciente: [],
   fatoresTecnicaAnestesica: [],
-  dataCirurgia: null,
   pocusDisponivel: null,
 };
 

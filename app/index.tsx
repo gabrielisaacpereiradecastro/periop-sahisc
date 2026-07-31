@@ -64,7 +64,7 @@ export default function TelaInicial() {
 
       <Botao
         titulo="Começar"
-        onPress={() => router.push("/categoria")}
+        onPress={() => router.push("/medperiop/questionario/classe")}
         desabilitado={!aceitou}
       />
 

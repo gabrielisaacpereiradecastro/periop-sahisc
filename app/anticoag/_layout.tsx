@@ -34,10 +34,6 @@ export default function RootLayout() {
           options={{ title: "Função renal" }}
         />
         <Stack.Screen
-          name="questionario/procedimento"
-          options={{ title: "Procedimento" }}
-        />
-        <Stack.Screen
           name="resultado"
           options={{ title: "Recomendação", headerBackVisible: false }}
         />

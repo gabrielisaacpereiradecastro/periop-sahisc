@@ -18,7 +18,7 @@ export default function TelaMaisMedicamentos() {
   }
 
   function continuar() {
-    router.push("/medperiop/questionario/data");
+    router.push("/medperiop/resultado");
   }
 
   return (

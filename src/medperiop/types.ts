@@ -132,16 +132,12 @@ export interface RespostasQuestionario {
   indicacaoIdAtual: string | null;
   condicaoAtendidaAtual: "sim" | "nao" | null;
   frequenciaDoseDiasAtual: number | null;
-  /** Data da cirurgia é opcional — quem só quer consultar a conduta não
-   * precisa informar. AAAA-MM-DD, ou null se o usuário optou por não informar
-   * (ou ainda não passou por essa etapa). */
-  dataCirurgia: string | null;
 }
 
 export type DecisaoFinal =
   | "continuar"
   | "suspender_dia_cirurgia"
-  | "suspender_com_data"
+  | "suspender_periodo"
   | "reduzir_dose"
   | "individualizado"
   | "indeterminado";
@@ -153,12 +149,8 @@ export interface Recomendacao {
   regraAplicada: RegraRecomendacao | null;
   /** Período relativo em dias (ex.: "suspender 3 dias antes"), já convertido
    * de horas quando aplicável. Preenchido sempre que decisao ===
-   * "suspender_com_data", independente de haver data de cirurgia informada —
-   * é o que permite mostrar "suspender N dias antes" mesmo sem data. */
+   * "suspender_periodo". O app não pede data de cirurgia/procedimento —
+   * a recomendação é sempre relativa, nunca uma data de corte calculada. */
   diasSuspensao: number | null;
-  /** Calculada só quando decisao === "suspender_com_data" E a data da
-   * cirurgia foi informada. AAAA-MM-DD. */
-  dataCorteSuspensao: string | null;
-  falhaJanelaSuspensao: boolean;
   motivoIndeterminado?: string;
 }

@@ -1,22 +1,6 @@
 import { gerarRecomendacaoHbpm, gerarRecomendacaoHnf } from "./regrasHeparina";
 import { RespostasQuestionario } from "@/anticoag/types";
 
-function hojeISO(): string {
-  const d = new Date();
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(
-    d.getDate()
-  ).padStart(2, "0")}`;
-}
-
-function somarDiasISO(dataISO: string, dias: number): string {
-  const [ano, mes, dia] = dataISO.split("-").map(Number);
-  const d = new Date(ano, mes - 1, dia);
-  d.setDate(d.getDate() + dias);
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(
-    d.getDate()
-  ).padStart(2, "0")}`;
-}
-
 function base(overrides: Partial<RespostasQuestionario> = {}): RespostasQuestionario {
   return {
     classe: "hnf",
@@ -29,8 +13,6 @@ function base(overrides: Partial<RespostasQuestionario> = {}): RespostasQuestion
     frequenciaHbpm: null,
     antiplaquetarioId: null,
     doseAtaquePosOp: null,
-    dataProcedimento: somarDiasISO(hojeISO(), 5),
-    horaProcedimento: 8,
     ...overrides,
   };
 }
@@ -96,19 +78,5 @@ describe("Heparina de baixo peso molecular (HBPM)", () => {
   test("sem dose informada: indeterminado", () => {
     const r = gerarRecomendacaoHbpm(base({ classe: "hbpm" }));
     expect(r.decisao).toBe("indeterminado");
-  });
-});
-
-describe("falha de janela de suspensão (heparina)", () => {
-  test("HBPM dose alta com procedimento muito próximo: falha detectada", () => {
-    const r = gerarRecomendacaoHbpm(
-      base({
-        classe: "hbpm",
-        doseHbpm: "alta",
-        dataProcedimento: somarDiasISO(hojeISO(), 0),
-        horaProcedimento: new Date().getHours(),
-      })
-    );
-    expect(r.falhaJanelaSuspensao).toBe(true);
   });
 });

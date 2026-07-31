@@ -1,5 +1,4 @@
-import { Recomendacao, RespostasQuestionario } from "@/anticoag/types";
-import { formatarDataHoraExtenso } from "@/anticoag/utils/data";
+import { Recomendacao } from "@/anticoag/types";
 import { SAHISC_LOGO_BASE64 } from "@/sahiscLogo";
 
 /**
@@ -8,18 +7,21 @@ import { SAHISC_LOGO_BASE64 } from "@/sahiscLogo";
  * etc.). Não repete a lista completa de indicações nem a bibliografia —
  * isso fica só dentro do app.
  */
-export function gerarHtmlResumo(
-  respostas: RespostasQuestionario,
-  recomendacao: Recomendacao,
-  nomePaciente: string
-): string {
+export function gerarHtmlResumo(recomendacao: Recomendacao, nomePaciente: string): string {
   const nome = nomePaciente.trim() || "Não informado";
   const medicamento = recomendacao.medicamentoNome ?? "Não identificado";
   const detalhe = recomendacao.detalhe ?? "Não informado";
 
-  const alerta = recomendacao.contraindicado || recomendacao.falhaJanelaSuspensao;
-  const corAlerta = recomendacao.semRestricao ? "#15803D" : alerta ? "#B91C1C" : "#B45309";
-  const fundoAlerta = recomendacao.semRestricao ? "#DCFCE7" : alerta ? "#FEE2E2" : "#FEF3C7";
+  const corAlerta = recomendacao.semRestricao
+    ? "#15803D"
+    : recomendacao.contraindicado
+      ? "#B91C1C"
+      : "#B45309";
+  const fundoAlerta = recomendacao.semRestricao
+    ? "#DCFCE7"
+    : recomendacao.contraindicado
+      ? "#FEE2E2"
+      : "#FEF3C7";
 
   let corpoDecisao = "";
   if (recomendacao.semRestricao) {
@@ -29,21 +31,7 @@ export function gerarHtmlResumo(
     if (recomendacao.contraindicado) {
       corpoDecisao += `<p><strong>⚠️ Bloqueio não recomendado nessa função renal</strong>, a menos que um nível plasmático do medicamento seja dosado e esteja ${recomendacao.nivelResidualAceitavel}.</p>`;
     }
-    if (recomendacao.falhaJanelaSuspensao) {
-      const dataCorte = recomendacao.dataHoraCorteSuspensao
-        ? formatarDataHoraExtenso(recomendacao.dataHoraCorteSuspensao)
-        : "a definir";
-      corpoDecisao += `
-        <p><strong>⚠️ Falha na janela de suspensão.</strong> Este medicamento exige suspensão prévia de ${recomendacao.horasSuspensao} horas — o uso deveria ter sido suspenso a partir de <strong>${dataCorte}</strong>.</p>
-        <p><strong>Procedimentos eletivos:</strong> adiar e reagendar após o cumprimento do prazo.</p>
-        <p><strong>Urgência/emergência:</strong> considerar dosagem do nível plasmático/coagulação (aceitável ${recomendacao.nivelResidualAceitavel}) e técnica alternativa.</p>
-      `;
-    } else {
-      const dataCorte = recomendacao.dataHoraCorteSuspensao
-        ? formatarDataHoraExtenso(recomendacao.dataHoraCorteSuspensao)
-        : "a definir";
-      corpoDecisao += `<p><strong>Suspender a partir de ${dataCorte}</strong> — ${recomendacao.horasSuspensao} horas antes do bloqueio.</p>`;
-    }
+    corpoDecisao += `<p><strong>Suspender nas ${recomendacao.horasSuspensao} horas antes</strong> do bloqueio.</p>`;
     corpoDecisao +=
       recomendacao.horasAteRetomar !== null
         ? `<p><strong>Retomar:</strong> aguardar pelo menos ${recomendacao.horasAteRetomar} horas após a colocação da agulha ou retirada do cateter, antes da próxima dose.</p>`

@@ -24,7 +24,7 @@ export default function RootLayout() {
           name="questionario/sintomas-risco"
           options={{ title: "Sintomas e fatores de risco" }}
         />
-        <Stack.Screen name="questionario/cirurgia" options={{ title: "Cirurgia" }} />
+        <Stack.Screen name="questionario/cirurgia" options={{ title: "Disponibilidade de POCUS" }} />
         <Stack.Screen
           name="resultado"
           options={{ title: "Recomendação", headerBackVisible: false }}

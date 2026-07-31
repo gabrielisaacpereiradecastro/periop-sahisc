@@ -11,7 +11,6 @@ const RESPOSTAS_INICIAIS: RespostasQuestionario = {
   indicacaoIdAtual: null,
   condicaoAtendidaAtual: null,
   frequenciaDoseDiasAtual: null,
-  dataCirurgia: null,
 };
 
 const CAMPOS_RASCUNHO: Partial<RespostasQuestionario> = {

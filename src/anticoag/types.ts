@@ -108,10 +108,6 @@ export interface RespostasQuestionario {
   // Antiplaquetário
   antiplaquetarioId: string | null;
   doseAtaquePosOp: RespostaSimNao;
-
-  // Comum
-  dataProcedimento: string | null; // ISO AAAA-MM-DD
-  horaProcedimento: number | null; // 0-23
 }
 
 export type Decisao = "calculada" | "indeterminado";
@@ -129,10 +125,8 @@ export interface Recomendacao {
   contraindicado: boolean;
   /** true quando o guideline não recomenda suspender nem restringe a técnica (AAS/AINEs). */
   semRestricao: boolean;
-  dataHoraCorteSuspensao: string | null;
   horasAteRetomar: number | null;
   observacaoRetomada: string | null;
   nivelResidualAceitavel: string | null;
-  falhaJanelaSuspensao: boolean;
   motivoIndeterminado?: string;
 }

@@ -1,22 +1,6 @@
 import { gerarRecomendacaoDoac } from "./regras";
 import { RespostasQuestionario } from "@/anticoag/types";
 
-function hojeISO(): string {
-  const d = new Date();
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(
-    d.getDate()
-  ).padStart(2, "0")}`;
-}
-
-function somarDiasISO(dataISO: string, dias: number): string {
-  const [ano, mes, dia] = dataISO.split("-").map(Number);
-  const d = new Date(ano, mes - 1, dia);
-  d.setDate(d.getDate() + dias);
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(
-    d.getDate()
-  ).padStart(2, "0")}`;
-}
-
 function base(overrides: Partial<RespostasQuestionario> = {}): RespostasQuestionario {
   return {
     classe: "doac",
@@ -29,8 +13,6 @@ function base(overrides: Partial<RespostasQuestionario> = {}): RespostasQuestion
     frequenciaHbpm: null,
     antiplaquetarioId: null,
     doseAtaquePosOp: null,
-    dataProcedimento: somarDiasISO(hojeISO(), 10),
-    horaProcedimento: 8,
     ...overrides,
   };
 }
@@ -174,27 +156,6 @@ describe("Dabigatran", () => {
     );
     expect(r.horasSuspensao).toBe(120);
     expect(r.contraindicado).toBe(false);
-  });
-});
-
-describe("falha de janela de suspensão", () => {
-  test("procedimento muito próximo: falha detectada", () => {
-    const r = gerarRecomendacaoDoac(
-      base({
-        medicamentoId: "dabigatran",
-        indicacaoId: "dabigatran_fanv",
-        funcaoRenalOpcao: "exata",
-        crClExata: 40, // 120h de suspensão necessárias
-        dataProcedimento: somarDiasISO(hojeISO(), 1), // só 24h de folga
-        horaProcedimento: 8,
-      })
-    );
-    expect(r.falhaJanelaSuspensao).toBe(true);
-  });
-
-  test("procedimento distante: sem falha", () => {
-    const r = gerarRecomendacaoDoac(base({ dataProcedimento: somarDiasISO(hojeISO(), 10) }));
-    expect(r.falhaJanelaSuspensao).toBe(false);
   });
 });
 

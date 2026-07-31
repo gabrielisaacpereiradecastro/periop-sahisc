@@ -9,7 +9,6 @@ import { useQuestionario } from "@/glp1/state/QuestionarioContext";
 import { gerarRecomendacao } from "@/glp1/logic/regras";
 import { gerarHtmlResumo } from "@/glp1/logic/resumoPdf";
 import { rotuloMedicamento } from "@/glp1/data/medicamentos";
-import { formatarDataExtenso } from "@/glp1/utils/data";
 import { cores, espacamento, raio } from "@/theme";
 
 const LIQUIDOS_SEM_RESIDUO = [
@@ -80,23 +79,10 @@ export default function TelaResultado() {
   }
 
   const manter = recomendacao.decisao === "manter";
-  const falhaJanela = recomendacao.falhaJanelaSuspensao;
 
-  const estiloCartaoDecisao = manter
-    ? estilos.cartaoSucesso
-    : falhaJanela
-      ? estilos.cartaoPerigo
-      : estilos.cartaoAlerta;
-  const estiloTituloDecisao = manter
-    ? estilos.tituloSucesso
-    : falhaJanela
-      ? estilos.tituloPerigo
-      : estilos.tituloAlerta;
-  const tituloDecisao = manter
-    ? "Manter a dose habitual"
-    : falhaJanela
-      ? "⚠️ Alerta de segurança — Falha na suspensão de fármaco"
-      : "Suspender o medicamento";
+  const estiloCartaoDecisao = manter ? estilos.cartaoSucesso : estilos.cartaoAlerta;
+  const estiloTituloDecisao = manter ? estilos.tituloSucesso : estilos.tituloAlerta;
+  const tituloDecisao = manter ? "Manter a dose habitual" : "Suspender o medicamento";
 
   return (
     <ScrollView contentContainerStyle={estilos.container}>
@@ -113,44 +99,15 @@ export default function TelaResultado() {
             fatores de risco identificados, em serviço com disponibilidade de
             ultrassonografia gástrica (POCUS). Pode manter a dose habitual do medicamento.
           </Text>
-        ) : falhaJanela ? (
-          <>
-            <Text style={estilos.textoDecisao}>
-              Este medicamento exige suspensão prévia de {recomendacao.diasSuspensao} dia
-              {recomendacao.diasSuspensao === 1 ? "" : "s"} antes do procedimento — ou seja,
-              o uso deveria ter sido suspenso a partir de{" "}
-              <Text style={estilos.destaque}>
-                {recomendacao.dataCorteSuspensao &&
-                  formatarDataExtenso(recomendacao.dataCorteSuspensao)}
-              </Text>
-              . Por não cumprir esse intervalo, adote a seguinte conduta:
-            </Text>
-            <Text style={[estilos.textoDecisao, estilos.destaque]}>Cirurgias eletivas:</Text>
-            <Text style={estilos.textoDecisao}>
-              Devem ser suspensas e reagendadas após o cumprimento do prazo de segurança.
-            </Text>
-            <Text style={[estilos.textoDecisao, estilos.destaque, { marginTop: espacamento.sm }]}>
-              Cirurgias de urgência ou emergência:
-            </Text>
-            <Text style={estilos.textoDecisao}>
-              {respostas.pocusDisponivel === "sim"
-                ? "Realize POCUS gástrico à beira-leito para avaliar o conteúdo antral, e reavalie a conduta com base no resultado."
-                : "Como este serviço não tem disponibilidade confirmada de POCUS gástrico, presuma estômago cheio e adote via aérea protegida (intubação em sequência rápida com manobra de Sellick)."}
-            </Text>
-          </>
         ) : (
-          <>
-            {recomendacao.dataCorteSuspensao && (
-              <Text style={estilos.textoDecisao}>
-                Não tome mais o medicamento a partir de{" "}
-                <Text style={estilos.destaque}>
-                  {formatarDataExtenso(recomendacao.dataCorteSuspensao)}
-                </Text>{" "}
-                — ou seja, suspensão de {recomendacao.diasSuspensao} dia
-                {recomendacao.diasSuspensao === 1 ? "" : "s"} antes da cirurgia.
-              </Text>
-            )}
-          </>
+          <Text style={estilos.textoDecisao}>
+            Suspender{" "}
+            <Text style={estilos.destaque}>
+              {recomendacao.diasSuspensao} dia{recomendacao.diasSuspensao === 1 ? "" : "s"}{" "}
+              antes
+            </Text>{" "}
+            da cirurgia ou procedimento.
+          </Text>
         )}
         {!manter && (
           <>

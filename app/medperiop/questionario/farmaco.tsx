@@ -1,12 +1,12 @@
 import React, { useMemo, useState } from "react";
-import { ScrollView, StyleSheet } from "react-native";
+import { ScrollView, StyleSheet, View } from "react-native";
 import { router } from "expo-router";
 import { Botao } from "@/components/Botao";
 import { SeletorFarmaco } from "@/components/SeletorFarmaco";
 import { useQuestionario } from "@/medperiop/state/QuestionarioContext";
 import { farmacosPorClasse, TODOS_FARMACOS } from "@/medperiop/data/farmacos";
 import { Farmaco, FarmacoPendente } from "@/medperiop/types";
-import { espacamento } from "@/theme";
+import { cores, espacamento } from "@/theme";
 
 export default function TelaFarmaco() {
   const { respostas, processarSelecaoFarmacos } = useQuestionario();
@@ -40,23 +40,39 @@ export default function TelaFarmaco() {
   }
 
   return (
-    <ScrollView contentContainerStyle={estilos.container}>
-      <SeletorFarmaco farmacos={farmacos} isSelecionado={estaSelecionado} onAlternar={alternar} />
-      <Botao
-        titulo={
-          selecionados.length > 1 ? `Concluir seleção (${selecionados.length})` : "Concluir seleção"
-        }
-        onPress={concluir}
-        desabilitado={selecionados.length === 0}
-      />
-      <Botao titulo="Trocar classe" variante="secundario" onPress={trocarClasse} />
-    </ScrollView>
+    <View style={estilos.tela}>
+      <ScrollView contentContainerStyle={estilos.container}>
+        <SeletorFarmaco farmacos={farmacos} isSelecionado={estaSelecionado} onAlternar={alternar} />
+      </ScrollView>
+      <View style={estilos.rodapeFixo}>
+        <Botao
+          titulo={
+            selecionados.length > 1
+              ? `Concluir seleção (${selecionados.length})`
+              : "Concluir seleção"
+          }
+          onPress={concluir}
+          desabilitado={selecionados.length === 0}
+        />
+        <Botao titulo="Trocar classe" variante="secundario" onPress={trocarClasse} />
+      </View>
+    </View>
   );
 }
 
 const estilos = StyleSheet.create({
+  tela: {
+    flex: 1,
+  },
   container: {
     padding: espacamento.lg,
-    gap: espacamento.lg,
+    paddingBottom: espacamento.lg,
+  },
+  rodapeFixo: {
+    padding: espacamento.lg,
+    gap: espacamento.sm,
+    backgroundColor: cores.fundo,
+    borderTopWidth: 1,
+    borderTopColor: cores.borda,
   },
 });

@@ -14,6 +14,14 @@ export default function TelaClasse() {
     router.push("/medperiop/questionario/farmaco");
   }
 
+  function irParaGlp1() {
+    router.push("/glp1/questionario/medicamento");
+  }
+
+  function irParaAnticoag() {
+    router.push("/anticoag/questionario/classe");
+  }
+
   function selecionar(classe: ClasseTerapeutica) {
     atualizar({
       classeAtual: classe,
@@ -41,8 +49,16 @@ export default function TelaClasse() {
       <Text style={estilos.pergunta}>
         {respostas.medicamentos.length > 0
           ? `Qual a classe do próximo medicamento? (${respostas.medicamentos.length} já adicionado${respostas.medicamentos.length > 1 ? "s" : ""})`
-          : "Qual a classe terapêutica da medicação?"}
+          : "Qual medicamento você precisa avaliar?"}
       </Text>
+
+      <Cartao>
+        <Botao titulo="Agonista do GLP-1" variante="secundario" onPress={irParaGlp1} />
+      </Cartao>
+      <Cartao>
+        <Botao titulo="Anticoagulante / Antiagregante" variante="secundario" onPress={irParaAnticoag} />
+      </Cartao>
+
       {CLASSES_TERAPEUTICAS.map((c) => (
         <Cartao key={c.valor} style={respostas.classeAtual === c.valor ? estilos.cartaoAtivo : undefined}>
           <Botao titulo={c.rotulo} variante="secundario" onPress={() => selecionar(c.valor)} />

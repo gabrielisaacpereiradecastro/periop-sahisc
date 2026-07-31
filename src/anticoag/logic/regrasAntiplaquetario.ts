@@ -1,6 +1,5 @@
 import { buscarAntiplaquetario, rotuloAntiplaquetario } from "@/anticoag/data/antiplaquetarios";
 import { Recomendacao, RespostasQuestionario } from "@/anticoag/types";
-import { combinarDataHora, dataHoraEhFutura, subtrairHoras } from "@/anticoag/utils/data";
 
 const PRECISA_PERGUNTAR_DOSE_ATAQUE = ["clopidogrel", "prasugrel", "ticagrelor"];
 
@@ -22,11 +21,9 @@ export function gerarRecomendacaoAntiplaquetario(
     horasSuspensao: null,
     contraindicado: false,
     semRestricao: false,
-    dataHoraCorteSuspensao: null,
     horasAteRetomar: null,
     observacaoRetomada: null,
     nivelResidualAceitavel: null,
-    falhaJanelaSuspensao: false,
   };
 
   const medicamento = buscarAntiplaquetario(respostas.antiplaquetarioId);
@@ -55,21 +52,6 @@ export function gerarRecomendacaoAntiplaquetario(
       ? medicamento.horasAteRetomarComDoseAtaque
       : medicamento.horasAteRetomar;
 
-  let dataHoraCorteSuspensao: string | null = null;
-  let falhaJanelaSuspensao = false;
-  if (
-    respostas.dataProcedimento &&
-    respostas.horaProcedimento !== null &&
-    !medicamento.semRestricao
-  ) {
-    const dataHoraProcedimento = combinarDataHora(
-      respostas.dataProcedimento,
-      respostas.horaProcedimento
-    );
-    dataHoraCorteSuspensao = subtrairHoras(dataHoraProcedimento, medicamento.horasSuspensao);
-    falhaJanelaSuspensao = !dataHoraEhFutura(dataHoraCorteSuspensao);
-  }
-
   const observacaoPartes = [medicamento.observacaoCateter, medicamento.observacaoRetomada].filter(
     (t): t is string => !!t
   );
@@ -81,10 +63,8 @@ export function gerarRecomendacaoAntiplaquetario(
     detalhe: null,
     semRestricao: !!medicamento.semRestricao,
     horasSuspensao: medicamento.horasSuspensao,
-    dataHoraCorteSuspensao,
     horasAteRetomar,
     observacaoRetomada: observacaoPartes.length > 0 ? observacaoPartes.join(" ") : null,
     nivelResidualAceitavel: null,
-    falhaJanelaSuspensao,
   };
 }

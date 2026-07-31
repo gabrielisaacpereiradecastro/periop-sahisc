@@ -25,7 +25,6 @@ export interface RespostasQuestionario {
   sintomasGI: RespostaSimNao;
   fatoresPaciente: string[];
   fatoresTecnicaAnestesica: string[];
-  dataCirurgia: string | null; // formato ISO: AAAA-MM-DD
   pocusDisponivel: DisponibilidadePocus | null;
 }
 
@@ -34,16 +33,10 @@ export type Decisao = "manter" | "suspender" | "indeterminado";
 export interface Recomendacao {
   decisao: Decisao;
   medicamento: Medicamento | null;
-  dataCorteSuspensao: string | null; // AAAA-MM-DD, último dia sem tomar a medicação
+  /** Período relativo (ex.: "suspender 3 dias antes"). O app não pede data
+   * de cirurgia/procedimento — nunca é calculada uma data de corte. */
   diasSuspensao: number | null;
   fatoresIdentificados: string[];
   usouEstratificacaoDeRisco: boolean;
   motivoIndeterminado?: string;
-  /**
-   * true quando a decisão é "suspender" mas a data de corte já passou — ou seja,
-   * não há mais tempo hábil para suspender o medicamento com segurança antes da
-   * cirurgia. Nesse caso a recomendação de data de corte não deve ser exibida;
-   * a UI deve mostrar a orientação de falha de suspensão em vez disso.
-   */
-  falhaJanelaSuspensao: boolean;
 }

@@ -12,8 +12,6 @@ const RESPOSTAS_INICIAIS: RespostasQuestionario = {
   frequenciaHbpm: null,
   antiplaquetarioId: null,
   doseAtaquePosOp: null,
-  dataProcedimento: null,
-  horaProcedimento: null,
 };
 
 interface QuestionarioContextValor {

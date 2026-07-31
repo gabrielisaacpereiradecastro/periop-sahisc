@@ -36,12 +36,6 @@ function deDate(d: Date): string {
   return `${ano}-${mes}-${dia}T${hora}`;
 }
 
-export function subtrairHoras(dataHoraISO: string, horas: number): string {
-  const d = paraDate(dataHoraISO);
-  d.setHours(d.getHours() - horas);
-  return deDate(d);
-}
-
 export function somarHoras(dataHoraISO: string, horas: number): string {
   const d = paraDate(dataHoraISO);
   d.setHours(d.getHours() + horas);

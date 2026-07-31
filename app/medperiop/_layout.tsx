@@ -16,7 +16,7 @@ export default function RootLayout() {
         }}
       >
         <Stack.Screen name="index" options={{ title: "MedPeriOp — SAHISC" }} />
-        <Stack.Screen name="questionario/classe" options={{ title: "Classe do medicamento" }} />
+        <Stack.Screen name="questionario/classe" options={{ title: "Qual medicamento?" }} />
         <Stack.Screen name="questionario/farmaco" options={{ title: "Medicamento" }} />
         <Stack.Screen name="questionario/indicacao" options={{ title: "Indicação de uso" }} />
         <Stack.Screen name="questionario/condicao" options={{ title: "Condição clínica" }} />
@@ -25,8 +25,6 @@ export default function RootLayout() {
           name="questionario/mais-medicamentos"
           options={{ title: "Mais medicamentos?" }}
         />
-        <Stack.Screen name="questionario/data" options={{ title: "Data da cirurgia" }} />
-        <Stack.Screen name="questionario/cirurgia" options={{ title: "Data da cirurgia" }} />
         <Stack.Screen
           name="resultado"
           options={{ title: "Recomendação", headerBackVisible: false }}

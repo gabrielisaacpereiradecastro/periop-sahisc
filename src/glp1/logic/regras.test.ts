@@ -2,22 +2,6 @@ import { gerarRecomendacao } from "./regras";
 import { MEDICAMENTO_OUTRO_ID } from "@/glp1/data/medicamentos";
 import { RespostasQuestionario } from "@/glp1/types";
 
-function hojeISO(): string {
-  const d = new Date();
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(
-    d.getDate()
-  ).padStart(2, "0")}`;
-}
-
-function somarDias(dataISO: string, dias: number): string {
-  const [ano, mes, dia] = dataISO.split("-").map(Number);
-  const d = new Date(ano, mes - 1, dia);
-  d.setDate(d.getDate() + dias);
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(
-    d.getDate()
-  ).padStart(2, "0")}`;
-}
-
 /**
  * Espelha o fluxograma da Nota SBA C.SBA-01744/2026. Cada teste aqui
  * corresponde a um ramo específico do fluxograma (Passos 1 a 4) — se o
@@ -32,7 +16,6 @@ function respostasBase(overrides: Partial<RespostasQuestionario> = {}): Resposta
     sintomasGI: "nao",
     fatoresPaciente: [],
     fatoresTecnicaAnestesica: [],
-    dataCirurgia: "2026-08-10",
     pocusDisponivel: "sim",
     ...overrides,
   };
@@ -42,7 +25,6 @@ describe("caso base: sem fatores de risco, uso estável, POCUS disponível", () 
   test("mantém a dose habitual", () => {
     const r = gerarRecomendacao(respostasBase());
     expect(r.decisao).toBe("manter");
-    expect(r.dataCorteSuspensao).toBeNull();
     expect(r.diasSuspensao).toBeNull();
     expect(r.fatoresIdentificados).toHaveLength(0);
     expect(r.usouEstratificacaoDeRisco).toBe(true);
@@ -54,7 +36,6 @@ describe("sem disponibilidade de POCUS gástrico", () => {
     const r = gerarRecomendacao(respostasBase({ pocusDisponivel: "nao" }));
     expect(r.decisao).toBe("suspender");
     expect(r.diasSuspensao).toBe(7);
-    expect(r.dataCorteSuspensao).toBe("2026-08-03");
     expect(r.usouEstratificacaoDeRisco).toBe(false);
   });
 
@@ -69,7 +50,6 @@ describe("sem disponibilidade de POCUS gástrico", () => {
       respostasBase({ medicamentoId: "liraglutida", pocusDisponivel: "nao" })
     );
     expect(r.diasSuspensao).toBe(1);
-    expect(r.dataCorteSuspensao).toBe("2026-08-09");
   });
 });
 
@@ -121,79 +101,5 @@ describe("medicamento não coberto pelo protocolo", () => {
   test("medicamento nulo também é indeterminado", () => {
     const r = gerarRecomendacao(respostasBase({ medicamentoId: null }));
     expect(r.decisao).toBe("indeterminado");
-  });
-});
-
-describe("casos sem data de cirurgia informada", () => {
-  test("ainda calcula os dias de suspensão, mas não a data de corte", () => {
-    const r = gerarRecomendacao(
-      respostasBase({ dataCirurgia: null, pocusDisponivel: "nao" })
-    );
-    expect(r.decisao).toBe("suspender");
-    expect(r.diasSuspensao).toBe(7);
-    expect(r.dataCorteSuspensao).toBeNull();
-    expect(r.falhaJanelaSuspensao).toBe(false);
-  });
-});
-
-describe("falha de janela de suspensão (não há mais tempo hábil)", () => {
-  test("cirurgia amanhã com medicamento de longa ação (7 dias): falha", () => {
-    const r = gerarRecomendacao(
-      respostasBase({ dataCirurgia: somarDias(hojeISO(), 1), pocusDisponivel: "nao" })
-    );
-    expect(r.decisao).toBe("suspender");
-    expect(r.falhaJanelaSuspensao).toBe(true);
-    expect(r.dataCorteSuspensao).toBe(somarDias(hojeISO(), -6));
-  });
-
-  test("cirurgia em 6 dias com medicamento de longa ação (7 dias): falha por 1 dia", () => {
-    const r = gerarRecomendacao(
-      respostasBase({ dataCirurgia: somarDias(hojeISO(), 6), pocusDisponivel: "nao" })
-    );
-    expect(r.falhaJanelaSuspensao).toBe(true);
-  });
-
-  test("cirurgia em exatamente 7 dias: ainda dá tempo (corte = hoje, não é falha)", () => {
-    const r = gerarRecomendacao(
-      respostasBase({ dataCirurgia: somarDias(hojeISO(), 7), pocusDisponivel: "nao" })
-    );
-    expect(r.dataCorteSuspensao).toBe(hojeISO());
-    expect(r.falhaJanelaSuspensao).toBe(false);
-  });
-
-  test("cirurgia em 10 dias: bastante tempo, sem falha", () => {
-    const r = gerarRecomendacao(
-      respostasBase({ dataCirurgia: somarDias(hojeISO(), 10), pocusDisponivel: "nao" })
-    );
-    expect(r.falhaJanelaSuspensao).toBe(false);
-  });
-
-  test("falha também ocorre quando a suspensão vem de fator de risco (não só falta de POCUS)", () => {
-    const r = gerarRecomendacao(
-      respostasBase({
-        dataCirurgia: somarDias(hojeISO(), 1),
-        pocusDisponivel: "sim",
-        sintomasGI: "sim",
-      })
-    );
-    expect(r.decisao).toBe("suspender");
-    expect(r.falhaJanelaSuspensao).toBe(true);
-  });
-
-  test("medicamento de curta ação (1 dia): cirurgia amanhã ainda dá tempo", () => {
-    const r = gerarRecomendacao(
-      respostasBase({
-        medicamentoId: "liraglutida",
-        dataCirurgia: somarDias(hojeISO(), 1),
-        pocusDisponivel: "nao",
-      })
-    );
-    expect(r.dataCorteSuspensao).toBe(hojeISO());
-    expect(r.falhaJanelaSuspensao).toBe(false);
-  });
-
-  test("manter dose habitual nunca é falha de janela", () => {
-    const r = gerarRecomendacao(respostasBase());
-    expect(r.falhaJanelaSuspensao).toBe(false);
   });
 });

@@ -1,5 +1,4 @@
-import { Recomendacao, RespostasQuestionario } from "@/medperiop/types";
-import { formatarDataExtenso } from "@/medperiop/utils/data";
+import { Recomendacao } from "@/medperiop/types";
 import { SAHISC_LOGO_BASE64 } from "@/sahiscLogo";
 
 function corpoDecisaoItem(recomendacao: Recomendacao): { html: string; corAlerta: string; fundoAlerta: string } {
@@ -18,21 +17,9 @@ function corpoDecisaoItem(recomendacao: Recomendacao): { html: string; corAlerta
       corpoDecisao =
         "<p><strong>Suspender só a dose do dia da cirurgia.</strong> Manter a terapia crônica até a véspera; não tomar a dose da manhã da cirurgia; retomar assim que possível no pós-operatório.</p>";
       break;
-    case "suspender_com_data": {
-      if (recomendacao.falhaJanelaSuspensao) {
-        const dataCorte = recomendacao.dataCorteSuspensao
-          ? formatarDataExtenso(recomendacao.dataCorteSuspensao)
-          : "a definir";
-        corAlerta = "#B91C1C";
-        fundoAlerta = "#FEE2E2";
-        corpoDecisao = `<p><strong>⚠️ Não há mais tempo hábil.</strong> Deveria ter sido suspenso a partir de <strong>${dataCorte}</strong>. Considerar adiar o procedimento eletivo ou discutir conduta alternativa com a equipe.</p>`;
-      } else if (recomendacao.dataCorteSuspensao) {
-        corpoDecisao = `<p><strong>Suspender a partir de ${formatarDataExtenso(recomendacao.dataCorteSuspensao)}.</strong></p>`;
-      } else {
-        corpoDecisao = `<p><strong>Suspender ${recomendacao.diasSuspensao} dia${recomendacao.diasSuspensao !== 1 ? "s" : ""} antes da cirurgia.</strong> (Data da cirurgia não informada.)</p>`;
-      }
+    case "suspender_periodo":
+      corpoDecisao = `<p><strong>Suspender ${recomendacao.diasSuspensao} dia${recomendacao.diasSuspensao !== 1 ? "s" : ""} antes</strong> da cirurgia, procedimento ou bloqueio de neuroeixo/inserção de cateter peridural.</p>`;
       break;
-    }
     case "reduzir_dose":
       corpoDecisao = `<p><strong>Ajustar a dose (não é suspensão):</strong> ${recomendacao.regraAplicada?.ajusteDose ?? ""}</p>`;
       break;
@@ -62,14 +49,10 @@ function corpoDecisaoItem(recomendacao: Recomendacao): { html: string; corAlerta
  * bibliografia).
  */
 export function gerarHtmlResumo(
-  respostas: RespostasQuestionario,
   recomendacoes: Recomendacao[],
   nomePaciente: string
 ): string {
   const nome = nomePaciente.trim() || "Não informado";
-  const cirurgia = respostas.dataCirurgia
-    ? formatarDataExtenso(respostas.dataCirurgia)
-    : "Não informada";
 
   const blocosMedicamentos = recomendacoes
     .map((recomendacao) => {
@@ -123,7 +106,6 @@ export function gerarHtmlResumo(
 
       <table class="info" width="100%">
         <tr><td class="rotulo">Paciente</td><td class="valor">${nome}</td></tr>
-        <tr><td class="rotulo">Cirurgia prevista</td><td class="valor">${cirurgia}</td></tr>
         <tr><td class="rotulo">Medicamentos avaliados</td><td class="valor">${recomendacoes.length}</td></tr>
       </table>
 

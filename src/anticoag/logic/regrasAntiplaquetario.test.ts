@@ -1,22 +1,6 @@
 import { gerarRecomendacaoAntiplaquetario } from "./regrasAntiplaquetario";
 import { RespostasQuestionario } from "@/anticoag/types";
 
-function hojeISO(): string {
-  const d = new Date();
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(
-    d.getDate()
-  ).padStart(2, "0")}`;
-}
-
-function somarDiasISO(dataISO: string, dias: number): string {
-  const [ano, mes, dia] = dataISO.split("-").map(Number);
-  const d = new Date(ano, mes - 1, dia);
-  d.setDate(d.getDate() + dias);
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(
-    d.getDate()
-  ).padStart(2, "0")}`;
-}
-
 function base(overrides: Partial<RespostasQuestionario> = {}): RespostasQuestionario {
   return {
     classe: "antiplaquetario",
@@ -29,8 +13,6 @@ function base(overrides: Partial<RespostasQuestionario> = {}): RespostasQuestion
     frequenciaHbpm: null,
     antiplaquetarioId: null,
     doseAtaquePosOp: null,
-    dataProcedimento: somarDiasISO(hojeISO(), 15),
-    horaProcedimento: 8,
     ...overrides,
   };
 }
@@ -41,8 +23,6 @@ describe("AAS/AINEs", () => {
     expect(r.decisao).toBe("calculada");
     expect(r.semRestricao).toBe(true);
     expect(r.horasSuspensao).toBe(0);
-    expect(r.dataHoraCorteSuspensao).toBeNull();
-    expect(r.falhaJanelaSuspensao).toBe(false);
   });
 });
 
@@ -115,26 +95,6 @@ describe("Inibidores GP IIb/IIIa", () => {
       base({ antiplaquetarioId: "eptifibatide_tirofiban" })
     );
     expect(r.horasSuspensao).toBe(8);
-  });
-});
-
-describe("falha de janela de suspensão", () => {
-  test("clopidogrel (7 dias) com procedimento em 2 dias: falha detectada", () => {
-    const r = gerarRecomendacaoAntiplaquetario(
-      base({
-        antiplaquetarioId: "clopidogrel",
-        doseAtaquePosOp: "nao",
-        dataProcedimento: somarDiasISO(hojeISO(), 2),
-      })
-    );
-    expect(r.falhaJanelaSuspensao).toBe(true);
-  });
-
-  test("AAS nunca falha (sem restrição, sem data de corte)", () => {
-    const r = gerarRecomendacaoAntiplaquetario(
-      base({ antiplaquetarioId: "aas_aine", dataProcedimento: somarDiasISO(hojeISO(), 0) })
-    );
-    expect(r.falhaJanelaSuspensao).toBe(false);
   });
 });
 

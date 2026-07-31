@@ -12,7 +12,6 @@ import { gerarRecomendacaoAntiplaquetario } from "@/anticoag/logic/regrasAntipla
 import { gerarHtmlResumo } from "@/anticoag/logic/resumoPdf";
 import { CalculadoraCateter } from "@/anticoag/components/CalculadoraCateter";
 import { Recomendacao } from "@/anticoag/types";
-import { formatarDataHoraExtenso } from "@/anticoag/utils/data";
 import { cores, espacamento, raio } from "@/theme";
 
 const ORIGEM_CRCL_TEXTO: Record<string, string> = {
@@ -44,7 +43,7 @@ export default function TelaResultado() {
   async function baixarPdf() {
     setGerandoPdf(true);
     try {
-      const html = gerarHtmlResumo(respostas, recomendacao, nomePaciente);
+      const html = gerarHtmlResumo(recomendacao, nomePaciente);
 
       if (Platform.OS === "web") {
         await Print.printAsync({ html });
@@ -122,38 +121,13 @@ export default function TelaResultado() {
             monitorização, ou o momento de retirada do cateter.
           </Text>
         </Cartao>
-      ) : recomendacao.falhaJanelaSuspensao ? (
-        <Cartao style={estilos.cartaoPerigo}>
-          <Text style={estilos.tituloPerigo}>⚠️ Alerta de segurança — falha na suspensão</Text>
-          <Text style={estilos.textoPerigo}>
-            Este medicamento exige suspensão prévia de {recomendacao.horasSuspensao} horas
-            antes do procedimento — ou seja, o uso deveria ter sido suspenso a partir de{" "}
-            {recomendacao.dataHoraCorteSuspensao &&
-              formatarDataHoraExtenso(recomendacao.dataHoraCorteSuspensao)}
-            . Por não cumprir esse intervalo, considere:
-          </Text>
-          <Text style={[estilos.textoPerigo, estilos.destaquePerigo]}>
-            Procedimentos eletivos: devem ser adiados e reagendados após o cumprimento do
-            prazo de segurança.
-          </Text>
-          <Text style={[estilos.textoPerigo, estilos.destaquePerigo]}>
-            Procedimentos de urgência/emergência: considere avaliar o nível
-            plasmático/coagulação (aceitável {recomendacao.nivelResidualAceitavel}), e
-            discuta com a equipe uma técnica anestésica alternativa caso a suspensão não
-            seja possível a tempo.
-          </Text>
-        </Cartao>
       ) : (
         <Cartao style={estilos.cartaoAlerta}>
           <Text style={estilos.tituloAlerta}>Suspender antes do procedimento</Text>
           <Text style={estilos.textoDecisao}>
-            Não usar o medicamento a partir de{" "}
-            <Text style={estilos.destaque}>
-              {recomendacao.dataHoraCorteSuspensao &&
-                formatarDataHoraExtenso(recomendacao.dataHoraCorteSuspensao)}
-            </Text>{" "}
-            — ou seja, suspensão de {recomendacao.horasSuspensao} horas antes do bloqueio
-            (agulha ou colocação de cateter).
+            Não usar o medicamento nas{" "}
+            <Text style={estilos.destaque}>{recomendacao.horasSuspensao} horas</Text> antes
+            do bloqueio (agulha ou colocação de cateter).
           </Text>
           {recomendacao.nivelResidualAceitavel && (
             <Text style={estilos.textoDecisao}>
@@ -279,9 +253,6 @@ const estilos = StyleSheet.create({
     fontSize: 14,
     lineHeight: 20,
     marginTop: espacamento.xs,
-  },
-  destaquePerigo: {
-    fontWeight: "700",
   },
   textoDecisao: {
     fontSize: 14,
