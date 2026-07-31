@@ -44,9 +44,6 @@ import { Farmaco } from "@/medperiop/types";
  * documentada no artigo para ela) — ver comentário no próprio fármaco.
  */
 export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
-  // ---------------------------------------------------------------------
-  // Imunossupressores convencionais (Tabela 2, p.1554-1555)
-  // ---------------------------------------------------------------------
   {
     id: "metotrexato",
     nomeGenerico: "Metotrexato",
@@ -269,14 +266,6 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
     fonteReferenciaNumero: 7,
     fontePagina: "1558-1559",
   },
-
-  // ---------------------------------------------------------------------
-  // Biológicos e DMARDs (Tabela 3, p.1557-1558)
-  // Princípio geral: suspender por um ciclo de dosagem completo (~3-5
-  // meias-vidas) antes da cirurgia eletiva; reinício em geral aos 14 dias
-  // pós-operatórios se não houver problema de cicatrização/infecção
-  // (exceção: inibidores de JAK, reinício em 3 dias).
-  // ---------------------------------------------------------------------
   {
     id: "adalimumabe",
     nomeGenerico: "Adalimumabe",
@@ -615,34 +604,10 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
     fonteReferenciaNumero: 7,
     fontePagina: "1565",
   },
-
-  // ---------------------------------------------------------------------
-  // Antirretrovirais para HIV (Tabela 4, p.1560-1567)
-  // Recomendação de consenso geral e única para TODAS as classes de ART:
-  // continuar no pré-operatório, incluindo no dia da cirurgia (DOS). Não
-  // suspender parcialmente um esquema combinado (risco de resistência).
-  // Idealmente, carga viral indetectável antes de cirurgia eletiva. Se NPO
-  // prolongado ou via oral impossibilitada, consultar especialista em HIV
-  // para adaptar o esquema — nunca interromper por conta própria.
-  // ---------------------------------------------------------------------
   {
-    id: "art_nrtis",
-    nomeGenerico: "Inibidores nucleosídeos da transcriptase reversa (NRTIs)",
-    nomesComerciais: [
-      "Abacavir (ABC)",
-      "Didanosina (ddI)",
-      "Emtricitabina (FTC)",
-      "Estavudina (d4T)",
-      "Lamivudina (3TC)",
-      "Tenofovir alafenamida (TAF)",
-      "Tenofovir disoproxila fumarato (TDF)",
-      "Zidovudina (AZT)",
-      "Epzicom/Kivexa",
-      "Trizivir",
-      "Descovy",
-      "Truvada",
-      "Combivir",
-    ],
+    id: "abacavir",
+    nomeGenerico: "Abacavir (ABC)",
+    nomesComerciais: [],
     classe: "reumatologico-hiv",
     subclasse: "Antirretroviral — NRTI",
     regra: { tipo: "continuar" },
@@ -654,20 +619,177 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
     fontePagina: "1560, 1565-1566",
   },
   {
-    id: "art_nnrtis",
-    nomeGenerico: "Inibidores não nucleosídeos da transcriptase reversa (NNRTIs)",
-    nomesComerciais: [
-      "Delavirdina (DLV)",
-      "Doravirina (DOR)",
-      "Efavirenz (EFV)",
-      "Etravirina (ETR)",
-      "Nevirapina (NVP)",
-      "Rilpivirina (RPV)",
-      "Delstrigo",
-      "Atripla",
-      "Odefsey",
-      "Complera",
-    ],
+    id: "didanosina",
+    nomeGenerico: "Didanosina (ddI)",
+    nomesComerciais: [],
+    classe: "reumatologico-hiv",
+    subclasse: "Antirretroviral — NRTI",
+    regra: { tipo: "continuar" },
+    racional:
+      "Poucas interações medicamentosas significativas — a maioria dos NRTIs não interage com o sistema do citocromo P450 hepático. Recomendação categórica do artigo para toda a terapia antirretroviral (ART): continuar no pré-operatório, incluindo DOS — suspensão parcial de um esquema combinado não é recomendada pelo risco de resistência viral.",
+    situacoesEspeciais:
+      "Risco de acidose lática — evitar infusão de propofol em pacientes tratados com NRTIs no perioperatório. Redução de dose indicada se função renal pós-operatória prejudicada (para FTC, 3TC, TAF, TDF, AZT). Zidovudina (AZT/ZDV) disponível em formulação IV — consultar especialista em HIV se considerado. Comprimidos combinados podem precisar ser trocados por fármacos individuais para dosagem apropriada.",
+    fonteReferenciaNumero: 7,
+    fontePagina: "1560, 1565-1566",
+  },
+  {
+    id: "emtricitabina",
+    nomeGenerico: "Emtricitabina (FTC)",
+    nomesComerciais: [],
+    classe: "reumatologico-hiv",
+    subclasse: "Antirretroviral — NRTI",
+    regra: { tipo: "continuar" },
+    racional:
+      "Poucas interações medicamentosas significativas — a maioria dos NRTIs não interage com o sistema do citocromo P450 hepático. Recomendação categórica do artigo para toda a terapia antirretroviral (ART): continuar no pré-operatório, incluindo DOS — suspensão parcial de um esquema combinado não é recomendada pelo risco de resistência viral.",
+    situacoesEspeciais:
+      "Risco de acidose lática — evitar infusão de propofol em pacientes tratados com NRTIs no perioperatório. Redução de dose indicada se função renal pós-operatória prejudicada (para FTC, 3TC, TAF, TDF, AZT). Zidovudina (AZT/ZDV) disponível em formulação IV — consultar especialista em HIV se considerado. Comprimidos combinados podem precisar ser trocados por fármacos individuais para dosagem apropriada.",
+    fonteReferenciaNumero: 7,
+    fontePagina: "1560, 1565-1566",
+  },
+  {
+    id: "estavudina",
+    nomeGenerico: "Estavudina (d4T)",
+    nomesComerciais: [],
+    classe: "reumatologico-hiv",
+    subclasse: "Antirretroviral — NRTI",
+    regra: { tipo: "continuar" },
+    racional:
+      "Poucas interações medicamentosas significativas — a maioria dos NRTIs não interage com o sistema do citocromo P450 hepático. Recomendação categórica do artigo para toda a terapia antirretroviral (ART): continuar no pré-operatório, incluindo DOS — suspensão parcial de um esquema combinado não é recomendada pelo risco de resistência viral.",
+    situacoesEspeciais:
+      "Risco de acidose lática — evitar infusão de propofol em pacientes tratados com NRTIs no perioperatório. Redução de dose indicada se função renal pós-operatória prejudicada (para FTC, 3TC, TAF, TDF, AZT). Zidovudina (AZT/ZDV) disponível em formulação IV — consultar especialista em HIV se considerado. Comprimidos combinados podem precisar ser trocados por fármacos individuais para dosagem apropriada.",
+    fonteReferenciaNumero: 7,
+    fontePagina: "1560, 1565-1566",
+  },
+  {
+    id: "lamivudina",
+    nomeGenerico: "Lamivudina (3TC)",
+    nomesComerciais: [],
+    classe: "reumatologico-hiv",
+    subclasse: "Antirretroviral — NRTI",
+    regra: { tipo: "continuar" },
+    racional:
+      "Poucas interações medicamentosas significativas — a maioria dos NRTIs não interage com o sistema do citocromo P450 hepático. Recomendação categórica do artigo para toda a terapia antirretroviral (ART): continuar no pré-operatório, incluindo DOS — suspensão parcial de um esquema combinado não é recomendada pelo risco de resistência viral.",
+    situacoesEspeciais:
+      "Risco de acidose lática — evitar infusão de propofol em pacientes tratados com NRTIs no perioperatório. Redução de dose indicada se função renal pós-operatória prejudicada (para FTC, 3TC, TAF, TDF, AZT). Zidovudina (AZT/ZDV) disponível em formulação IV — consultar especialista em HIV se considerado. Comprimidos combinados podem precisar ser trocados por fármacos individuais para dosagem apropriada.",
+    fonteReferenciaNumero: 7,
+    fontePagina: "1560, 1565-1566",
+  },
+  {
+    id: "tenofovir_alafenamida",
+    nomeGenerico: "Tenofovir alafenamida (TAF)",
+    nomesComerciais: [],
+    classe: "reumatologico-hiv",
+    subclasse: "Antirretroviral — NRTI",
+    regra: { tipo: "continuar" },
+    racional:
+      "Poucas interações medicamentosas significativas — a maioria dos NRTIs não interage com o sistema do citocromo P450 hepático. Recomendação categórica do artigo para toda a terapia antirretroviral (ART): continuar no pré-operatório, incluindo DOS — suspensão parcial de um esquema combinado não é recomendada pelo risco de resistência viral.",
+    situacoesEspeciais:
+      "Risco de acidose lática — evitar infusão de propofol em pacientes tratados com NRTIs no perioperatório. Redução de dose indicada se função renal pós-operatória prejudicada (para FTC, 3TC, TAF, TDF, AZT). Zidovudina (AZT/ZDV) disponível em formulação IV — consultar especialista em HIV se considerado. Comprimidos combinados podem precisar ser trocados por fármacos individuais para dosagem apropriada.",
+    fonteReferenciaNumero: 7,
+    fontePagina: "1560, 1565-1566",
+  },
+  {
+    id: "tenofovir_disoproxila_fumarato",
+    nomeGenerico: "Tenofovir disoproxila fumarato (TDF)",
+    nomesComerciais: [],
+    classe: "reumatologico-hiv",
+    subclasse: "Antirretroviral — NRTI",
+    regra: { tipo: "continuar" },
+    racional:
+      "Poucas interações medicamentosas significativas — a maioria dos NRTIs não interage com o sistema do citocromo P450 hepático. Recomendação categórica do artigo para toda a terapia antirretroviral (ART): continuar no pré-operatório, incluindo DOS — suspensão parcial de um esquema combinado não é recomendada pelo risco de resistência viral.",
+    situacoesEspeciais:
+      "Risco de acidose lática — evitar infusão de propofol em pacientes tratados com NRTIs no perioperatório. Redução de dose indicada se função renal pós-operatória prejudicada (para FTC, 3TC, TAF, TDF, AZT). Zidovudina (AZT/ZDV) disponível em formulação IV — consultar especialista em HIV se considerado. Comprimidos combinados podem precisar ser trocados por fármacos individuais para dosagem apropriada.",
+    fonteReferenciaNumero: 7,
+    fontePagina: "1560, 1565-1566",
+  },
+  {
+    id: "zidovudina",
+    nomeGenerico: "Zidovudina (AZT)",
+    nomesComerciais: [],
+    classe: "reumatologico-hiv",
+    subclasse: "Antirretroviral — NRTI",
+    regra: { tipo: "continuar" },
+    racional:
+      "Poucas interações medicamentosas significativas — a maioria dos NRTIs não interage com o sistema do citocromo P450 hepático. Recomendação categórica do artigo para toda a terapia antirretroviral (ART): continuar no pré-operatório, incluindo DOS — suspensão parcial de um esquema combinado não é recomendada pelo risco de resistência viral.",
+    situacoesEspeciais:
+      "Risco de acidose lática — evitar infusão de propofol em pacientes tratados com NRTIs no perioperatório. Redução de dose indicada se função renal pós-operatória prejudicada (para FTC, 3TC, TAF, TDF, AZT). Zidovudina (AZT/ZDV) disponível em formulação IV — consultar especialista em HIV se considerado. Comprimidos combinados podem precisar ser trocados por fármacos individuais para dosagem apropriada.",
+    fonteReferenciaNumero: 7,
+    fontePagina: "1560, 1565-1566",
+  },
+  {
+    id: "epzicom_kivexa",
+    nomeGenerico: "Epzicom/Kivexa",
+    nomesComerciais: [],
+    classe: "reumatologico-hiv",
+    subclasse: "Antirretroviral — NRTI",
+    regra: { tipo: "continuar" },
+    racional:
+      "Poucas interações medicamentosas significativas — a maioria dos NRTIs não interage com o sistema do citocromo P450 hepático. Recomendação categórica do artigo para toda a terapia antirretroviral (ART): continuar no pré-operatório, incluindo DOS — suspensão parcial de um esquema combinado não é recomendada pelo risco de resistência viral.",
+    situacoesEspeciais:
+      "Risco de acidose lática — evitar infusão de propofol em pacientes tratados com NRTIs no perioperatório. Redução de dose indicada se função renal pós-operatória prejudicada (para FTC, 3TC, TAF, TDF, AZT). Zidovudina (AZT/ZDV) disponível em formulação IV — consultar especialista em HIV se considerado. Comprimidos combinados podem precisar ser trocados por fármacos individuais para dosagem apropriada.",
+    fonteReferenciaNumero: 7,
+    fontePagina: "1560, 1565-1566",
+  },
+  {
+    id: "trizivir",
+    nomeGenerico: "Trizivir",
+    nomesComerciais: [],
+    classe: "reumatologico-hiv",
+    subclasse: "Antirretroviral — NRTI",
+    regra: { tipo: "continuar" },
+    racional:
+      "Poucas interações medicamentosas significativas — a maioria dos NRTIs não interage com o sistema do citocromo P450 hepático. Recomendação categórica do artigo para toda a terapia antirretroviral (ART): continuar no pré-operatório, incluindo DOS — suspensão parcial de um esquema combinado não é recomendada pelo risco de resistência viral.",
+    situacoesEspeciais:
+      "Risco de acidose lática — evitar infusão de propofol em pacientes tratados com NRTIs no perioperatório. Redução de dose indicada se função renal pós-operatória prejudicada (para FTC, 3TC, TAF, TDF, AZT). Zidovudina (AZT/ZDV) disponível em formulação IV — consultar especialista em HIV se considerado. Comprimidos combinados podem precisar ser trocados por fármacos individuais para dosagem apropriada.",
+    fonteReferenciaNumero: 7,
+    fontePagina: "1560, 1565-1566",
+  },
+  {
+    id: "descovy",
+    nomeGenerico: "Descovy",
+    nomesComerciais: [],
+    classe: "reumatologico-hiv",
+    subclasse: "Antirretroviral — NRTI",
+    regra: { tipo: "continuar" },
+    racional:
+      "Poucas interações medicamentosas significativas — a maioria dos NRTIs não interage com o sistema do citocromo P450 hepático. Recomendação categórica do artigo para toda a terapia antirretroviral (ART): continuar no pré-operatório, incluindo DOS — suspensão parcial de um esquema combinado não é recomendada pelo risco de resistência viral.",
+    situacoesEspeciais:
+      "Risco de acidose lática — evitar infusão de propofol em pacientes tratados com NRTIs no perioperatório. Redução de dose indicada se função renal pós-operatória prejudicada (para FTC, 3TC, TAF, TDF, AZT). Zidovudina (AZT/ZDV) disponível em formulação IV — consultar especialista em HIV se considerado. Comprimidos combinados podem precisar ser trocados por fármacos individuais para dosagem apropriada.",
+    fonteReferenciaNumero: 7,
+    fontePagina: "1560, 1565-1566",
+  },
+  {
+    id: "truvada",
+    nomeGenerico: "Truvada",
+    nomesComerciais: [],
+    classe: "reumatologico-hiv",
+    subclasse: "Antirretroviral — NRTI",
+    regra: { tipo: "continuar" },
+    racional:
+      "Poucas interações medicamentosas significativas — a maioria dos NRTIs não interage com o sistema do citocromo P450 hepático. Recomendação categórica do artigo para toda a terapia antirretroviral (ART): continuar no pré-operatório, incluindo DOS — suspensão parcial de um esquema combinado não é recomendada pelo risco de resistência viral.",
+    situacoesEspeciais:
+      "Risco de acidose lática — evitar infusão de propofol em pacientes tratados com NRTIs no perioperatório. Redução de dose indicada se função renal pós-operatória prejudicada (para FTC, 3TC, TAF, TDF, AZT). Zidovudina (AZT/ZDV) disponível em formulação IV — consultar especialista em HIV se considerado. Comprimidos combinados podem precisar ser trocados por fármacos individuais para dosagem apropriada.",
+    fonteReferenciaNumero: 7,
+    fontePagina: "1560, 1565-1566",
+  },
+  {
+    id: "combivir",
+    nomeGenerico: "Combivir",
+    nomesComerciais: [],
+    classe: "reumatologico-hiv",
+    subclasse: "Antirretroviral — NRTI",
+    regra: { tipo: "continuar" },
+    racional:
+      "Poucas interações medicamentosas significativas — a maioria dos NRTIs não interage com o sistema do citocromo P450 hepático. Recomendação categórica do artigo para toda a terapia antirretroviral (ART): continuar no pré-operatório, incluindo DOS — suspensão parcial de um esquema combinado não é recomendada pelo risco de resistência viral.",
+    situacoesEspeciais:
+      "Risco de acidose lática — evitar infusão de propofol em pacientes tratados com NRTIs no perioperatório. Redução de dose indicada se função renal pós-operatória prejudicada (para FTC, 3TC, TAF, TDF, AZT). Zidovudina (AZT/ZDV) disponível em formulação IV — consultar especialista em HIV se considerado. Comprimidos combinados podem precisar ser trocados por fármacos individuais para dosagem apropriada.",
+    fonteReferenciaNumero: 7,
+    fontePagina: "1560, 1565-1566",
+  },
+  {
+    id: "delavirdina",
+    nomeGenerico: "Delavirdina (DLV)",
+    nomesComerciais: [],
     classe: "reumatologico-hiv",
     subclasse: "Antirretroviral — NNRTI",
     regra: { tipo: "continuar" },
@@ -679,23 +801,135 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
     fontePagina: "1560-1561, 1566",
   },
   {
-    id: "art_inibidores_protease",
-    nomeGenerico: "Inibidores de protease",
-    nomesComerciais: [
-      "Amprenavir (APV)",
-      "Atazanavir (ATV)",
-      "Darunavir (DRV)",
-      "Fosamprenavir (FPV)",
-      "Indinavir (IDV)",
-      "Nelfinavir (NFV)",
-      "Ritonavir (RTV)",
-      "Saquinavir (SQV)",
-      "Tipranavir (TPV)",
-      "Evotaz",
-      "Prezcobix",
-      "Symtuza",
-      "Kaletra",
-    ],
+    id: "doravirina",
+    nomeGenerico: "Doravirina (DOR)",
+    nomesComerciais: [],
+    classe: "reumatologico-hiv",
+    subclasse: "Antirretroviral — NNRTI",
+    regra: { tipo: "continuar" },
+    racional:
+      "Metabolizados pelo citocromo P450 hepático — interações medicamentosas variáveis relevantes no perioperatório. Recomendação categórica do artigo para toda a ART: continuar no pré-operatório, incluindo DOS.",
+    situacoesEspeciais:
+      "Coadministração com opioides e benzodiazepínicos comumente usados no perioperatório (fentanil, oxicodona, hidrocodona, tramadol, midazolam) pode reduzir os níveis desses fármacos e a eficácia de sedação/analgesia; vários NNRTIs prolongam o intervalo QT (risco de arritmia se combinados com outros prolongadores de QT); com bloqueadores de canal de cálcio, podem reduzir significativamente a eficácia do bloqueio. Comprimidos de nevirapina (liberação prolongada) nunca devem ser triturados (existe suspensão disponível); cápsulas de efavirenz podem ser abertas, mas o comprimido não deve ser triturado; rilpivirina requer acidez gástrica para absorção — se for necessário bloqueador ácido no pós-operatório com paciente NPO, considerar mudança do esquema ART antes da cirurgia.",
+    fonteReferenciaNumero: 7,
+    fontePagina: "1560-1561, 1566",
+  },
+  {
+    id: "efavirenz",
+    nomeGenerico: "Efavirenz (EFV)",
+    nomesComerciais: [],
+    classe: "reumatologico-hiv",
+    subclasse: "Antirretroviral — NNRTI",
+    regra: { tipo: "continuar" },
+    racional:
+      "Metabolizados pelo citocromo P450 hepático — interações medicamentosas variáveis relevantes no perioperatório. Recomendação categórica do artigo para toda a ART: continuar no pré-operatório, incluindo DOS.",
+    situacoesEspeciais:
+      "Coadministração com opioides e benzodiazepínicos comumente usados no perioperatório (fentanil, oxicodona, hidrocodona, tramadol, midazolam) pode reduzir os níveis desses fármacos e a eficácia de sedação/analgesia; vários NNRTIs prolongam o intervalo QT (risco de arritmia se combinados com outros prolongadores de QT); com bloqueadores de canal de cálcio, podem reduzir significativamente a eficácia do bloqueio. Comprimidos de nevirapina (liberação prolongada) nunca devem ser triturados (existe suspensão disponível); cápsulas de efavirenz podem ser abertas, mas o comprimido não deve ser triturado; rilpivirina requer acidez gástrica para absorção — se for necessário bloqueador ácido no pós-operatório com paciente NPO, considerar mudança do esquema ART antes da cirurgia.",
+    fonteReferenciaNumero: 7,
+    fontePagina: "1560-1561, 1566",
+  },
+  {
+    id: "etravirina",
+    nomeGenerico: "Etravirina (ETR)",
+    nomesComerciais: [],
+    classe: "reumatologico-hiv",
+    subclasse: "Antirretroviral — NNRTI",
+    regra: { tipo: "continuar" },
+    racional:
+      "Metabolizados pelo citocromo P450 hepático — interações medicamentosas variáveis relevantes no perioperatório. Recomendação categórica do artigo para toda a ART: continuar no pré-operatório, incluindo DOS.",
+    situacoesEspeciais:
+      "Coadministração com opioides e benzodiazepínicos comumente usados no perioperatório (fentanil, oxicodona, hidrocodona, tramadol, midazolam) pode reduzir os níveis desses fármacos e a eficácia de sedação/analgesia; vários NNRTIs prolongam o intervalo QT (risco de arritmia se combinados com outros prolongadores de QT); com bloqueadores de canal de cálcio, podem reduzir significativamente a eficácia do bloqueio. Comprimidos de nevirapina (liberação prolongada) nunca devem ser triturados (existe suspensão disponível); cápsulas de efavirenz podem ser abertas, mas o comprimido não deve ser triturado; rilpivirina requer acidez gástrica para absorção — se for necessário bloqueador ácido no pós-operatório com paciente NPO, considerar mudança do esquema ART antes da cirurgia.",
+    fonteReferenciaNumero: 7,
+    fontePagina: "1560-1561, 1566",
+  },
+  {
+    id: "nevirapina",
+    nomeGenerico: "Nevirapina (NVP)",
+    nomesComerciais: [],
+    classe: "reumatologico-hiv",
+    subclasse: "Antirretroviral — NNRTI",
+    regra: { tipo: "continuar" },
+    racional:
+      "Metabolizados pelo citocromo P450 hepático — interações medicamentosas variáveis relevantes no perioperatório. Recomendação categórica do artigo para toda a ART: continuar no pré-operatório, incluindo DOS.",
+    situacoesEspeciais:
+      "Coadministração com opioides e benzodiazepínicos comumente usados no perioperatório (fentanil, oxicodona, hidrocodona, tramadol, midazolam) pode reduzir os níveis desses fármacos e a eficácia de sedação/analgesia; vários NNRTIs prolongam o intervalo QT (risco de arritmia se combinados com outros prolongadores de QT); com bloqueadores de canal de cálcio, podem reduzir significativamente a eficácia do bloqueio. Comprimidos de nevirapina (liberação prolongada) nunca devem ser triturados (existe suspensão disponível); cápsulas de efavirenz podem ser abertas, mas o comprimido não deve ser triturado; rilpivirina requer acidez gástrica para absorção — se for necessário bloqueador ácido no pós-operatório com paciente NPO, considerar mudança do esquema ART antes da cirurgia.",
+    fonteReferenciaNumero: 7,
+    fontePagina: "1560-1561, 1566",
+  },
+  {
+    id: "rilpivirina",
+    nomeGenerico: "Rilpivirina (RPV)",
+    nomesComerciais: [],
+    classe: "reumatologico-hiv",
+    subclasse: "Antirretroviral — NNRTI",
+    regra: { tipo: "continuar" },
+    racional:
+      "Metabolizados pelo citocromo P450 hepático — interações medicamentosas variáveis relevantes no perioperatório. Recomendação categórica do artigo para toda a ART: continuar no pré-operatório, incluindo DOS.",
+    situacoesEspeciais:
+      "Coadministração com opioides e benzodiazepínicos comumente usados no perioperatório (fentanil, oxicodona, hidrocodona, tramadol, midazolam) pode reduzir os níveis desses fármacos e a eficácia de sedação/analgesia; vários NNRTIs prolongam o intervalo QT (risco de arritmia se combinados com outros prolongadores de QT); com bloqueadores de canal de cálcio, podem reduzir significativamente a eficácia do bloqueio. Comprimidos de nevirapina (liberação prolongada) nunca devem ser triturados (existe suspensão disponível); cápsulas de efavirenz podem ser abertas, mas o comprimido não deve ser triturado; rilpivirina requer acidez gástrica para absorção — se for necessário bloqueador ácido no pós-operatório com paciente NPO, considerar mudança do esquema ART antes da cirurgia.",
+    fonteReferenciaNumero: 7,
+    fontePagina: "1560-1561, 1566",
+  },
+  {
+    id: "delstrigo",
+    nomeGenerico: "Delstrigo",
+    nomesComerciais: [],
+    classe: "reumatologico-hiv",
+    subclasse: "Antirretroviral — NNRTI",
+    regra: { tipo: "continuar" },
+    racional:
+      "Metabolizados pelo citocromo P450 hepático — interações medicamentosas variáveis relevantes no perioperatório. Recomendação categórica do artigo para toda a ART: continuar no pré-operatório, incluindo DOS.",
+    situacoesEspeciais:
+      "Coadministração com opioides e benzodiazepínicos comumente usados no perioperatório (fentanil, oxicodona, hidrocodona, tramadol, midazolam) pode reduzir os níveis desses fármacos e a eficácia de sedação/analgesia; vários NNRTIs prolongam o intervalo QT (risco de arritmia se combinados com outros prolongadores de QT); com bloqueadores de canal de cálcio, podem reduzir significativamente a eficácia do bloqueio. Comprimidos de nevirapina (liberação prolongada) nunca devem ser triturados (existe suspensão disponível); cápsulas de efavirenz podem ser abertas, mas o comprimido não deve ser triturado; rilpivirina requer acidez gástrica para absorção — se for necessário bloqueador ácido no pós-operatório com paciente NPO, considerar mudança do esquema ART antes da cirurgia.",
+    fonteReferenciaNumero: 7,
+    fontePagina: "1560-1561, 1566",
+  },
+  {
+    id: "atripla",
+    nomeGenerico: "Atripla",
+    nomesComerciais: [],
+    classe: "reumatologico-hiv",
+    subclasse: "Antirretroviral — NNRTI",
+    regra: { tipo: "continuar" },
+    racional:
+      "Metabolizados pelo citocromo P450 hepático — interações medicamentosas variáveis relevantes no perioperatório. Recomendação categórica do artigo para toda a ART: continuar no pré-operatório, incluindo DOS.",
+    situacoesEspeciais:
+      "Coadministração com opioides e benzodiazepínicos comumente usados no perioperatório (fentanil, oxicodona, hidrocodona, tramadol, midazolam) pode reduzir os níveis desses fármacos e a eficácia de sedação/analgesia; vários NNRTIs prolongam o intervalo QT (risco de arritmia se combinados com outros prolongadores de QT); com bloqueadores de canal de cálcio, podem reduzir significativamente a eficácia do bloqueio. Comprimidos de nevirapina (liberação prolongada) nunca devem ser triturados (existe suspensão disponível); cápsulas de efavirenz podem ser abertas, mas o comprimido não deve ser triturado; rilpivirina requer acidez gástrica para absorção — se for necessário bloqueador ácido no pós-operatório com paciente NPO, considerar mudança do esquema ART antes da cirurgia.",
+    fonteReferenciaNumero: 7,
+    fontePagina: "1560-1561, 1566",
+  },
+  {
+    id: "odefsey",
+    nomeGenerico: "Odefsey",
+    nomesComerciais: [],
+    classe: "reumatologico-hiv",
+    subclasse: "Antirretroviral — NNRTI",
+    regra: { tipo: "continuar" },
+    racional:
+      "Metabolizados pelo citocromo P450 hepático — interações medicamentosas variáveis relevantes no perioperatório. Recomendação categórica do artigo para toda a ART: continuar no pré-operatório, incluindo DOS.",
+    situacoesEspeciais:
+      "Coadministração com opioides e benzodiazepínicos comumente usados no perioperatório (fentanil, oxicodona, hidrocodona, tramadol, midazolam) pode reduzir os níveis desses fármacos e a eficácia de sedação/analgesia; vários NNRTIs prolongam o intervalo QT (risco de arritmia se combinados com outros prolongadores de QT); com bloqueadores de canal de cálcio, podem reduzir significativamente a eficácia do bloqueio. Comprimidos de nevirapina (liberação prolongada) nunca devem ser triturados (existe suspensão disponível); cápsulas de efavirenz podem ser abertas, mas o comprimido não deve ser triturado; rilpivirina requer acidez gástrica para absorção — se for necessário bloqueador ácido no pós-operatório com paciente NPO, considerar mudança do esquema ART antes da cirurgia.",
+    fonteReferenciaNumero: 7,
+    fontePagina: "1560-1561, 1566",
+  },
+  {
+    id: "complera",
+    nomeGenerico: "Complera",
+    nomesComerciais: [],
+    classe: "reumatologico-hiv",
+    subclasse: "Antirretroviral — NNRTI",
+    regra: { tipo: "continuar" },
+    racional:
+      "Metabolizados pelo citocromo P450 hepático — interações medicamentosas variáveis relevantes no perioperatório. Recomendação categórica do artigo para toda a ART: continuar no pré-operatório, incluindo DOS.",
+    situacoesEspeciais:
+      "Coadministração com opioides e benzodiazepínicos comumente usados no perioperatório (fentanil, oxicodona, hidrocodona, tramadol, midazolam) pode reduzir os níveis desses fármacos e a eficácia de sedação/analgesia; vários NNRTIs prolongam o intervalo QT (risco de arritmia se combinados com outros prolongadores de QT); com bloqueadores de canal de cálcio, podem reduzir significativamente a eficácia do bloqueio. Comprimidos de nevirapina (liberação prolongada) nunca devem ser triturados (existe suspensão disponível); cápsulas de efavirenz podem ser abertas, mas o comprimido não deve ser triturado; rilpivirina requer acidez gástrica para absorção — se for necessário bloqueador ácido no pós-operatório com paciente NPO, considerar mudança do esquema ART antes da cirurgia.",
+    fonteReferenciaNumero: 7,
+    fontePagina: "1560-1561, 1566",
+  },
+  {
+    id: "amprenavir",
+    nomeGenerico: "Amprenavir (APV)",
+    nomesComerciais: [],
     classe: "reumatologico-hiv",
     subclasse: "Antirretroviral — inibidor de protease",
     regra: { tipo: "continuar" },
@@ -707,21 +941,177 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
     fontePagina: "1561, 1566-1567",
   },
   {
-    id: "art_inibidores_integrase",
-    nomeGenerico: "Inibidores de integrase",
-    nomesComerciais: [
-      "Cabotegravir (CAB)",
-      "Dolutegravir (DTG)",
-      "Elvitegravir (EVG)",
-      "Raltegravir (RAL)",
-      "Biktarvy",
-      "Cabenuva",
-      "Triumeq",
-      "Dovato",
-      "Juluca",
-      "Genvoya",
-      "Stribild",
-    ],
+    id: "atazanavir",
+    nomeGenerico: "Atazanavir (ATV)",
+    nomesComerciais: [],
+    classe: "reumatologico-hiv",
+    subclasse: "Antirretroviral — inibidor de protease",
+    regra: { tipo: "continuar" },
+    racional:
+      "Fortes inibidores do CYP3A4 hepático — interações medicamentosas significativas e relevantes no perioperatório. Recomendação categórica do artigo para toda a ART: continuar no pré-operatório, incluindo DOS.",
+    situacoesEspeciais:
+      "Prolongam efeito de vários opioides e benzodiazepínicos (recuperação anestésica mais lenta, sedação e depressão respiratória aumentadas — considerar doses menores/titulação); prolongam intervalo QT (risco de arritmia com sevoflurano, ondansetrona, proclorperazina, prometazina, droperidol); interação com bloqueadores de canal de cálcio e betabloqueadores (aumento de PR, bradicardia, hipotensão, arritmias); supressores ácidos (IBP, bloqueadores H2) podem aumentar toxicidade do inibidor de protease; podem potencializar efeito de corticoides. Não requer ajuste de dose para insuficiência renal, mas a dose de muitos outros fármacos pode precisar de ajuste — considerar farmacêutico. Atazanavir requer acidez gástrica para absorção (mesma consideração de bloqueador ácido pós-operatório citada para rilpivirina).",
+    fonteReferenciaNumero: 7,
+    fontePagina: "1561, 1566-1567",
+  },
+  {
+    id: "darunavir",
+    nomeGenerico: "Darunavir (DRV)",
+    nomesComerciais: [],
+    classe: "reumatologico-hiv",
+    subclasse: "Antirretroviral — inibidor de protease",
+    regra: { tipo: "continuar" },
+    racional:
+      "Fortes inibidores do CYP3A4 hepático — interações medicamentosas significativas e relevantes no perioperatório. Recomendação categórica do artigo para toda a ART: continuar no pré-operatório, incluindo DOS.",
+    situacoesEspeciais:
+      "Prolongam efeito de vários opioides e benzodiazepínicos (recuperação anestésica mais lenta, sedação e depressão respiratória aumentadas — considerar doses menores/titulação); prolongam intervalo QT (risco de arritmia com sevoflurano, ondansetrona, proclorperazina, prometazina, droperidol); interação com bloqueadores de canal de cálcio e betabloqueadores (aumento de PR, bradicardia, hipotensão, arritmias); supressores ácidos (IBP, bloqueadores H2) podem aumentar toxicidade do inibidor de protease; podem potencializar efeito de corticoides. Não requer ajuste de dose para insuficiência renal, mas a dose de muitos outros fármacos pode precisar de ajuste — considerar farmacêutico. Atazanavir requer acidez gástrica para absorção (mesma consideração de bloqueador ácido pós-operatório citada para rilpivirina).",
+    fonteReferenciaNumero: 7,
+    fontePagina: "1561, 1566-1567",
+  },
+  {
+    id: "fosamprenavir",
+    nomeGenerico: "Fosamprenavir (FPV)",
+    nomesComerciais: [],
+    classe: "reumatologico-hiv",
+    subclasse: "Antirretroviral — inibidor de protease",
+    regra: { tipo: "continuar" },
+    racional:
+      "Fortes inibidores do CYP3A4 hepático — interações medicamentosas significativas e relevantes no perioperatório. Recomendação categórica do artigo para toda a ART: continuar no pré-operatório, incluindo DOS.",
+    situacoesEspeciais:
+      "Prolongam efeito de vários opioides e benzodiazepínicos (recuperação anestésica mais lenta, sedação e depressão respiratória aumentadas — considerar doses menores/titulação); prolongam intervalo QT (risco de arritmia com sevoflurano, ondansetrona, proclorperazina, prometazina, droperidol); interação com bloqueadores de canal de cálcio e betabloqueadores (aumento de PR, bradicardia, hipotensão, arritmias); supressores ácidos (IBP, bloqueadores H2) podem aumentar toxicidade do inibidor de protease; podem potencializar efeito de corticoides. Não requer ajuste de dose para insuficiência renal, mas a dose de muitos outros fármacos pode precisar de ajuste — considerar farmacêutico. Atazanavir requer acidez gástrica para absorção (mesma consideração de bloqueador ácido pós-operatório citada para rilpivirina).",
+    fonteReferenciaNumero: 7,
+    fontePagina: "1561, 1566-1567",
+  },
+  {
+    id: "indinavir",
+    nomeGenerico: "Indinavir (IDV)",
+    nomesComerciais: [],
+    classe: "reumatologico-hiv",
+    subclasse: "Antirretroviral — inibidor de protease",
+    regra: { tipo: "continuar" },
+    racional:
+      "Fortes inibidores do CYP3A4 hepático — interações medicamentosas significativas e relevantes no perioperatório. Recomendação categórica do artigo para toda a ART: continuar no pré-operatório, incluindo DOS.",
+    situacoesEspeciais:
+      "Prolongam efeito de vários opioides e benzodiazepínicos (recuperação anestésica mais lenta, sedação e depressão respiratória aumentadas — considerar doses menores/titulação); prolongam intervalo QT (risco de arritmia com sevoflurano, ondansetrona, proclorperazina, prometazina, droperidol); interação com bloqueadores de canal de cálcio e betabloqueadores (aumento de PR, bradicardia, hipotensão, arritmias); supressores ácidos (IBP, bloqueadores H2) podem aumentar toxicidade do inibidor de protease; podem potencializar efeito de corticoides. Não requer ajuste de dose para insuficiência renal, mas a dose de muitos outros fármacos pode precisar de ajuste — considerar farmacêutico. Atazanavir requer acidez gástrica para absorção (mesma consideração de bloqueador ácido pós-operatório citada para rilpivirina).",
+    fonteReferenciaNumero: 7,
+    fontePagina: "1561, 1566-1567",
+  },
+  {
+    id: "nelfinavir",
+    nomeGenerico: "Nelfinavir (NFV)",
+    nomesComerciais: [],
+    classe: "reumatologico-hiv",
+    subclasse: "Antirretroviral — inibidor de protease",
+    regra: { tipo: "continuar" },
+    racional:
+      "Fortes inibidores do CYP3A4 hepático — interações medicamentosas significativas e relevantes no perioperatório. Recomendação categórica do artigo para toda a ART: continuar no pré-operatório, incluindo DOS.",
+    situacoesEspeciais:
+      "Prolongam efeito de vários opioides e benzodiazepínicos (recuperação anestésica mais lenta, sedação e depressão respiratória aumentadas — considerar doses menores/titulação); prolongam intervalo QT (risco de arritmia com sevoflurano, ondansetrona, proclorperazina, prometazina, droperidol); interação com bloqueadores de canal de cálcio e betabloqueadores (aumento de PR, bradicardia, hipotensão, arritmias); supressores ácidos (IBP, bloqueadores H2) podem aumentar toxicidade do inibidor de protease; podem potencializar efeito de corticoides. Não requer ajuste de dose para insuficiência renal, mas a dose de muitos outros fármacos pode precisar de ajuste — considerar farmacêutico. Atazanavir requer acidez gástrica para absorção (mesma consideração de bloqueador ácido pós-operatório citada para rilpivirina).",
+    fonteReferenciaNumero: 7,
+    fontePagina: "1561, 1566-1567",
+  },
+  {
+    id: "ritonavir",
+    nomeGenerico: "Ritonavir (RTV)",
+    nomesComerciais: [],
+    classe: "reumatologico-hiv",
+    subclasse: "Antirretroviral — inibidor de protease",
+    regra: { tipo: "continuar" },
+    racional:
+      "Fortes inibidores do CYP3A4 hepático — interações medicamentosas significativas e relevantes no perioperatório. Recomendação categórica do artigo para toda a ART: continuar no pré-operatório, incluindo DOS.",
+    situacoesEspeciais:
+      "Prolongam efeito de vários opioides e benzodiazepínicos (recuperação anestésica mais lenta, sedação e depressão respiratória aumentadas — considerar doses menores/titulação); prolongam intervalo QT (risco de arritmia com sevoflurano, ondansetrona, proclorperazina, prometazina, droperidol); interação com bloqueadores de canal de cálcio e betabloqueadores (aumento de PR, bradicardia, hipotensão, arritmias); supressores ácidos (IBP, bloqueadores H2) podem aumentar toxicidade do inibidor de protease; podem potencializar efeito de corticoides. Não requer ajuste de dose para insuficiência renal, mas a dose de muitos outros fármacos pode precisar de ajuste — considerar farmacêutico. Atazanavir requer acidez gástrica para absorção (mesma consideração de bloqueador ácido pós-operatório citada para rilpivirina).",
+    fonteReferenciaNumero: 7,
+    fontePagina: "1561, 1566-1567",
+  },
+  {
+    id: "saquinavir",
+    nomeGenerico: "Saquinavir (SQV)",
+    nomesComerciais: [],
+    classe: "reumatologico-hiv",
+    subclasse: "Antirretroviral — inibidor de protease",
+    regra: { tipo: "continuar" },
+    racional:
+      "Fortes inibidores do CYP3A4 hepático — interações medicamentosas significativas e relevantes no perioperatório. Recomendação categórica do artigo para toda a ART: continuar no pré-operatório, incluindo DOS.",
+    situacoesEspeciais:
+      "Prolongam efeito de vários opioides e benzodiazepínicos (recuperação anestésica mais lenta, sedação e depressão respiratória aumentadas — considerar doses menores/titulação); prolongam intervalo QT (risco de arritmia com sevoflurano, ondansetrona, proclorperazina, prometazina, droperidol); interação com bloqueadores de canal de cálcio e betabloqueadores (aumento de PR, bradicardia, hipotensão, arritmias); supressores ácidos (IBP, bloqueadores H2) podem aumentar toxicidade do inibidor de protease; podem potencializar efeito de corticoides. Não requer ajuste de dose para insuficiência renal, mas a dose de muitos outros fármacos pode precisar de ajuste — considerar farmacêutico. Atazanavir requer acidez gástrica para absorção (mesma consideração de bloqueador ácido pós-operatório citada para rilpivirina).",
+    fonteReferenciaNumero: 7,
+    fontePagina: "1561, 1566-1567",
+  },
+  {
+    id: "tipranavir",
+    nomeGenerico: "Tipranavir (TPV)",
+    nomesComerciais: [],
+    classe: "reumatologico-hiv",
+    subclasse: "Antirretroviral — inibidor de protease",
+    regra: { tipo: "continuar" },
+    racional:
+      "Fortes inibidores do CYP3A4 hepático — interações medicamentosas significativas e relevantes no perioperatório. Recomendação categórica do artigo para toda a ART: continuar no pré-operatório, incluindo DOS.",
+    situacoesEspeciais:
+      "Prolongam efeito de vários opioides e benzodiazepínicos (recuperação anestésica mais lenta, sedação e depressão respiratória aumentadas — considerar doses menores/titulação); prolongam intervalo QT (risco de arritmia com sevoflurano, ondansetrona, proclorperazina, prometazina, droperidol); interação com bloqueadores de canal de cálcio e betabloqueadores (aumento de PR, bradicardia, hipotensão, arritmias); supressores ácidos (IBP, bloqueadores H2) podem aumentar toxicidade do inibidor de protease; podem potencializar efeito de corticoides. Não requer ajuste de dose para insuficiência renal, mas a dose de muitos outros fármacos pode precisar de ajuste — considerar farmacêutico. Atazanavir requer acidez gástrica para absorção (mesma consideração de bloqueador ácido pós-operatório citada para rilpivirina).",
+    fonteReferenciaNumero: 7,
+    fontePagina: "1561, 1566-1567",
+  },
+  {
+    id: "evotaz",
+    nomeGenerico: "Evotaz",
+    nomesComerciais: [],
+    classe: "reumatologico-hiv",
+    subclasse: "Antirretroviral — inibidor de protease",
+    regra: { tipo: "continuar" },
+    racional:
+      "Fortes inibidores do CYP3A4 hepático — interações medicamentosas significativas e relevantes no perioperatório. Recomendação categórica do artigo para toda a ART: continuar no pré-operatório, incluindo DOS.",
+    situacoesEspeciais:
+      "Prolongam efeito de vários opioides e benzodiazepínicos (recuperação anestésica mais lenta, sedação e depressão respiratória aumentadas — considerar doses menores/titulação); prolongam intervalo QT (risco de arritmia com sevoflurano, ondansetrona, proclorperazina, prometazina, droperidol); interação com bloqueadores de canal de cálcio e betabloqueadores (aumento de PR, bradicardia, hipotensão, arritmias); supressores ácidos (IBP, bloqueadores H2) podem aumentar toxicidade do inibidor de protease; podem potencializar efeito de corticoides. Não requer ajuste de dose para insuficiência renal, mas a dose de muitos outros fármacos pode precisar de ajuste — considerar farmacêutico. Atazanavir requer acidez gástrica para absorção (mesma consideração de bloqueador ácido pós-operatório citada para rilpivirina).",
+    fonteReferenciaNumero: 7,
+    fontePagina: "1561, 1566-1567",
+  },
+  {
+    id: "prezcobix",
+    nomeGenerico: "Prezcobix",
+    nomesComerciais: [],
+    classe: "reumatologico-hiv",
+    subclasse: "Antirretroviral — inibidor de protease",
+    regra: { tipo: "continuar" },
+    racional:
+      "Fortes inibidores do CYP3A4 hepático — interações medicamentosas significativas e relevantes no perioperatório. Recomendação categórica do artigo para toda a ART: continuar no pré-operatório, incluindo DOS.",
+    situacoesEspeciais:
+      "Prolongam efeito de vários opioides e benzodiazepínicos (recuperação anestésica mais lenta, sedação e depressão respiratória aumentadas — considerar doses menores/titulação); prolongam intervalo QT (risco de arritmia com sevoflurano, ondansetrona, proclorperazina, prometazina, droperidol); interação com bloqueadores de canal de cálcio e betabloqueadores (aumento de PR, bradicardia, hipotensão, arritmias); supressores ácidos (IBP, bloqueadores H2) podem aumentar toxicidade do inibidor de protease; podem potencializar efeito de corticoides. Não requer ajuste de dose para insuficiência renal, mas a dose de muitos outros fármacos pode precisar de ajuste — considerar farmacêutico. Atazanavir requer acidez gástrica para absorção (mesma consideração de bloqueador ácido pós-operatório citada para rilpivirina).",
+    fonteReferenciaNumero: 7,
+    fontePagina: "1561, 1566-1567",
+  },
+  {
+    id: "symtuza",
+    nomeGenerico: "Symtuza",
+    nomesComerciais: [],
+    classe: "reumatologico-hiv",
+    subclasse: "Antirretroviral — inibidor de protease",
+    regra: { tipo: "continuar" },
+    racional:
+      "Fortes inibidores do CYP3A4 hepático — interações medicamentosas significativas e relevantes no perioperatório. Recomendação categórica do artigo para toda a ART: continuar no pré-operatório, incluindo DOS.",
+    situacoesEspeciais:
+      "Prolongam efeito de vários opioides e benzodiazepínicos (recuperação anestésica mais lenta, sedação e depressão respiratória aumentadas — considerar doses menores/titulação); prolongam intervalo QT (risco de arritmia com sevoflurano, ondansetrona, proclorperazina, prometazina, droperidol); interação com bloqueadores de canal de cálcio e betabloqueadores (aumento de PR, bradicardia, hipotensão, arritmias); supressores ácidos (IBP, bloqueadores H2) podem aumentar toxicidade do inibidor de protease; podem potencializar efeito de corticoides. Não requer ajuste de dose para insuficiência renal, mas a dose de muitos outros fármacos pode precisar de ajuste — considerar farmacêutico. Atazanavir requer acidez gástrica para absorção (mesma consideração de bloqueador ácido pós-operatório citada para rilpivirina).",
+    fonteReferenciaNumero: 7,
+    fontePagina: "1561, 1566-1567",
+  },
+  {
+    id: "kaletra",
+    nomeGenerico: "Kaletra",
+    nomesComerciais: [],
+    classe: "reumatologico-hiv",
+    subclasse: "Antirretroviral — inibidor de protease",
+    regra: { tipo: "continuar" },
+    racional:
+      "Fortes inibidores do CYP3A4 hepático — interações medicamentosas significativas e relevantes no perioperatório. Recomendação categórica do artigo para toda a ART: continuar no pré-operatório, incluindo DOS.",
+    situacoesEspeciais:
+      "Prolongam efeito de vários opioides e benzodiazepínicos (recuperação anestésica mais lenta, sedação e depressão respiratória aumentadas — considerar doses menores/titulação); prolongam intervalo QT (risco de arritmia com sevoflurano, ondansetrona, proclorperazina, prometazina, droperidol); interação com bloqueadores de canal de cálcio e betabloqueadores (aumento de PR, bradicardia, hipotensão, arritmias); supressores ácidos (IBP, bloqueadores H2) podem aumentar toxicidade do inibidor de protease; podem potencializar efeito de corticoides. Não requer ajuste de dose para insuficiência renal, mas a dose de muitos outros fármacos pode precisar de ajuste — considerar farmacêutico. Atazanavir requer acidez gástrica para absorção (mesma consideração de bloqueador ácido pós-operatório citada para rilpivirina).",
+    fonteReferenciaNumero: 7,
+    fontePagina: "1561, 1566-1567",
+  },
+  {
+    id: "cabotegravir",
+    nomeGenerico: "Cabotegravir (CAB)",
+    nomesComerciais: [],
     classe: "reumatologico-hiv",
     subclasse: "Antirretroviral — inibidor de integrase",
     regra: { tipo: "continuar" },
@@ -733,9 +1123,177 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
     fontePagina: "1561-1562, 1567",
   },
   {
-    id: "art_inibidores_entrada",
-    nomeGenerico: "Inibidores de entrada em CD4 (CCR5/gp41)",
-    nomesComerciais: ["Enfuvirtida (Fuzeon)", "Fostemsavir (Rukobia)", "Maraviroque (Selzentry)"],
+    id: "dolutegravir",
+    nomeGenerico: "Dolutegravir (DTG)",
+    nomesComerciais: [],
+    classe: "reumatologico-hiv",
+    subclasse: "Antirretroviral — inibidor de integrase",
+    regra: { tipo: "continuar" },
+    racional:
+      "Elvitegravir metabolizado por CYP3A4 (interações mais prováveis); os demais, em geral, não requerem redução de dose por insuficiência renal. Recomendação categórica do artigo para toda a ART: continuar no pré-operatório, incluindo DOS.",
+    situacoesEspeciais:
+      "Concentrações podem ser reduzidas por antiácidos/suplementos com cátions polivalentes; se insuficiência renal pós-operatória for esperada, considerar trocar para esquema com componentes individuais sob supervisão de especialista em HIV; raltegravir existe em comprimido mastigável que pode ser triturado ou administrado por sonda; nem todos os inibidores de integrase estão disponíveis como fármacos individuais.",
+    fonteReferenciaNumero: 7,
+    fontePagina: "1561-1562, 1567",
+  },
+  {
+    id: "elvitegravir",
+    nomeGenerico: "Elvitegravir (EVG)",
+    nomesComerciais: [],
+    classe: "reumatologico-hiv",
+    subclasse: "Antirretroviral — inibidor de integrase",
+    regra: { tipo: "continuar" },
+    racional:
+      "Elvitegravir metabolizado por CYP3A4 (interações mais prováveis); os demais, em geral, não requerem redução de dose por insuficiência renal. Recomendação categórica do artigo para toda a ART: continuar no pré-operatório, incluindo DOS.",
+    situacoesEspeciais:
+      "Concentrações podem ser reduzidas por antiácidos/suplementos com cátions polivalentes; se insuficiência renal pós-operatória for esperada, considerar trocar para esquema com componentes individuais sob supervisão de especialista em HIV; raltegravir existe em comprimido mastigável que pode ser triturado ou administrado por sonda; nem todos os inibidores de integrase estão disponíveis como fármacos individuais.",
+    fonteReferenciaNumero: 7,
+    fontePagina: "1561-1562, 1567",
+  },
+  {
+    id: "raltegravir",
+    nomeGenerico: "Raltegravir (RAL)",
+    nomesComerciais: [],
+    classe: "reumatologico-hiv",
+    subclasse: "Antirretroviral — inibidor de integrase",
+    regra: { tipo: "continuar" },
+    racional:
+      "Elvitegravir metabolizado por CYP3A4 (interações mais prováveis); os demais, em geral, não requerem redução de dose por insuficiência renal. Recomendação categórica do artigo para toda a ART: continuar no pré-operatório, incluindo DOS.",
+    situacoesEspeciais:
+      "Concentrações podem ser reduzidas por antiácidos/suplementos com cátions polivalentes; se insuficiência renal pós-operatória for esperada, considerar trocar para esquema com componentes individuais sob supervisão de especialista em HIV; raltegravir existe em comprimido mastigável que pode ser triturado ou administrado por sonda; nem todos os inibidores de integrase estão disponíveis como fármacos individuais.",
+    fonteReferenciaNumero: 7,
+    fontePagina: "1561-1562, 1567",
+  },
+  {
+    id: "biktarvy",
+    nomeGenerico: "Biktarvy",
+    nomesComerciais: [],
+    classe: "reumatologico-hiv",
+    subclasse: "Antirretroviral — inibidor de integrase",
+    regra: { tipo: "continuar" },
+    racional:
+      "Elvitegravir metabolizado por CYP3A4 (interações mais prováveis); os demais, em geral, não requerem redução de dose por insuficiência renal. Recomendação categórica do artigo para toda a ART: continuar no pré-operatório, incluindo DOS.",
+    situacoesEspeciais:
+      "Concentrações podem ser reduzidas por antiácidos/suplementos com cátions polivalentes; se insuficiência renal pós-operatória for esperada, considerar trocar para esquema com componentes individuais sob supervisão de especialista em HIV; raltegravir existe em comprimido mastigável que pode ser triturado ou administrado por sonda; nem todos os inibidores de integrase estão disponíveis como fármacos individuais.",
+    fonteReferenciaNumero: 7,
+    fontePagina: "1561-1562, 1567",
+  },
+  {
+    id: "cabenuva",
+    nomeGenerico: "Cabenuva",
+    nomesComerciais: [],
+    classe: "reumatologico-hiv",
+    subclasse: "Antirretroviral — inibidor de integrase",
+    regra: { tipo: "continuar" },
+    racional:
+      "Elvitegravir metabolizado por CYP3A4 (interações mais prováveis); os demais, em geral, não requerem redução de dose por insuficiência renal. Recomendação categórica do artigo para toda a ART: continuar no pré-operatório, incluindo DOS.",
+    situacoesEspeciais:
+      "Concentrações podem ser reduzidas por antiácidos/suplementos com cátions polivalentes; se insuficiência renal pós-operatória for esperada, considerar trocar para esquema com componentes individuais sob supervisão de especialista em HIV; raltegravir existe em comprimido mastigável que pode ser triturado ou administrado por sonda; nem todos os inibidores de integrase estão disponíveis como fármacos individuais.",
+    fonteReferenciaNumero: 7,
+    fontePagina: "1561-1562, 1567",
+  },
+  {
+    id: "triumeq",
+    nomeGenerico: "Triumeq",
+    nomesComerciais: [],
+    classe: "reumatologico-hiv",
+    subclasse: "Antirretroviral — inibidor de integrase",
+    regra: { tipo: "continuar" },
+    racional:
+      "Elvitegravir metabolizado por CYP3A4 (interações mais prováveis); os demais, em geral, não requerem redução de dose por insuficiência renal. Recomendação categórica do artigo para toda a ART: continuar no pré-operatório, incluindo DOS.",
+    situacoesEspeciais:
+      "Concentrações podem ser reduzidas por antiácidos/suplementos com cátions polivalentes; se insuficiência renal pós-operatória for esperada, considerar trocar para esquema com componentes individuais sob supervisão de especialista em HIV; raltegravir existe em comprimido mastigável que pode ser triturado ou administrado por sonda; nem todos os inibidores de integrase estão disponíveis como fármacos individuais.",
+    fonteReferenciaNumero: 7,
+    fontePagina: "1561-1562, 1567",
+  },
+  {
+    id: "dovato",
+    nomeGenerico: "Dovato",
+    nomesComerciais: [],
+    classe: "reumatologico-hiv",
+    subclasse: "Antirretroviral — inibidor de integrase",
+    regra: { tipo: "continuar" },
+    racional:
+      "Elvitegravir metabolizado por CYP3A4 (interações mais prováveis); os demais, em geral, não requerem redução de dose por insuficiência renal. Recomendação categórica do artigo para toda a ART: continuar no pré-operatório, incluindo DOS.",
+    situacoesEspeciais:
+      "Concentrações podem ser reduzidas por antiácidos/suplementos com cátions polivalentes; se insuficiência renal pós-operatória for esperada, considerar trocar para esquema com componentes individuais sob supervisão de especialista em HIV; raltegravir existe em comprimido mastigável que pode ser triturado ou administrado por sonda; nem todos os inibidores de integrase estão disponíveis como fármacos individuais.",
+    fonteReferenciaNumero: 7,
+    fontePagina: "1561-1562, 1567",
+  },
+  {
+    id: "juluca",
+    nomeGenerico: "Juluca",
+    nomesComerciais: [],
+    classe: "reumatologico-hiv",
+    subclasse: "Antirretroviral — inibidor de integrase",
+    regra: { tipo: "continuar" },
+    racional:
+      "Elvitegravir metabolizado por CYP3A4 (interações mais prováveis); os demais, em geral, não requerem redução de dose por insuficiência renal. Recomendação categórica do artigo para toda a ART: continuar no pré-operatório, incluindo DOS.",
+    situacoesEspeciais:
+      "Concentrações podem ser reduzidas por antiácidos/suplementos com cátions polivalentes; se insuficiência renal pós-operatória for esperada, considerar trocar para esquema com componentes individuais sob supervisão de especialista em HIV; raltegravir existe em comprimido mastigável que pode ser triturado ou administrado por sonda; nem todos os inibidores de integrase estão disponíveis como fármacos individuais.",
+    fonteReferenciaNumero: 7,
+    fontePagina: "1561-1562, 1567",
+  },
+  {
+    id: "genvoya",
+    nomeGenerico: "Genvoya",
+    nomesComerciais: [],
+    classe: "reumatologico-hiv",
+    subclasse: "Antirretroviral — inibidor de integrase",
+    regra: { tipo: "continuar" },
+    racional:
+      "Elvitegravir metabolizado por CYP3A4 (interações mais prováveis); os demais, em geral, não requerem redução de dose por insuficiência renal. Recomendação categórica do artigo para toda a ART: continuar no pré-operatório, incluindo DOS.",
+    situacoesEspeciais:
+      "Concentrações podem ser reduzidas por antiácidos/suplementos com cátions polivalentes; se insuficiência renal pós-operatória for esperada, considerar trocar para esquema com componentes individuais sob supervisão de especialista em HIV; raltegravir existe em comprimido mastigável que pode ser triturado ou administrado por sonda; nem todos os inibidores de integrase estão disponíveis como fármacos individuais.",
+    fonteReferenciaNumero: 7,
+    fontePagina: "1561-1562, 1567",
+  },
+  {
+    id: "stribild",
+    nomeGenerico: "Stribild",
+    nomesComerciais: [],
+    classe: "reumatologico-hiv",
+    subclasse: "Antirretroviral — inibidor de integrase",
+    regra: { tipo: "continuar" },
+    racional:
+      "Elvitegravir metabolizado por CYP3A4 (interações mais prováveis); os demais, em geral, não requerem redução de dose por insuficiência renal. Recomendação categórica do artigo para toda a ART: continuar no pré-operatório, incluindo DOS.",
+    situacoesEspeciais:
+      "Concentrações podem ser reduzidas por antiácidos/suplementos com cátions polivalentes; se insuficiência renal pós-operatória for esperada, considerar trocar para esquema com componentes individuais sob supervisão de especialista em HIV; raltegravir existe em comprimido mastigável que pode ser triturado ou administrado por sonda; nem todos os inibidores de integrase estão disponíveis como fármacos individuais.",
+    fonteReferenciaNumero: 7,
+    fontePagina: "1561-1562, 1567",
+  },
+  {
+    id: "enfuvirtida",
+    nomeGenerico: "Enfuvirtida (Fuzeon)",
+    nomesComerciais: [],
+    classe: "reumatologico-hiv",
+    subclasse: "Antirretroviral — inibidor de entrada",
+    regra: { tipo: "continuar" },
+    racional:
+      "Uso incomum, limitado a pacientes com vírus resistente e experiência prévia de tratamento; hospitais provavelmente não têm esses fármacos em estoque — orientar paciente a trazer o próprio suprimento. Recomendação categórica do artigo para toda a ART: continuar no pré-operatório, incluindo DOS.",
+    situacoesEspeciais:
+      "Nenhum ajuste de dose necessário para insuficiência renal; maraviroque e fostemsavir são fortes inibidores do CYP450 hepático; maraviroque disponível em formulação líquida oral; maraviroque associado a risco aumentado de infarto do miocárdio/isquemia, particularmente em pacientes com hipotensão postural, doença cardíaca de base, ou em uso de anti-hipertensivos; fostemsavir pode causar prolongamento do QT (especialmente em doses maiores ou com fármacos que afetam substratos de CYP3A); interações medicamentosas com outros fármacos que também prolongam QT.",
+    fonteReferenciaNumero: 7,
+    fontePagina: "1562, 1567",
+  },
+  {
+    id: "fostemsavir",
+    nomeGenerico: "Fostemsavir (Rukobia)",
+    nomesComerciais: [],
+    classe: "reumatologico-hiv",
+    subclasse: "Antirretroviral — inibidor de entrada",
+    regra: { tipo: "continuar" },
+    racional:
+      "Uso incomum, limitado a pacientes com vírus resistente e experiência prévia de tratamento; hospitais provavelmente não têm esses fármacos em estoque — orientar paciente a trazer o próprio suprimento. Recomendação categórica do artigo para toda a ART: continuar no pré-operatório, incluindo DOS.",
+    situacoesEspeciais:
+      "Nenhum ajuste de dose necessário para insuficiência renal; maraviroque e fostemsavir são fortes inibidores do CYP450 hepático; maraviroque disponível em formulação líquida oral; maraviroque associado a risco aumentado de infarto do miocárdio/isquemia, particularmente em pacientes com hipotensão postural, doença cardíaca de base, ou em uso de anti-hipertensivos; fostemsavir pode causar prolongamento do QT (especialmente em doses maiores ou com fármacos que afetam substratos de CYP3A); interações medicamentosas com outros fármacos que também prolongam QT.",
+    fonteReferenciaNumero: 7,
+    fontePagina: "1562, 1567",
+  },
+  {
+    id: "maraviroque",
+    nomeGenerico: "Maraviroque (Selzentry)",
+    nomesComerciais: [],
     classe: "reumatologico-hiv",
     subclasse: "Antirretroviral — inibidor de entrada",
     regra: { tipo: "continuar" },
@@ -760,17 +1318,6 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
     fonteReferenciaNumero: 7,
     fontePagina: "1562, 1567-1568",
   },
-
-  // ---------------------------------------------------------------------
-  // AINEs (Tabela 5, p.1567-1568) — classe "analgesicos" por decisão de UX
-  // (fonte bibliográfica real é este artigo reumatológico, referência 7).
-  // Usa-se o tempo de suspensão específico por fármaco (baseado em
-  // meia-vida), não o "7 dias" genérico da classe — ver nota no topo do
-  // arquivo. Racional geral: risco de sangramento em sítio cirúrgico, lesão
-  // renal e eventos cardiovasculares associados à inibição de COX-1
-  // (proteção gastrointestinal e agregação plaquetária); literatura sobre
-  // efeitos adversos perioperatórios de AINEs é inconsistente/mista.
-  // ---------------------------------------------------------------------
   {
     id: "diclofenaco",
     nomeGenerico: "Diclofenaco",

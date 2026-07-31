@@ -16,13 +16,46 @@ import { Farmaco } from "@/medperiop/types";
  *   em debate, fora do escopo das suas recomendações; não há limiar numérico.
  */
 export const FARMACOS_ENDOCRINO: Farmaco[] = [
-  // ---------------------------------------------------------------------
-  // Insulinas (Tabela 1)
-  // ---------------------------------------------------------------------
   {
-    id: "insulina_basal_longa",
-    nomeGenerico: "Insulina de ação longa (basal)",
-    nomesComerciais: ["Glargina", "Detemir", "Degludeca"],
+    id: "glargina",
+    nomeGenerico: "Glargina",
+    nomesComerciais: [],
+    classe: "endocrino",
+    subclasse: "Insulina, ação longa (basal)",
+    regra: {
+      tipo: "reduzir_dose",
+      ajusteDose:
+        "Reduzir para 60%-80% da dose usual na noite anterior (ou na manhã da cirurgia, se normalmente tomada de manhã); 25%-50% de redução é razoável em pacientes de alto risco de hipoglicemia.",
+    },
+    racional:
+      "Manter insulina basal evita cetoacidose em DM tipo 1; a farmacocinética de longa duração permite ajuste percentual em vez de suspensão. Um RCT (n=410, tipo 1 e 2) mostrou que redução empírica de 20% da dose de glargina na noite anterior foi tão eficaz quanto ajuste guiado por tabela médica. A ADA recomenda 80% da dose usual de insulina de longa duração na manhã da cirurgia.",
+    situacoesEspeciais:
+      "Risco elevado de hipoglicemia = hipoglicemia noturna frequente, necessidade de lanche antes de dormir para evitar hipoglicemia, queda glicêmica noturna >40 mg/dL, desnutrição, insuficiência renal ou hepática.",
+    fonteReferenciaNumero: 3,
+    fontePagina: "3-4",
+  },
+  {
+    id: "detemir",
+    nomeGenerico: "Detemir",
+    nomesComerciais: [],
+    classe: "endocrino",
+    subclasse: "Insulina, ação longa (basal)",
+    regra: {
+      tipo: "reduzir_dose",
+      ajusteDose:
+        "Reduzir para 60%-80% da dose usual na noite anterior (ou na manhã da cirurgia, se normalmente tomada de manhã); 25%-50% de redução é razoável em pacientes de alto risco de hipoglicemia.",
+    },
+    racional:
+      "Manter insulina basal evita cetoacidose em DM tipo 1; a farmacocinética de longa duração permite ajuste percentual em vez de suspensão. Um RCT (n=410, tipo 1 e 2) mostrou que redução empírica de 20% da dose de glargina na noite anterior foi tão eficaz quanto ajuste guiado por tabela médica. A ADA recomenda 80% da dose usual de insulina de longa duração na manhã da cirurgia.",
+    situacoesEspeciais:
+      "Risco elevado de hipoglicemia = hipoglicemia noturna frequente, necessidade de lanche antes de dormir para evitar hipoglicemia, queda glicêmica noturna >40 mg/dL, desnutrição, insuficiência renal ou hepática.",
+    fonteReferenciaNumero: 3,
+    fontePagina: "3-4",
+  },
+  {
+    id: "degludeca",
+    nomeGenerico: "Degludeca",
+    nomesComerciais: [],
     classe: "endocrino",
     subclasse: "Insulina, ação longa (basal)",
     regra: {
@@ -96,9 +129,51 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
     fontePagina: "3-4",
   },
   {
-    id: "insulina_prandial",
-    nomeGenerico: "Insulina de ação curta/rápida (prandial)",
-    nomesComerciais: ["Regular", "Aspart", "Lispro", "Glulisina"],
+    id: "regular",
+    nomeGenerico: "Regular",
+    nomesComerciais: [],
+    classe: "endocrino",
+    subclasse: "Insulina, ação curta/rápida (prandial)",
+    regra: { tipo: "suspender_dia_cirurgia" },
+    racional:
+      "Cobertura prandial não é necessária em jejum; manter aumentaria risco de hipoglicemia.",
+    situacoesEspeciais:
+      "Pode ser usada na manhã da cirurgia apenas para tratamento urgente de hiperglicemia aguda, conforme protocolo institucional (via subcutânea ou infusão).",
+    fonteReferenciaNumero: 3,
+    fontePagina: "3-4",
+  },
+  {
+    id: "aspart",
+    nomeGenerico: "Aspart",
+    nomesComerciais: [],
+    classe: "endocrino",
+    subclasse: "Insulina, ação curta/rápida (prandial)",
+    regra: { tipo: "suspender_dia_cirurgia" },
+    racional:
+      "Cobertura prandial não é necessária em jejum; manter aumentaria risco de hipoglicemia.",
+    situacoesEspeciais:
+      "Pode ser usada na manhã da cirurgia apenas para tratamento urgente de hiperglicemia aguda, conforme protocolo institucional (via subcutânea ou infusão).",
+    fonteReferenciaNumero: 3,
+    fontePagina: "3-4",
+  },
+  {
+    id: "lispro",
+    nomeGenerico: "Lispro",
+    nomesComerciais: [],
+    classe: "endocrino",
+    subclasse: "Insulina, ação curta/rápida (prandial)",
+    regra: { tipo: "suspender_dia_cirurgia" },
+    racional:
+      "Cobertura prandial não é necessária em jejum; manter aumentaria risco de hipoglicemia.",
+    situacoesEspeciais:
+      "Pode ser usada na manhã da cirurgia apenas para tratamento urgente de hiperglicemia aguda, conforme protocolo institucional (via subcutânea ou infusão).",
+    fonteReferenciaNumero: 3,
+    fontePagina: "3-4",
+  },
+  {
+    id: "glulisina",
+    nomeGenerico: "Glulisina",
+    nomesComerciais: [],
     classe: "endocrino",
     subclasse: "Insulina, ação curta/rápida (prandial)",
     regra: { tipo: "suspender_dia_cirurgia" },
@@ -127,14 +202,24 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
     fonteReferenciaNumero: 3,
     fontePagina: "3-4",
   },
-
-  // ---------------------------------------------------------------------
-  // Hipoglicemiantes não-insulina (Tabela 2)
-  // ---------------------------------------------------------------------
   {
-    id: "alfa_glicosidase_inibidores",
-    nomeGenerico: "Alfa-glicosidase inibidores",
-    nomesComerciais: ["Acarbose", "Miglitol"],
+    id: "acarbose",
+    nomeGenerico: "Acarbose",
+    nomesComerciais: [],
+    classe: "endocrino",
+    subclasse: "Alfa-glicosidase inibidores",
+    regra: { tipo: "suspender_dia_cirurgia" },
+    racional:
+      "Mecanismo (retardo da absorção intestinal de carboidratos) tem baixo risco de hipoglicemia isolado, mas não há estudos perioperatórios; recomendação segue diretriz ADA de suspender no dia da cirurgia.",
+    situacoesEspeciais:
+      "Nenhuma condicional adicional; efeito colateral conhecido é desconforto GI/gases, não perioperatório específico.",
+    fonteReferenciaNumero: 3,
+    fontePagina: "4-5",
+  },
+  {
+    id: "miglitol",
+    nomeGenerico: "Miglitol",
+    nomesComerciais: [],
     classe: "endocrino",
     subclasse: "Alfa-glicosidase inibidores",
     regra: { tipo: "suspender_dia_cirurgia" },
@@ -165,9 +250,9 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
     fontePagina: "4-5",
   },
   {
-    id: "dpp4_inibidores",
-    nomeGenerico: "DPP-4 inibidores",
-    nomesComerciais: ["Vildagliptina", "Sitagliptina", "Saxagliptina", "Linagliptina", "Alogliptina"],
+    id: "vildagliptina",
+    nomeGenerico: "Vildagliptina",
+    nomesComerciais: [],
     classe: "endocrino",
     subclasse: "DPP-4 inibidores",
     condicaoClinica: {
@@ -184,9 +269,85 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
     fontePagina: "5-7",
   },
   {
-    id: "sulfonilureias_glinidas",
-    nomeGenerico: "Sulfonilureias e glinidas (secretagogos de insulina)",
-    nomesComerciais: ["Glipizida", "Glibenclamida (glyburide)", "Glimepirida", "Repaglinida", "Nateglinida"],
+    id: "sitagliptina",
+    nomeGenerico: "Sitagliptina",
+    nomesComerciais: [],
+    classe: "endocrino",
+    subclasse: "DPP-4 inibidores",
+    condicaoClinica: {
+      pergunta:
+        "Cirurgia ambulatorial com no máximo uma refeição a ser omitida (uso ininterrupto pode ser aceitável)?",
+      regraSeSim: { tipo: "continuar" },
+      regraSeNao: { tipo: "suspender_dia_cirurgia" },
+    },
+    racional:
+      "Não há benefício demonstrado em prevenir hiperglicemia pós-operatória quando administrado 1-2 dias antes de cirurgia cardíaca/não-cardíaca vs placebo; em idosos ou pacientes com IC (real ou suspeita), uso de DPP-4i associado a piora de insuficiência cardíaca.",
+    situacoesEspeciais:
+      "Cautela em pacientes idosos ou com IC (suspeita ou confirmada). Linguagem do carve-out ambulatorial é mais fraca/hedged ('pode ser aceitável') que a do metformina.",
+    fonteReferenciaNumero: 3,
+    fontePagina: "5-7",
+  },
+  {
+    id: "saxagliptina",
+    nomeGenerico: "Saxagliptina",
+    nomesComerciais: [],
+    classe: "endocrino",
+    subclasse: "DPP-4 inibidores",
+    condicaoClinica: {
+      pergunta:
+        "Cirurgia ambulatorial com no máximo uma refeição a ser omitida (uso ininterrupto pode ser aceitável)?",
+      regraSeSim: { tipo: "continuar" },
+      regraSeNao: { tipo: "suspender_dia_cirurgia" },
+    },
+    racional:
+      "Não há benefício demonstrado em prevenir hiperglicemia pós-operatória quando administrado 1-2 dias antes de cirurgia cardíaca/não-cardíaca vs placebo; em idosos ou pacientes com IC (real ou suspeita), uso de DPP-4i associado a piora de insuficiência cardíaca.",
+    situacoesEspeciais:
+      "Cautela em pacientes idosos ou com IC (suspeita ou confirmada). Linguagem do carve-out ambulatorial é mais fraca/hedged ('pode ser aceitável') que a do metformina.",
+    fonteReferenciaNumero: 3,
+    fontePagina: "5-7",
+  },
+  {
+    id: "linagliptina",
+    nomeGenerico: "Linagliptina",
+    nomesComerciais: [],
+    classe: "endocrino",
+    subclasse: "DPP-4 inibidores",
+    condicaoClinica: {
+      pergunta:
+        "Cirurgia ambulatorial com no máximo uma refeição a ser omitida (uso ininterrupto pode ser aceitável)?",
+      regraSeSim: { tipo: "continuar" },
+      regraSeNao: { tipo: "suspender_dia_cirurgia" },
+    },
+    racional:
+      "Não há benefício demonstrado em prevenir hiperglicemia pós-operatória quando administrado 1-2 dias antes de cirurgia cardíaca/não-cardíaca vs placebo; em idosos ou pacientes com IC (real ou suspeita), uso de DPP-4i associado a piora de insuficiência cardíaca.",
+    situacoesEspeciais:
+      "Cautela em pacientes idosos ou com IC (suspeita ou confirmada). Linguagem do carve-out ambulatorial é mais fraca/hedged ('pode ser aceitável') que a do metformina.",
+    fonteReferenciaNumero: 3,
+    fontePagina: "5-7",
+  },
+  {
+    id: "alogliptina",
+    nomeGenerico: "Alogliptina",
+    nomesComerciais: [],
+    classe: "endocrino",
+    subclasse: "DPP-4 inibidores",
+    condicaoClinica: {
+      pergunta:
+        "Cirurgia ambulatorial com no máximo uma refeição a ser omitida (uso ininterrupto pode ser aceitável)?",
+      regraSeSim: { tipo: "continuar" },
+      regraSeNao: { tipo: "suspender_dia_cirurgia" },
+    },
+    racional:
+      "Não há benefício demonstrado em prevenir hiperglicemia pós-operatória quando administrado 1-2 dias antes de cirurgia cardíaca/não-cardíaca vs placebo; em idosos ou pacientes com IC (real ou suspeita), uso de DPP-4i associado a piora de insuficiência cardíaca.",
+    situacoesEspeciais:
+      "Cautela em pacientes idosos ou com IC (suspeita ou confirmada). Linguagem do carve-out ambulatorial é mais fraca/hedged ('pode ser aceitável') que a do metformina.",
+    fonteReferenciaNumero: 3,
+    fontePagina: "5-7",
+  },
+  {
+    id: "glipizida",
+    nomeGenerico: "Glipizida",
+    nomesComerciais: [],
     classe: "endocrino",
     subclasse: "Sulfonilureias e glinidas (secretagogos de insulina)",
     regra: { tipo: "suspender_dia_cirurgia" },
@@ -198,9 +359,93 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
     fontePagina: "5-6",
   },
   {
-    id: "sglt2_inibidores",
-    nomeGenerico: "Inibidores de SGLT2 — canagliflozina, dapagliflozina, empagliflozina",
-    nomesComerciais: ["Canagliflozina", "Dapagliflozina", "Empagliflozina"],
+    id: "glibenclamida",
+    nomeGenerico: "Glibenclamida (glyburide)",
+    nomesComerciais: [],
+    classe: "endocrino",
+    subclasse: "Sulfonilureias e glinidas (secretagogos de insulina)",
+    regra: { tipo: "suspender_dia_cirurgia" },
+    racional:
+      "Estimulam secreção de insulina endógena independentemente da glicemia/ingestão alimentar, causando risco de hipoglicemia, sobretudo com função renal comprometida ou baixa ingestão oral. Prevalência de hipoglicemia aumentada em internados >65 anos e GFR <30 mL/min.",
+    situacoesEspeciais:
+      "Interações relevantes: inibidores de CYP2C9 (fluoroquinolonas, fluconazol, amiodarona, sulfametoxazol-trimetoprima, valproato) potencializam efeito hipoglicemiante. Para glinidas especificamente, o texto narrativo diz que não são recomendadas no período perioperatório de forma mais ampla, mas a Tabela 2 as agrupa com sulfonilureias sob a mesma recomendação.",
+    fonteReferenciaNumero: 3,
+    fontePagina: "5-6",
+  },
+  {
+    id: "glimepirida",
+    nomeGenerico: "Glimepirida",
+    nomesComerciais: [],
+    classe: "endocrino",
+    subclasse: "Sulfonilureias e glinidas (secretagogos de insulina)",
+    regra: { tipo: "suspender_dia_cirurgia" },
+    racional:
+      "Estimulam secreção de insulina endógena independentemente da glicemia/ingestão alimentar, causando risco de hipoglicemia, sobretudo com função renal comprometida ou baixa ingestão oral. Prevalência de hipoglicemia aumentada em internados >65 anos e GFR <30 mL/min.",
+    situacoesEspeciais:
+      "Interações relevantes: inibidores de CYP2C9 (fluoroquinolonas, fluconazol, amiodarona, sulfametoxazol-trimetoprima, valproato) potencializam efeito hipoglicemiante. Para glinidas especificamente, o texto narrativo diz que não são recomendadas no período perioperatório de forma mais ampla, mas a Tabela 2 as agrupa com sulfonilureias sob a mesma recomendação.",
+    fonteReferenciaNumero: 3,
+    fontePagina: "5-6",
+  },
+  {
+    id: "repaglinida",
+    nomeGenerico: "Repaglinida",
+    nomesComerciais: [],
+    classe: "endocrino",
+    subclasse: "Sulfonilureias e glinidas (secretagogos de insulina)",
+    regra: { tipo: "suspender_dia_cirurgia" },
+    racional:
+      "Estimulam secreção de insulina endógena independentemente da glicemia/ingestão alimentar, causando risco de hipoglicemia, sobretudo com função renal comprometida ou baixa ingestão oral. Prevalência de hipoglicemia aumentada em internados >65 anos e GFR <30 mL/min.",
+    situacoesEspeciais:
+      "Interações relevantes: inibidores de CYP2C9 (fluoroquinolonas, fluconazol, amiodarona, sulfametoxazol-trimetoprima, valproato) potencializam efeito hipoglicemiante. Para glinidas especificamente, o texto narrativo diz que não são recomendadas no período perioperatório de forma mais ampla, mas a Tabela 2 as agrupa com sulfonilureias sob a mesma recomendação.",
+    fonteReferenciaNumero: 3,
+    fontePagina: "5-6",
+  },
+  {
+    id: "nateglinida",
+    nomeGenerico: "Nateglinida",
+    nomesComerciais: [],
+    classe: "endocrino",
+    subclasse: "Sulfonilureias e glinidas (secretagogos de insulina)",
+    regra: { tipo: "suspender_dia_cirurgia" },
+    racional:
+      "Estimulam secreção de insulina endógena independentemente da glicemia/ingestão alimentar, causando risco de hipoglicemia, sobretudo com função renal comprometida ou baixa ingestão oral. Prevalência de hipoglicemia aumentada em internados >65 anos e GFR <30 mL/min.",
+    situacoesEspeciais:
+      "Interações relevantes: inibidores de CYP2C9 (fluoroquinolonas, fluconazol, amiodarona, sulfametoxazol-trimetoprima, valproato) potencializam efeito hipoglicemiante. Para glinidas especificamente, o texto narrativo diz que não são recomendadas no período perioperatório de forma mais ampla, mas a Tabela 2 as agrupa com sulfonilureias sob a mesma recomendação.",
+    fonteReferenciaNumero: 3,
+    fontePagina: "5-6",
+  },
+  {
+    id: "canagliflozina",
+    nomeGenerico: "Canagliflozina",
+    nomesComerciais: [],
+    classe: "endocrino",
+    subclasse: "Inibidores de SGLT2",
+    regra: { tipo: "suspender_periodo_fixo", valor: 3, unidade: "dias" },
+    racional:
+      "Risco de cetoacidose diabética euglicêmica (complicação relatada como significativa no perioperatório), além de risco de infecção urogenital, lesão renal aguda, desidratação e hipotensão por efeito glicosúrico. FDA emitiu boletim recomendando suspensão temporária antes de cirurgia programada.",
+    situacoesEspeciais:
+      "Esta é a classe com o alerta mais crítico de segurança do artigo inteiro: a cetoacidose euglicêmica pode ocorrer com glicemia normal/pouco elevada, dificultando o diagnóstico. Monitorar glicemia cuidadosamente após suspensão.",
+    fonteReferenciaNumero: 3,
+    fontePagina: "5-6",
+  },
+  {
+    id: "dapagliflozina",
+    nomeGenerico: "Dapagliflozina",
+    nomesComerciais: [],
+    classe: "endocrino",
+    subclasse: "Inibidores de SGLT2",
+    regra: { tipo: "suspender_periodo_fixo", valor: 3, unidade: "dias" },
+    racional:
+      "Risco de cetoacidose diabética euglicêmica (complicação relatada como significativa no perioperatório), além de risco de infecção urogenital, lesão renal aguda, desidratação e hipotensão por efeito glicosúrico. FDA emitiu boletim recomendando suspensão temporária antes de cirurgia programada.",
+    situacoesEspeciais:
+      "Esta é a classe com o alerta mais crítico de segurança do artigo inteiro: a cetoacidose euglicêmica pode ocorrer com glicemia normal/pouco elevada, dificultando o diagnóstico. Monitorar glicemia cuidadosamente após suspensão.",
+    fonteReferenciaNumero: 3,
+    fontePagina: "5-6",
+  },
+  {
+    id: "empagliflozina",
+    nomeGenerico: "Empagliflozina",
+    nomesComerciais: [],
     classe: "endocrino",
     subclasse: "Inibidores de SGLT2",
     regra: { tipo: "suspender_periodo_fixo", valor: 3, unidade: "dias" },
@@ -238,14 +483,10 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
     fonteReferenciaNumero: 3,
     fontePagina: "5-6",
   },
-
-  // ---------------------------------------------------------------------
-  // Hormonais/endócrino não-diabetes (Tabela 3)
-  // ---------------------------------------------------------------------
   {
-    id: "hormonio_tireoidiano",
-    nomeGenerico: "Reposição de hormônio tireoidiano",
-    nomesComerciais: ["Levotiroxina", "Liotironina", "Extrato de tireoide dessecado"],
+    id: "levotiroxina",
+    nomeGenerico: "Levotiroxina",
+    nomesComerciais: [],
     classe: "endocrino",
     subclasse: "Reposição de hormônio tireoidiano",
     regra: { tipo: "continuar" },
@@ -255,9 +496,33 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
     fontePagina: "7-8",
   },
   {
-    id: "antitireoidianos",
-    nomeGenerico: "Antitireoidianos",
-    nomesComerciais: ["Metimazol", "Propiltiouracila"],
+    id: "liotironina",
+    nomeGenerico: "Liotironina",
+    nomesComerciais: [],
+    classe: "endocrino",
+    subclasse: "Reposição de hormônio tireoidiano",
+    regra: { tipo: "continuar" },
+    racional:
+      "Dose de reposição usual administrada por via enteral no dia da cirurgia é suficiente; não há necessidade de conversão parenteral nem suplementação adicional.",
+    fonteReferenciaNumero: 3,
+    fontePagina: "7-8",
+  },
+  {
+    id: "extrato_de_tireoide_dessecado",
+    nomeGenerico: "Extrato de tireoide dessecado",
+    nomesComerciais: [],
+    classe: "endocrino",
+    subclasse: "Reposição de hormônio tireoidiano",
+    regra: { tipo: "continuar" },
+    racional:
+      "Dose de reposição usual administrada por via enteral no dia da cirurgia é suficiente; não há necessidade de conversão parenteral nem suplementação adicional.",
+    fonteReferenciaNumero: 3,
+    fontePagina: "7-8",
+  },
+  {
+    id: "metimazol",
+    nomeGenerico: "Metimazol",
+    nomesComerciais: [],
     classe: "endocrino",
     subclasse: "Antitireoidianos",
     regra: { tipo: "continuar" },
@@ -267,19 +532,21 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
     fontePagina: "7-8",
   },
   {
-    id: "corticosteroides_sistemicos",
-    nomeGenerico: "Corticosteroides sistêmicos",
-    nomesComerciais: [
-      "Betametasona",
-      "Triancinolona",
-      "Hidrocortisona",
-      "Cortisona",
-      "Prednisona",
-      "Metilprednisolona",
-      "Budesonida",
-      "Dexametasona",
-      "Fludrocortisona",
-    ],
+    id: "propiltiouracila",
+    nomeGenerico: "Propiltiouracila",
+    nomesComerciais: [],
+    classe: "endocrino",
+    subclasse: "Antitireoidianos",
+    regra: { tipo: "continuar" },
+    racional:
+      "Não há estudos sobre segurança/eficácia perioperatória; para evitar risco de tempestade tireoidiana (thyroid storm), essas medicações devem ser continuadas sem interrupção.",
+    fonteReferenciaNumero: 3,
+    fontePagina: "7-8",
+  },
+  {
+    id: "betametasona",
+    nomeGenerico: "Betametasona",
+    nomesComerciais: [],
     classe: "endocrino",
     subclasse: "Corticosteroides sistêmicos",
     regra: { tipo: "continuar" },
@@ -291,21 +558,121 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
     fontePagina: "7-8",
   },
   {
-    id: "medicacoes_hipofisarias",
-    nomeGenerico: "Medicações hipofisárias (pituitária)",
-    nomesComerciais: [
-      "Hormônio do crescimento (somatotropina)",
-      "Desmopressina",
-      "Cabergolina",
-      "Bromocriptina",
-      "Pegvisomanto",
-      "Tesamorelina",
-      "Octreotide",
-      "Lanreotide",
-      "Pasireotide",
-      "Mecasermina",
-      "Corticotropina de depósito",
-    ],
+    id: "triancinolona",
+    nomeGenerico: "Triancinolona",
+    nomesComerciais: [],
+    classe: "endocrino",
+    subclasse: "Corticosteroides sistêmicos",
+    regra: { tipo: "continuar" },
+    racional:
+      "Possível supressão do eixo hipotálamo-hipófise-adrenal com uso crônico; risco de hiperglicemia e outros efeitos adversos documentados de forma inconsistente na literatura. Uso crônico de longo prazo e dose mais alta pode requerer avaliação adicional para eventual suplementação perioperatória, mas essa avaliação está fora do escopo desta recomendação.",
+    situacoesEspeciais:
+      "O artigo afirma explicitamente que o tema 'dose de estresse' é objeto de debate em andamento e está fora do escopo do artigo — não há limiar numérico de dose/duração definido por esta fonte.",
+    fonteReferenciaNumero: 3,
+    fontePagina: "7-8",
+  },
+  {
+    id: "hidrocortisona",
+    nomeGenerico: "Hidrocortisona",
+    nomesComerciais: [],
+    classe: "endocrino",
+    subclasse: "Corticosteroides sistêmicos",
+    regra: { tipo: "continuar" },
+    racional:
+      "Possível supressão do eixo hipotálamo-hipófise-adrenal com uso crônico; risco de hiperglicemia e outros efeitos adversos documentados de forma inconsistente na literatura. Uso crônico de longo prazo e dose mais alta pode requerer avaliação adicional para eventual suplementação perioperatória, mas essa avaliação está fora do escopo desta recomendação.",
+    situacoesEspeciais:
+      "O artigo afirma explicitamente que o tema 'dose de estresse' é objeto de debate em andamento e está fora do escopo do artigo — não há limiar numérico de dose/duração definido por esta fonte.",
+    fonteReferenciaNumero: 3,
+    fontePagina: "7-8",
+  },
+  {
+    id: "cortisona",
+    nomeGenerico: "Cortisona",
+    nomesComerciais: [],
+    classe: "endocrino",
+    subclasse: "Corticosteroides sistêmicos",
+    regra: { tipo: "continuar" },
+    racional:
+      "Possível supressão do eixo hipotálamo-hipófise-adrenal com uso crônico; risco de hiperglicemia e outros efeitos adversos documentados de forma inconsistente na literatura. Uso crônico de longo prazo e dose mais alta pode requerer avaliação adicional para eventual suplementação perioperatória, mas essa avaliação está fora do escopo desta recomendação.",
+    situacoesEspeciais:
+      "O artigo afirma explicitamente que o tema 'dose de estresse' é objeto de debate em andamento e está fora do escopo do artigo — não há limiar numérico de dose/duração definido por esta fonte.",
+    fonteReferenciaNumero: 3,
+    fontePagina: "7-8",
+  },
+  {
+    id: "prednisona",
+    nomeGenerico: "Prednisona",
+    nomesComerciais: [],
+    classe: "endocrino",
+    subclasse: "Corticosteroides sistêmicos",
+    regra: { tipo: "continuar" },
+    racional:
+      "Possível supressão do eixo hipotálamo-hipófise-adrenal com uso crônico; risco de hiperglicemia e outros efeitos adversos documentados de forma inconsistente na literatura. Uso crônico de longo prazo e dose mais alta pode requerer avaliação adicional para eventual suplementação perioperatória, mas essa avaliação está fora do escopo desta recomendação.",
+    situacoesEspeciais:
+      "O artigo afirma explicitamente que o tema 'dose de estresse' é objeto de debate em andamento e está fora do escopo do artigo — não há limiar numérico de dose/duração definido por esta fonte.",
+    fonteReferenciaNumero: 3,
+    fontePagina: "7-8",
+  },
+  {
+    id: "metilprednisolona",
+    nomeGenerico: "Metilprednisolona",
+    nomesComerciais: [],
+    classe: "endocrino",
+    subclasse: "Corticosteroides sistêmicos",
+    regra: { tipo: "continuar" },
+    racional:
+      "Possível supressão do eixo hipotálamo-hipófise-adrenal com uso crônico; risco de hiperglicemia e outros efeitos adversos documentados de forma inconsistente na literatura. Uso crônico de longo prazo e dose mais alta pode requerer avaliação adicional para eventual suplementação perioperatória, mas essa avaliação está fora do escopo desta recomendação.",
+    situacoesEspeciais:
+      "O artigo afirma explicitamente que o tema 'dose de estresse' é objeto de debate em andamento e está fora do escopo do artigo — não há limiar numérico de dose/duração definido por esta fonte.",
+    fonteReferenciaNumero: 3,
+    fontePagina: "7-8",
+  },
+  {
+    id: "budesonida",
+    nomeGenerico: "Budesonida",
+    nomesComerciais: [],
+    classe: "endocrino",
+    subclasse: "Corticosteroides sistêmicos",
+    regra: { tipo: "continuar" },
+    racional:
+      "Possível supressão do eixo hipotálamo-hipófise-adrenal com uso crônico; risco de hiperglicemia e outros efeitos adversos documentados de forma inconsistente na literatura. Uso crônico de longo prazo e dose mais alta pode requerer avaliação adicional para eventual suplementação perioperatória, mas essa avaliação está fora do escopo desta recomendação.",
+    situacoesEspeciais:
+      "O artigo afirma explicitamente que o tema 'dose de estresse' é objeto de debate em andamento e está fora do escopo do artigo — não há limiar numérico de dose/duração definido por esta fonte.",
+    fonteReferenciaNumero: 3,
+    fontePagina: "7-8",
+  },
+  {
+    id: "dexametasona",
+    nomeGenerico: "Dexametasona",
+    nomesComerciais: [],
+    classe: "endocrino",
+    subclasse: "Corticosteroides sistêmicos",
+    regra: { tipo: "continuar" },
+    racional:
+      "Possível supressão do eixo hipotálamo-hipófise-adrenal com uso crônico; risco de hiperglicemia e outros efeitos adversos documentados de forma inconsistente na literatura. Uso crônico de longo prazo e dose mais alta pode requerer avaliação adicional para eventual suplementação perioperatória, mas essa avaliação está fora do escopo desta recomendação.",
+    situacoesEspeciais:
+      "O artigo afirma explicitamente que o tema 'dose de estresse' é objeto de debate em andamento e está fora do escopo do artigo — não há limiar numérico de dose/duração definido por esta fonte.",
+    fonteReferenciaNumero: 3,
+    fontePagina: "7-8",
+  },
+  {
+    id: "fludrocortisona",
+    nomeGenerico: "Fludrocortisona",
+    nomesComerciais: [],
+    classe: "endocrino",
+    subclasse: "Corticosteroides sistêmicos",
+    regra: { tipo: "continuar" },
+    racional:
+      "Possível supressão do eixo hipotálamo-hipófise-adrenal com uso crônico; risco de hiperglicemia e outros efeitos adversos documentados de forma inconsistente na literatura. Uso crônico de longo prazo e dose mais alta pode requerer avaliação adicional para eventual suplementação perioperatória, mas essa avaliação está fora do escopo desta recomendação.",
+    situacoesEspeciais:
+      "O artigo afirma explicitamente que o tema 'dose de estresse' é objeto de debate em andamento e está fora do escopo do artigo — não há limiar numérico de dose/duração definido por esta fonte.",
+    fonteReferenciaNumero: 3,
+    fontePagina: "7-8",
+  },
+  {
+    id: "hormonio_do_crescimento",
+    nomeGenerico: "Hormônio do crescimento (somatotropina)",
+    nomesComerciais: [],
     classe: "endocrino",
     subclasse: "Medicações hipofisárias (pituitária)",
     regra: { tipo: "continuar" },
@@ -315,9 +682,129 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
     fontePagina: "8-9",
   },
   {
-    id: "hormonios_androgenicos",
-    nomeGenerico: "Hormônios androgênicos",
-    nomesComerciais: ["Testosterona", "Metiltestosterona"],
+    id: "desmopressina",
+    nomeGenerico: "Desmopressina",
+    nomesComerciais: [],
+    classe: "endocrino",
+    subclasse: "Medicações hipofisárias (pituitária)",
+    regra: { tipo: "continuar" },
+    racional:
+      "Sem estudos específicos, mas razoável manter dado o risco de descompensação da condição de base se interrompido.",
+    fonteReferenciaNumero: 3,
+    fontePagina: "8-9",
+  },
+  {
+    id: "cabergolina",
+    nomeGenerico: "Cabergolina",
+    nomesComerciais: [],
+    classe: "endocrino",
+    subclasse: "Medicações hipofisárias (pituitária)",
+    regra: { tipo: "continuar" },
+    racional:
+      "Sem estudos específicos, mas razoável manter dado o risco de descompensação da condição de base se interrompido.",
+    fonteReferenciaNumero: 3,
+    fontePagina: "8-9",
+  },
+  {
+    id: "bromocriptina",
+    nomeGenerico: "Bromocriptina",
+    nomesComerciais: [],
+    classe: "endocrino",
+    subclasse: "Medicações hipofisárias (pituitária)",
+    regra: { tipo: "continuar" },
+    racional:
+      "Sem estudos específicos, mas razoável manter dado o risco de descompensação da condição de base se interrompido.",
+    fonteReferenciaNumero: 3,
+    fontePagina: "8-9",
+  },
+  {
+    id: "pegvisomanto",
+    nomeGenerico: "Pegvisomanto",
+    nomesComerciais: [],
+    classe: "endocrino",
+    subclasse: "Medicações hipofisárias (pituitária)",
+    regra: { tipo: "continuar" },
+    racional:
+      "Sem estudos específicos, mas razoável manter dado o risco de descompensação da condição de base se interrompido.",
+    fonteReferenciaNumero: 3,
+    fontePagina: "8-9",
+  },
+  {
+    id: "tesamorelina",
+    nomeGenerico: "Tesamorelina",
+    nomesComerciais: [],
+    classe: "endocrino",
+    subclasse: "Medicações hipofisárias (pituitária)",
+    regra: { tipo: "continuar" },
+    racional:
+      "Sem estudos específicos, mas razoável manter dado o risco de descompensação da condição de base se interrompido.",
+    fonteReferenciaNumero: 3,
+    fontePagina: "8-9",
+  },
+  {
+    id: "octreotide",
+    nomeGenerico: "Octreotide",
+    nomesComerciais: [],
+    classe: "endocrino",
+    subclasse: "Medicações hipofisárias (pituitária)",
+    regra: { tipo: "continuar" },
+    racional:
+      "Sem estudos específicos, mas razoável manter dado o risco de descompensação da condição de base se interrompido.",
+    fonteReferenciaNumero: 3,
+    fontePagina: "8-9",
+  },
+  {
+    id: "lanreotide",
+    nomeGenerico: "Lanreotide",
+    nomesComerciais: [],
+    classe: "endocrino",
+    subclasse: "Medicações hipofisárias (pituitária)",
+    regra: { tipo: "continuar" },
+    racional:
+      "Sem estudos específicos, mas razoável manter dado o risco de descompensação da condição de base se interrompido.",
+    fonteReferenciaNumero: 3,
+    fontePagina: "8-9",
+  },
+  {
+    id: "pasireotide",
+    nomeGenerico: "Pasireotide",
+    nomesComerciais: [],
+    classe: "endocrino",
+    subclasse: "Medicações hipofisárias (pituitária)",
+    regra: { tipo: "continuar" },
+    racional:
+      "Sem estudos específicos, mas razoável manter dado o risco de descompensação da condição de base se interrompido.",
+    fonteReferenciaNumero: 3,
+    fontePagina: "8-9",
+  },
+  {
+    id: "mecasermina",
+    nomeGenerico: "Mecasermina",
+    nomesComerciais: [],
+    classe: "endocrino",
+    subclasse: "Medicações hipofisárias (pituitária)",
+    regra: { tipo: "continuar" },
+    racional:
+      "Sem estudos específicos, mas razoável manter dado o risco de descompensação da condição de base se interrompido.",
+    fonteReferenciaNumero: 3,
+    fontePagina: "8-9",
+  },
+  {
+    id: "corticotropina_de_deposito",
+    nomeGenerico: "Corticotropina de depósito",
+    nomesComerciais: [],
+    classe: "endocrino",
+    subclasse: "Medicações hipofisárias (pituitária)",
+    regra: { tipo: "continuar" },
+    racional:
+      "Sem estudos específicos, mas razoável manter dado o risco de descompensação da condição de base se interrompido.",
+    fonteReferenciaNumero: 3,
+    fontePagina: "8-9",
+  },
+  {
+    id: "testosterona",
+    nomeGenerico: "Testosterona",
+    nomesComerciais: [],
     classe: "endocrino",
     subclasse: "Hormônios androgênicos",
     regra: { tipo: "continuar" },
@@ -329,9 +816,23 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
     fontePagina: "9",
   },
   {
-    id: "estrogenios",
-    nomeGenerico: "Estrogênios (inclui terapia de reposição hormonal e contraceptivos combinados)",
-    nomesComerciais: ["Estradiol", "Estrogênios conjugados", "Estropipato", "Etinilestradiol"],
+    id: "metiltestosterona",
+    nomeGenerico: "Metiltestosterona",
+    nomesComerciais: [],
+    classe: "endocrino",
+    subclasse: "Hormônios androgênicos",
+    regra: { tipo: "continuar" },
+    racional:
+      "Preocupação teórica com tromboembolismo (TEV), mas dados disponíveis não confirmam associação entre uso perioperatório de andrógenos e eventos tromboembólicos.",
+    situacoesEspeciais:
+      "Uso inclui hipogonadismo masculino, câncer de mama avançado em mulheres, terapia hormonal para pessoas trans. Considerar potencial de risco de TEV pós-operatório, ainda que a literatura não tenha demonstrado associação clara.",
+    fonteReferenciaNumero: 3,
+    fontePagina: "9",
+  },
+  {
+    id: "estradiol",
+    nomeGenerico: "Estradiol",
+    nomesComerciais: [],
     classe: "endocrino",
     subclasse: "Estrogênios",
     regra: { tipo: "continuar" },
@@ -343,18 +844,51 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
     fontePagina: "9-10",
   },
   {
-    id: "progestagenos",
-    nomeGenerico: "Progestágenos",
-    nomesComerciais: [
-      "Megestrol",
-      "Levonorgestrel",
-      "Progesterona",
-      "Hidroxiprogesterona",
-      "Noretindrona",
-      "Medroxiprogesterona",
-      "Etonogestrel",
-      "Drospirenona",
-    ],
+    id: "estrogenios_conjugados",
+    nomeGenerico: "Estrogênios conjugados",
+    nomesComerciais: [],
+    classe: "endocrino",
+    subclasse: "Estrogênios",
+    regra: { tipo: "continuar" },
+    racional:
+      "Risco de TEV aumenta com dose de estrogênio e idade. Bula de fabricante recomenda suspender 4 semanas antes de cirurgia de grande porte, mas essa recomendação é baseada em evidência de risco de TEV na população geral, não em dados perioperatórios robustos. Um estudo em reposição hormonal pós-menopausa (doses mais baixas) não mostrou aumento de risco de TEV após cirurgia ortopédica de grande porte.",
+    situacoesEspeciais:
+      "Os autores explicitamente não seguem a recomendação clássica de bula de suspender 4 semanas antes — preferem continuar, ponderando risco de TEV contra risco de gravidez indesejada quando usado para contracepção. Divergência relevante de práticas mais antigas/comuns.",
+    fonteReferenciaNumero: 3,
+    fontePagina: "9-10",
+  },
+  {
+    id: "estropipato",
+    nomeGenerico: "Estropipato",
+    nomesComerciais: [],
+    classe: "endocrino",
+    subclasse: "Estrogênios",
+    regra: { tipo: "continuar" },
+    racional:
+      "Risco de TEV aumenta com dose de estrogênio e idade. Bula de fabricante recomenda suspender 4 semanas antes de cirurgia de grande porte, mas essa recomendação é baseada em evidência de risco de TEV na população geral, não em dados perioperatórios robustos. Um estudo em reposição hormonal pós-menopausa (doses mais baixas) não mostrou aumento de risco de TEV após cirurgia ortopédica de grande porte.",
+    situacoesEspeciais:
+      "Os autores explicitamente não seguem a recomendação clássica de bula de suspender 4 semanas antes — preferem continuar, ponderando risco de TEV contra risco de gravidez indesejada quando usado para contracepção. Divergência relevante de práticas mais antigas/comuns.",
+    fonteReferenciaNumero: 3,
+    fontePagina: "9-10",
+  },
+  {
+    id: "etinilestradiol",
+    nomeGenerico: "Etinilestradiol",
+    nomesComerciais: [],
+    classe: "endocrino",
+    subclasse: "Estrogênios",
+    regra: { tipo: "continuar" },
+    racional:
+      "Risco de TEV aumenta com dose de estrogênio e idade. Bula de fabricante recomenda suspender 4 semanas antes de cirurgia de grande porte, mas essa recomendação é baseada em evidência de risco de TEV na população geral, não em dados perioperatórios robustos. Um estudo em reposição hormonal pós-menopausa (doses mais baixas) não mostrou aumento de risco de TEV após cirurgia ortopédica de grande porte.",
+    situacoesEspeciais:
+      "Os autores explicitamente não seguem a recomendação clássica de bula de suspender 4 semanas antes — preferem continuar, ponderando risco de TEV contra risco de gravidez indesejada quando usado para contracepção. Divergência relevante de práticas mais antigas/comuns.",
+    fonteReferenciaNumero: 3,
+    fontePagina: "9-10",
+  },
+  {
+    id: "megestrol",
+    nomeGenerico: "Megestrol",
+    nomesComerciais: [],
     classe: "endocrino",
     subclasse: "Progestágenos",
     regra: { tipo: "continuar" },
@@ -364,9 +898,93 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
     fontePagina: "9",
   },
   {
-    id: "serm_tamoxifeno",
-    nomeGenerico: "SERMs — moduladores seletivos do receptor de estrogênio (inclui tamoxifeno)",
-    nomesComerciais: ["Toremifeno", "Tamoxifeno", "Raloxifeno", "Ospemifeno"],
+    id: "levonorgestrel",
+    nomeGenerico: "Levonorgestrel",
+    nomesComerciais: [],
+    classe: "endocrino",
+    subclasse: "Progestágenos",
+    regra: { tipo: "continuar" },
+    racional:
+      "Não há literatura sobre manejo perioperatório específico; evidência de população geral mostra risco mínimo de TEV associado a contraceptivos só-de-progestágeno.",
+    fonteReferenciaNumero: 3,
+    fontePagina: "9",
+  },
+  {
+    id: "progesterona",
+    nomeGenerico: "Progesterona",
+    nomesComerciais: [],
+    classe: "endocrino",
+    subclasse: "Progestágenos",
+    regra: { tipo: "continuar" },
+    racional:
+      "Não há literatura sobre manejo perioperatório específico; evidência de população geral mostra risco mínimo de TEV associado a contraceptivos só-de-progestágeno.",
+    fonteReferenciaNumero: 3,
+    fontePagina: "9",
+  },
+  {
+    id: "hidroxiprogesterona",
+    nomeGenerico: "Hidroxiprogesterona",
+    nomesComerciais: [],
+    classe: "endocrino",
+    subclasse: "Progestágenos",
+    regra: { tipo: "continuar" },
+    racional:
+      "Não há literatura sobre manejo perioperatório específico; evidência de população geral mostra risco mínimo de TEV associado a contraceptivos só-de-progestágeno.",
+    fonteReferenciaNumero: 3,
+    fontePagina: "9",
+  },
+  {
+    id: "noretindrona",
+    nomeGenerico: "Noretindrona",
+    nomesComerciais: [],
+    classe: "endocrino",
+    subclasse: "Progestágenos",
+    regra: { tipo: "continuar" },
+    racional:
+      "Não há literatura sobre manejo perioperatório específico; evidência de população geral mostra risco mínimo de TEV associado a contraceptivos só-de-progestágeno.",
+    fonteReferenciaNumero: 3,
+    fontePagina: "9",
+  },
+  {
+    id: "medroxiprogesterona",
+    nomeGenerico: "Medroxiprogesterona",
+    nomesComerciais: [],
+    classe: "endocrino",
+    subclasse: "Progestágenos",
+    regra: { tipo: "continuar" },
+    racional:
+      "Não há literatura sobre manejo perioperatório específico; evidência de população geral mostra risco mínimo de TEV associado a contraceptivos só-de-progestágeno.",
+    fonteReferenciaNumero: 3,
+    fontePagina: "9",
+  },
+  {
+    id: "etonogestrel",
+    nomeGenerico: "Etonogestrel",
+    nomesComerciais: [],
+    classe: "endocrino",
+    subclasse: "Progestágenos",
+    regra: { tipo: "continuar" },
+    racional:
+      "Não há literatura sobre manejo perioperatório específico; evidência de população geral mostra risco mínimo de TEV associado a contraceptivos só-de-progestágeno.",
+    fonteReferenciaNumero: 3,
+    fontePagina: "9",
+  },
+  {
+    id: "drospirenona",
+    nomeGenerico: "Drospirenona",
+    nomesComerciais: [],
+    classe: "endocrino",
+    subclasse: "Progestágenos",
+    regra: { tipo: "continuar" },
+    racional:
+      "Não há literatura sobre manejo perioperatório específico; evidência de população geral mostra risco mínimo de TEV associado a contraceptivos só-de-progestágeno.",
+    fonteReferenciaNumero: 3,
+    fontePagina: "9",
+  },
+  {
+    id: "toremifeno",
+    nomeGenerico: "Toremifeno",
+    nomesComerciais: [],
     classe: "endocrino",
     subclasse: "SERMs (moduladores seletivos do receptor de estrogênio)",
     indicacoes: [
@@ -390,9 +1008,87 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
     fontePagina: "9-10",
   },
   {
-    id: "inibidores_aromatase",
-    nomeGenerico: "Inibidores de aromatase",
-    nomesComerciais: ["Anastrozol", "Exemestano", "Letrozol"],
+    id: "tamoxifeno",
+    nomeGenerico: "Tamoxifeno",
+    nomesComerciais: [],
+    classe: "endocrino",
+    subclasse: "SERMs (moduladores seletivos do receptor de estrogênio)",
+    indicacoes: [
+      {
+        id: "serm_cancer_mama",
+        descricao: "Prevenção ou tratamento de câncer de mama",
+        regra: { tipo: "continuar" },
+      },
+      {
+        id: "serm_outra_indicacao",
+        descricao:
+          "Outra indicação (ex.: raloxifeno para osteoporose, ospemifeno para atrofia vaginal) — aplicável somente se houver fatores de risco adicionais do paciente/cirurgia para TEV presentes",
+        regra: { tipo: "suspender_periodo_fixo", valor: 7, unidade: "dias" },
+      },
+    ],
+    racional:
+      "Todos os SERMs associados a risco trombótico aumentado, embora um estudo em pacientes de cirurgia de câncer de mama não tenha encontrado associação entre uso de tamoxifeno e TEV. Estudos identificaram risco aumentado de complicação de reconstrução de mama em pacientes usando tamoxifeno. O risco de suspensão de curto prazo da terapia antiestrogênica em pacientes com câncer de mama é desconhecido/incerto.",
+    situacoesEspeciais:
+      "Esta é a única subclasse do artigo com um número exato de dias de suspensão (7 dias), mas condicional: só se aplica quando NÃO é para prevenção/tratamento de câncer de mama E há fatores de risco adicionais de TEV — o artigo não enumera explicitamente quais são esses fatores.",
+    fonteReferenciaNumero: 3,
+    fontePagina: "9-10",
+  },
+  {
+    id: "raloxifeno",
+    nomeGenerico: "Raloxifeno",
+    nomesComerciais: [],
+    classe: "endocrino",
+    subclasse: "SERMs (moduladores seletivos do receptor de estrogênio)",
+    indicacoes: [
+      {
+        id: "serm_cancer_mama",
+        descricao: "Prevenção ou tratamento de câncer de mama",
+        regra: { tipo: "continuar" },
+      },
+      {
+        id: "serm_outra_indicacao",
+        descricao:
+          "Outra indicação (ex.: raloxifeno para osteoporose, ospemifeno para atrofia vaginal) — aplicável somente se houver fatores de risco adicionais do paciente/cirurgia para TEV presentes",
+        regra: { tipo: "suspender_periodo_fixo", valor: 7, unidade: "dias" },
+      },
+    ],
+    racional:
+      "Todos os SERMs associados a risco trombótico aumentado, embora um estudo em pacientes de cirurgia de câncer de mama não tenha encontrado associação entre uso de tamoxifeno e TEV. Estudos identificaram risco aumentado de complicação de reconstrução de mama em pacientes usando tamoxifeno. O risco de suspensão de curto prazo da terapia antiestrogênica em pacientes com câncer de mama é desconhecido/incerto.",
+    situacoesEspeciais:
+      "Esta é a única subclasse do artigo com um número exato de dias de suspensão (7 dias), mas condicional: só se aplica quando NÃO é para prevenção/tratamento de câncer de mama E há fatores de risco adicionais de TEV — o artigo não enumera explicitamente quais são esses fatores.",
+    fonteReferenciaNumero: 3,
+    fontePagina: "9-10",
+  },
+  {
+    id: "ospemifeno",
+    nomeGenerico: "Ospemifeno",
+    nomesComerciais: [],
+    classe: "endocrino",
+    subclasse: "SERMs (moduladores seletivos do receptor de estrogênio)",
+    indicacoes: [
+      {
+        id: "serm_cancer_mama",
+        descricao: "Prevenção ou tratamento de câncer de mama",
+        regra: { tipo: "continuar" },
+      },
+      {
+        id: "serm_outra_indicacao",
+        descricao:
+          "Outra indicação (ex.: raloxifeno para osteoporose, ospemifeno para atrofia vaginal) — aplicável somente se houver fatores de risco adicionais do paciente/cirurgia para TEV presentes",
+        regra: { tipo: "suspender_periodo_fixo", valor: 7, unidade: "dias" },
+      },
+    ],
+    racional:
+      "Todos os SERMs associados a risco trombótico aumentado, embora um estudo em pacientes de cirurgia de câncer de mama não tenha encontrado associação entre uso de tamoxifeno e TEV. Estudos identificaram risco aumentado de complicação de reconstrução de mama em pacientes usando tamoxifeno. O risco de suspensão de curto prazo da terapia antiestrogênica em pacientes com câncer de mama é desconhecido/incerto.",
+    situacoesEspeciais:
+      "Esta é a única subclasse do artigo com um número exato de dias de suspensão (7 dias), mas condicional: só se aplica quando NÃO é para prevenção/tratamento de câncer de mama E há fatores de risco adicionais de TEV — o artigo não enumera explicitamente quais são esses fatores.",
+    fonteReferenciaNumero: 3,
+    fontePagina: "9-10",
+  },
+  {
+    id: "anastrozol",
+    nomeGenerico: "Anastrozol",
+    nomesComerciais: [],
     classe: "endocrino",
     subclasse: "Inibidores de aromatase",
     regra: { tipo: "continuar" },
@@ -404,9 +1100,97 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
     fontePagina: "9-10",
   },
   {
-    id: "medicacoes_osso_calcio",
-    nomeGenerico: "Medicações de osso/cálcio (PTH análogos, calcimiméticos, calcitonina, denosumabe)",
-    nomesComerciais: ["Teriparatida", "Abaloparatida", "Cinacalcete", "Etelcalcetida", "Calcitonina", "Denosumabe"],
+    id: "exemestano",
+    nomeGenerico: "Exemestano",
+    nomesComerciais: [],
+    classe: "endocrino",
+    subclasse: "Inibidores de aromatase",
+    regra: { tipo: "continuar" },
+    racional:
+      "Interferem na produção periférica de estradiol; usados no tratamento de câncer de mama. Um estudo de coorte retrospectivo encontrou associação entre uso perioperatório de inibidor de aromatase e complicação de ferida; risco de recorrência do câncer com suspensão temporária é desconhecido.",
+    situacoesEspeciais:
+      "Considerar potencial de aumento de complicações de ferida operatória se continuado. Nenhum corte numérico de dias.",
+    fonteReferenciaNumero: 3,
+    fontePagina: "9-10",
+  },
+  {
+    id: "letrozol",
+    nomeGenerico: "Letrozol",
+    nomesComerciais: [],
+    classe: "endocrino",
+    subclasse: "Inibidores de aromatase",
+    regra: { tipo: "continuar" },
+    racional:
+      "Interferem na produção periférica de estradiol; usados no tratamento de câncer de mama. Um estudo de coorte retrospectivo encontrou associação entre uso perioperatório de inibidor de aromatase e complicação de ferida; risco de recorrência do câncer com suspensão temporária é desconhecido.",
+    situacoesEspeciais:
+      "Considerar potencial de aumento de complicações de ferida operatória se continuado. Nenhum corte numérico de dias.",
+    fonteReferenciaNumero: 3,
+    fontePagina: "9-10",
+  },
+  {
+    id: "teriparatida",
+    nomeGenerico: "Teriparatida",
+    nomesComerciais: [],
+    classe: "endocrino",
+    subclasse: "Medicações de osso/cálcio",
+    regra: { tipo: "continuar" },
+    racional:
+      "Sem racional de suspensão para PTH análogos, calcimiméticos, calcitonina e denosumabe; continuar antes e no dia da cirurgia.",
+    fonteReferenciaNumero: 3,
+    fontePagina: "9-11",
+  },
+  {
+    id: "abaloparatida",
+    nomeGenerico: "Abaloparatida",
+    nomesComerciais: [],
+    classe: "endocrino",
+    subclasse: "Medicações de osso/cálcio",
+    regra: { tipo: "continuar" },
+    racional:
+      "Sem racional de suspensão para PTH análogos, calcimiméticos, calcitonina e denosumabe; continuar antes e no dia da cirurgia.",
+    fonteReferenciaNumero: 3,
+    fontePagina: "9-11",
+  },
+  {
+    id: "cinacalcete",
+    nomeGenerico: "Cinacalcete",
+    nomesComerciais: [],
+    classe: "endocrino",
+    subclasse: "Medicações de osso/cálcio",
+    regra: { tipo: "continuar" },
+    racional:
+      "Sem racional de suspensão para PTH análogos, calcimiméticos, calcitonina e denosumabe; continuar antes e no dia da cirurgia.",
+    fonteReferenciaNumero: 3,
+    fontePagina: "9-11",
+  },
+  {
+    id: "etelcalcetida",
+    nomeGenerico: "Etelcalcetida",
+    nomesComerciais: [],
+    classe: "endocrino",
+    subclasse: "Medicações de osso/cálcio",
+    regra: { tipo: "continuar" },
+    racional:
+      "Sem racional de suspensão para PTH análogos, calcimiméticos, calcitonina e denosumabe; continuar antes e no dia da cirurgia.",
+    fonteReferenciaNumero: 3,
+    fontePagina: "9-11",
+  },
+  {
+    id: "calcitonina",
+    nomeGenerico: "Calcitonina",
+    nomesComerciais: [],
+    classe: "endocrino",
+    subclasse: "Medicações de osso/cálcio",
+    regra: { tipo: "continuar" },
+    racional:
+      "Sem racional de suspensão para PTH análogos, calcimiméticos, calcitonina e denosumabe; continuar antes e no dia da cirurgia.",
+    fonteReferenciaNumero: 3,
+    fontePagina: "9-11",
+  },
+  {
+    id: "denosumabe",
+    nomeGenerico: "Denosumabe",
+    nomesComerciais: [],
     classe: "endocrino",
     subclasse: "Medicações de osso/cálcio",
     regra: { tipo: "continuar" },
@@ -428,14 +1212,10 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
     fonteReferenciaNumero: 3,
     fontePagina: "9-11",
   },
-
-  // ---------------------------------------------------------------------
-  // Medicações urológicas (Tabela 4)
-  // ---------------------------------------------------------------------
   {
-    id: "alfa1_bloqueadores",
-    nomeGenerico: "Alfa-1 bloqueadores adrenérgicos (uso urológico — HPB)",
-    nomesComerciais: ["Alfuzosina", "Doxazosina", "Prazosina", "Silodosina", "Tansulosina", "Terazosina"],
+    id: "alfuzosina",
+    nomeGenerico: "Alfuzosina",
+    nomesComerciais: [],
     classe: "endocrino",
     subclasse: "Alfa-1 bloqueadores adrenérgicos (uso urológico)",
     regra: { tipo: "continuar" },
@@ -447,9 +1227,79 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
     fontePagina: "11-12",
   },
   {
-    id: "inibidores_5_alfa_redutase",
-    nomeGenerico: "Inibidores da 5-alfa redutase",
-    nomesComerciais: ["Dutasterida", "Finasterida"],
+    id: "doxazosina",
+    nomeGenerico: "Doxazosina",
+    nomesComerciais: [],
+    classe: "endocrino",
+    subclasse: "Alfa-1 bloqueadores adrenérgicos (uso urológico)",
+    regra: { tipo: "continuar" },
+    racional:
+      "Tratamento de hiperplasia prostática benigna (HPB); há literatura mostrando possível redução da incidência de retenção urinária pós-operatória quando continuados.",
+    situacoesEspeciais:
+      "Síndrome da íris flácida intraoperatória (floppy iris syndrome) em cirurgia de catarata — risco maior com tansulosina; notificar o oftalmologista antes da cirurgia de catarata, pois suspender a medicação antes da cirurgia não elimina necessariamente o risco.",
+    fonteReferenciaNumero: 3,
+    fontePagina: "11-12",
+  },
+  {
+    id: "prazosina",
+    nomeGenerico: "Prazosina",
+    nomesComerciais: [],
+    classe: "endocrino",
+    subclasse: "Alfa-1 bloqueadores adrenérgicos (uso urológico)",
+    regra: { tipo: "continuar" },
+    racional:
+      "Tratamento de hiperplasia prostática benigna (HPB); há literatura mostrando possível redução da incidência de retenção urinária pós-operatória quando continuados.",
+    situacoesEspeciais:
+      "Síndrome da íris flácida intraoperatória (floppy iris syndrome) em cirurgia de catarata — risco maior com tansulosina; notificar o oftalmologista antes da cirurgia de catarata, pois suspender a medicação antes da cirurgia não elimina necessariamente o risco.",
+    fonteReferenciaNumero: 3,
+    fontePagina: "11-12",
+  },
+  {
+    id: "silodosina",
+    nomeGenerico: "Silodosina",
+    nomesComerciais: [],
+    classe: "endocrino",
+    subclasse: "Alfa-1 bloqueadores adrenérgicos (uso urológico)",
+    regra: { tipo: "continuar" },
+    racional:
+      "Tratamento de hiperplasia prostática benigna (HPB); há literatura mostrando possível redução da incidência de retenção urinária pós-operatória quando continuados.",
+    situacoesEspeciais:
+      "Síndrome da íris flácida intraoperatória (floppy iris syndrome) em cirurgia de catarata — risco maior com tansulosina; notificar o oftalmologista antes da cirurgia de catarata, pois suspender a medicação antes da cirurgia não elimina necessariamente o risco.",
+    fonteReferenciaNumero: 3,
+    fontePagina: "11-12",
+  },
+  {
+    id: "tansulosina",
+    nomeGenerico: "Tansulosina",
+    nomesComerciais: [],
+    classe: "endocrino",
+    subclasse: "Alfa-1 bloqueadores adrenérgicos (uso urológico)",
+    regra: { tipo: "continuar" },
+    racional:
+      "Tratamento de hiperplasia prostática benigna (HPB); há literatura mostrando possível redução da incidência de retenção urinária pós-operatória quando continuados.",
+    situacoesEspeciais:
+      "Síndrome da íris flácida intraoperatória (floppy iris syndrome) em cirurgia de catarata — risco maior com tansulosina; notificar o oftalmologista antes da cirurgia de catarata, pois suspender a medicação antes da cirurgia não elimina necessariamente o risco.",
+    fonteReferenciaNumero: 3,
+    fontePagina: "11-12",
+  },
+  {
+    id: "terazosina",
+    nomeGenerico: "Terazosina",
+    nomesComerciais: [],
+    classe: "endocrino",
+    subclasse: "Alfa-1 bloqueadores adrenérgicos (uso urológico)",
+    regra: { tipo: "continuar" },
+    racional:
+      "Tratamento de hiperplasia prostática benigna (HPB); há literatura mostrando possível redução da incidência de retenção urinária pós-operatória quando continuados.",
+    situacoesEspeciais:
+      "Síndrome da íris flácida intraoperatória (floppy iris syndrome) em cirurgia de catarata — risco maior com tansulosina; notificar o oftalmologista antes da cirurgia de catarata, pois suspender a medicação antes da cirurgia não elimina necessariamente o risco.",
+    fonteReferenciaNumero: 3,
+    fontePagina: "11-12",
+  },
+  {
+    id: "dutasterida",
+    nomeGenerico: "Dutasterida",
+    nomesComerciais: [],
     classe: "endocrino",
     subclasse: "Inibidores da 5-alfa redutase",
     regra: { tipo: "continuar" },
@@ -459,9 +1309,21 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
     fontePagina: "12",
   },
   {
-    id: "anticolinergicos_bexiga",
-    nomeGenerico: "Anticolinérgicos para disfunção vesical (bexiga hiperativa)",
-    nomesComerciais: ["Darifenacina", "Fesoterodina", "Flavoxato", "Oxibutinina", "Solifenacina", "Tolterodina", "Trospio"],
+    id: "finasterida",
+    nomeGenerico: "Finasterida",
+    nomesComerciais: [],
+    classe: "endocrino",
+    subclasse: "Inibidores da 5-alfa redutase",
+    regra: { tipo: "continuar" },
+    racional:
+      "Sem interação relatada com anestesia; alguns estudos mostram redução de perda sanguínea estimada em RTU de próstata (TURP) com uso de finasterida.",
+    fonteReferenciaNumero: 3,
+    fontePagina: "12",
+  },
+  {
+    id: "darifenacina",
+    nomeGenerico: "Darifenacina",
+    nomesComerciais: [],
     classe: "endocrino",
     subclasse: "Anticolinérgicos para disfunção vesical",
     regra: { tipo: "suspender_dia_cirurgia" },
@@ -472,18 +1334,87 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
     fontePagina: "11-12",
   },
   {
-    id: "antineoplasicos_urologicos",
-    nomeGenerico: "Medicações antineoplásicas urológicas",
-    nomesComerciais: [
-      "Acetato de abiraterona",
-      "Apalutamida",
-      "Bicalutamida",
-      "Degarelix",
-      "Enzalutamida",
-      "Acetato de goserrelina",
-      "Acetato de leuprolida",
-      "Nilutamida",
-    ],
+    id: "fesoterodina",
+    nomeGenerico: "Fesoterodina",
+    nomesComerciais: [],
+    classe: "endocrino",
+    subclasse: "Anticolinérgicos para disfunção vesical",
+    regra: { tipo: "suspender_dia_cirurgia" },
+    racional:
+      "Podem reduzir desconforto vesical relacionado a cateter, mas têm efeitos adversos anticolinérgicos significativos e podem contribuir para delirium — considerados de uso cauteloso em idosos.",
+    situacoesEspeciais: "Cautela especial em pacientes idosos.",
+    fonteReferenciaNumero: 3,
+    fontePagina: "11-12",
+  },
+  {
+    id: "flavoxato",
+    nomeGenerico: "Flavoxato",
+    nomesComerciais: [],
+    classe: "endocrino",
+    subclasse: "Anticolinérgicos para disfunção vesical",
+    regra: { tipo: "suspender_dia_cirurgia" },
+    racional:
+      "Podem reduzir desconforto vesical relacionado a cateter, mas têm efeitos adversos anticolinérgicos significativos e podem contribuir para delirium — considerados de uso cauteloso em idosos.",
+    situacoesEspeciais: "Cautela especial em pacientes idosos.",
+    fonteReferenciaNumero: 3,
+    fontePagina: "11-12",
+  },
+  {
+    id: "oxibutinina",
+    nomeGenerico: "Oxibutinina",
+    nomesComerciais: [],
+    classe: "endocrino",
+    subclasse: "Anticolinérgicos para disfunção vesical",
+    regra: { tipo: "suspender_dia_cirurgia" },
+    racional:
+      "Podem reduzir desconforto vesical relacionado a cateter, mas têm efeitos adversos anticolinérgicos significativos e podem contribuir para delirium — considerados de uso cauteloso em idosos.",
+    situacoesEspeciais: "Cautela especial em pacientes idosos.",
+    fonteReferenciaNumero: 3,
+    fontePagina: "11-12",
+  },
+  {
+    id: "solifenacina",
+    nomeGenerico: "Solifenacina",
+    nomesComerciais: [],
+    classe: "endocrino",
+    subclasse: "Anticolinérgicos para disfunção vesical",
+    regra: { tipo: "suspender_dia_cirurgia" },
+    racional:
+      "Podem reduzir desconforto vesical relacionado a cateter, mas têm efeitos adversos anticolinérgicos significativos e podem contribuir para delirium — considerados de uso cauteloso em idosos.",
+    situacoesEspeciais: "Cautela especial em pacientes idosos.",
+    fonteReferenciaNumero: 3,
+    fontePagina: "11-12",
+  },
+  {
+    id: "tolterodina",
+    nomeGenerico: "Tolterodina",
+    nomesComerciais: [],
+    classe: "endocrino",
+    subclasse: "Anticolinérgicos para disfunção vesical",
+    regra: { tipo: "suspender_dia_cirurgia" },
+    racional:
+      "Podem reduzir desconforto vesical relacionado a cateter, mas têm efeitos adversos anticolinérgicos significativos e podem contribuir para delirium — considerados de uso cauteloso em idosos.",
+    situacoesEspeciais: "Cautela especial em pacientes idosos.",
+    fonteReferenciaNumero: 3,
+    fontePagina: "11-12",
+  },
+  {
+    id: "trospio",
+    nomeGenerico: "Trospio",
+    nomesComerciais: [],
+    classe: "endocrino",
+    subclasse: "Anticolinérgicos para disfunção vesical",
+    regra: { tipo: "suspender_dia_cirurgia" },
+    racional:
+      "Podem reduzir desconforto vesical relacionado a cateter, mas têm efeitos adversos anticolinérgicos significativos e podem contribuir para delirium — considerados de uso cauteloso em idosos.",
+    situacoesEspeciais: "Cautela especial em pacientes idosos.",
+    fonteReferenciaNumero: 3,
+    fontePagina: "11-12",
+  },
+  {
+    id: "acetato_de_abiraterona",
+    nomeGenerico: "Acetato de abiraterona",
+    nomesComerciais: [],
     classe: "endocrino",
     subclasse: "Medicações antineoplásicas urológicas",
     regra: { tipo: "continuar" },
@@ -494,9 +1425,100 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
     fontePagina: "12-13",
   },
   {
-    id: "pde5_inibidores",
-    nomeGenerico: "Inibidores da PDE-5",
-    nomesComerciais: ["Sildenafila", "Tadalafila", "Avanafila", "Vardenafila"],
+    id: "apalutamida",
+    nomeGenerico: "Apalutamida",
+    nomesComerciais: [],
+    classe: "endocrino",
+    subclasse: "Medicações antineoplásicas urológicas",
+    regra: { tipo: "continuar" },
+    racional:
+      "Usadas no tratamento de câncer de próstata (e outras indicações: câncer de mama/uterino, hiperplasia, SOP, alopecia, terapia de afirmação de gênero). Efeitos adversos conhecidos (risco cardiovascular, anemia, disfunção hepática, prolongamento de QT, doença pulmonar intersticial, redução de densidade óssea) são crônicos e não mitigados por interrupção perioperatória de curto prazo.",
+    situacoesEspeciais: "Nenhuma condicional perioperatória específica — sem estudos perioperatórios disponíveis para esta classe.",
+    fonteReferenciaNumero: 3,
+    fontePagina: "12-13",
+  },
+  {
+    id: "bicalutamida",
+    nomeGenerico: "Bicalutamida",
+    nomesComerciais: [],
+    classe: "endocrino",
+    subclasse: "Medicações antineoplásicas urológicas",
+    regra: { tipo: "continuar" },
+    racional:
+      "Usadas no tratamento de câncer de próstata (e outras indicações: câncer de mama/uterino, hiperplasia, SOP, alopecia, terapia de afirmação de gênero). Efeitos adversos conhecidos (risco cardiovascular, anemia, disfunção hepática, prolongamento de QT, doença pulmonar intersticial, redução de densidade óssea) são crônicos e não mitigados por interrupção perioperatória de curto prazo.",
+    situacoesEspeciais: "Nenhuma condicional perioperatória específica — sem estudos perioperatórios disponíveis para esta classe.",
+    fonteReferenciaNumero: 3,
+    fontePagina: "12-13",
+  },
+  {
+    id: "degarelix",
+    nomeGenerico: "Degarelix",
+    nomesComerciais: [],
+    classe: "endocrino",
+    subclasse: "Medicações antineoplásicas urológicas",
+    regra: { tipo: "continuar" },
+    racional:
+      "Usadas no tratamento de câncer de próstata (e outras indicações: câncer de mama/uterino, hiperplasia, SOP, alopecia, terapia de afirmação de gênero). Efeitos adversos conhecidos (risco cardiovascular, anemia, disfunção hepática, prolongamento de QT, doença pulmonar intersticial, redução de densidade óssea) são crônicos e não mitigados por interrupção perioperatória de curto prazo.",
+    situacoesEspeciais: "Nenhuma condicional perioperatória específica — sem estudos perioperatórios disponíveis para esta classe.",
+    fonteReferenciaNumero: 3,
+    fontePagina: "12-13",
+  },
+  {
+    id: "enzalutamida",
+    nomeGenerico: "Enzalutamida",
+    nomesComerciais: [],
+    classe: "endocrino",
+    subclasse: "Medicações antineoplásicas urológicas",
+    regra: { tipo: "continuar" },
+    racional:
+      "Usadas no tratamento de câncer de próstata (e outras indicações: câncer de mama/uterino, hiperplasia, SOP, alopecia, terapia de afirmação de gênero). Efeitos adversos conhecidos (risco cardiovascular, anemia, disfunção hepática, prolongamento de QT, doença pulmonar intersticial, redução de densidade óssea) são crônicos e não mitigados por interrupção perioperatória de curto prazo.",
+    situacoesEspeciais: "Nenhuma condicional perioperatória específica — sem estudos perioperatórios disponíveis para esta classe.",
+    fonteReferenciaNumero: 3,
+    fontePagina: "12-13",
+  },
+  {
+    id: "acetato_de_goserrelina",
+    nomeGenerico: "Acetato de goserrelina",
+    nomesComerciais: [],
+    classe: "endocrino",
+    subclasse: "Medicações antineoplásicas urológicas",
+    regra: { tipo: "continuar" },
+    racional:
+      "Usadas no tratamento de câncer de próstata (e outras indicações: câncer de mama/uterino, hiperplasia, SOP, alopecia, terapia de afirmação de gênero). Efeitos adversos conhecidos (risco cardiovascular, anemia, disfunção hepática, prolongamento de QT, doença pulmonar intersticial, redução de densidade óssea) são crônicos e não mitigados por interrupção perioperatória de curto prazo.",
+    situacoesEspeciais: "Nenhuma condicional perioperatória específica — sem estudos perioperatórios disponíveis para esta classe.",
+    fonteReferenciaNumero: 3,
+    fontePagina: "12-13",
+  },
+  {
+    id: "acetato_de_leuprolida",
+    nomeGenerico: "Acetato de leuprolida",
+    nomesComerciais: [],
+    classe: "endocrino",
+    subclasse: "Medicações antineoplásicas urológicas",
+    regra: { tipo: "continuar" },
+    racional:
+      "Usadas no tratamento de câncer de próstata (e outras indicações: câncer de mama/uterino, hiperplasia, SOP, alopecia, terapia de afirmação de gênero). Efeitos adversos conhecidos (risco cardiovascular, anemia, disfunção hepática, prolongamento de QT, doença pulmonar intersticial, redução de densidade óssea) são crônicos e não mitigados por interrupção perioperatória de curto prazo.",
+    situacoesEspeciais: "Nenhuma condicional perioperatória específica — sem estudos perioperatórios disponíveis para esta classe.",
+    fonteReferenciaNumero: 3,
+    fontePagina: "12-13",
+  },
+  {
+    id: "nilutamida",
+    nomeGenerico: "Nilutamida",
+    nomesComerciais: [],
+    classe: "endocrino",
+    subclasse: "Medicações antineoplásicas urológicas",
+    regra: { tipo: "continuar" },
+    racional:
+      "Usadas no tratamento de câncer de próstata (e outras indicações: câncer de mama/uterino, hiperplasia, SOP, alopecia, terapia de afirmação de gênero). Efeitos adversos conhecidos (risco cardiovascular, anemia, disfunção hepática, prolongamento de QT, doença pulmonar intersticial, redução de densidade óssea) são crônicos e não mitigados por interrupção perioperatória de curto prazo.",
+    situacoesEspeciais: "Nenhuma condicional perioperatória específica — sem estudos perioperatórios disponíveis para esta classe.",
+    fonteReferenciaNumero: 3,
+    fontePagina: "12-13",
+  },
+  {
+    id: "sildenafila",
+    nomeGenerico: "Sildenafila",
+    nomesComerciais: [],
     classe: "endocrino",
     subclasse: "Inibidores da PDE-5",
     indicacoes: [
@@ -519,9 +1541,97 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
     fontePagina: "12-13",
   },
   {
-    id: "outras_medicacoes_urologicas",
-    nomeGenerico: "Outras medicações urológicas",
-    nomesComerciais: ["Cloreto de betanecol (Bethanechol chloride)", "Mirabegrom"],
+    id: "tadalafila",
+    nomeGenerico: "Tadalafila",
+    nomesComerciais: [],
+    classe: "endocrino",
+    subclasse: "Inibidores da PDE-5",
+    indicacoes: [
+      {
+        id: "pde5_hipertensao_pulmonar",
+        descricao: "Hipertensão pulmonar",
+        regra: { tipo: "continuar" },
+      },
+      {
+        id: "pde5_disfuncao_eretil_hpb",
+        descricao: "Disfunção erétil / hiperplasia prostática benigna (HPB)",
+        regra: { tipo: "suspender_periodo_fixo", valor: 3, unidade: "dias" },
+      },
+    ],
+    racional:
+      "Risco de hipotensão intraoperatória; nenhum estudo determinou o momento seguro de anestesia após uso, e os estudos de segurança existentes só se aplicam a pacientes com hipertensão pulmonar (população diferente da indicação urológica).",
+    situacoesEspeciais:
+      "A decisão depende inteiramente da indicação de uso. Quando usado para hipertensão pulmonar, o manejo é coberto por outra declaração de consenso da SPAQI sobre medicações pulmonares — a regra aqui é 'continuar', coerente com aquele artigo, mesmo este relatório sendo focado na indicação urológica.",
+    fonteReferenciaNumero: 3,
+    fontePagina: "12-13",
+  },
+  {
+    id: "avanafila",
+    nomeGenerico: "Avanafila",
+    nomesComerciais: [],
+    classe: "endocrino",
+    subclasse: "Inibidores da PDE-5",
+    indicacoes: [
+      {
+        id: "pde5_hipertensao_pulmonar",
+        descricao: "Hipertensão pulmonar",
+        regra: { tipo: "continuar" },
+      },
+      {
+        id: "pde5_disfuncao_eretil_hpb",
+        descricao: "Disfunção erétil / hiperplasia prostática benigna (HPB)",
+        regra: { tipo: "suspender_periodo_fixo", valor: 3, unidade: "dias" },
+      },
+    ],
+    racional:
+      "Risco de hipotensão intraoperatória; nenhum estudo determinou o momento seguro de anestesia após uso, e os estudos de segurança existentes só se aplicam a pacientes com hipertensão pulmonar (população diferente da indicação urológica).",
+    situacoesEspeciais:
+      "A decisão depende inteiramente da indicação de uso. Quando usado para hipertensão pulmonar, o manejo é coberto por outra declaração de consenso da SPAQI sobre medicações pulmonares — a regra aqui é 'continuar', coerente com aquele artigo, mesmo este relatório sendo focado na indicação urológica.",
+    fonteReferenciaNumero: 3,
+    fontePagina: "12-13",
+  },
+  {
+    id: "vardenafila",
+    nomeGenerico: "Vardenafila",
+    nomesComerciais: [],
+    classe: "endocrino",
+    subclasse: "Inibidores da PDE-5",
+    indicacoes: [
+      {
+        id: "pde5_hipertensao_pulmonar",
+        descricao: "Hipertensão pulmonar",
+        regra: { tipo: "continuar" },
+      },
+      {
+        id: "pde5_disfuncao_eretil_hpb",
+        descricao: "Disfunção erétil / hiperplasia prostática benigna (HPB)",
+        regra: { tipo: "suspender_periodo_fixo", valor: 3, unidade: "dias" },
+      },
+    ],
+    racional:
+      "Risco de hipotensão intraoperatória; nenhum estudo determinou o momento seguro de anestesia após uso, e os estudos de segurança existentes só se aplicam a pacientes com hipertensão pulmonar (população diferente da indicação urológica).",
+    situacoesEspeciais:
+      "A decisão depende inteiramente da indicação de uso. Quando usado para hipertensão pulmonar, o manejo é coberto por outra declaração de consenso da SPAQI sobre medicações pulmonares — a regra aqui é 'continuar', coerente com aquele artigo, mesmo este relatório sendo focado na indicação urológica.",
+    fonteReferenciaNumero: 3,
+    fontePagina: "12-13",
+  },
+  {
+    id: "cloreto_de_betanecol",
+    nomeGenerico: "Cloreto de betanecol (Bethanechol chloride)",
+    nomesComerciais: [],
+    classe: "endocrino",
+    subclasse: "Outras medicações urológicas",
+    regra: { tipo: "suspender_dia_cirurgia" },
+    racional:
+      "Betanecol estimula liberação de acetilcolina (receptor muscarínico) — tem benefício modesto documentado na prevenção de retenção urinária pós-operatória, mas potencial de interação com agentes anestésicos. Mirabegrom (agonista beta-3 adrenérgico) pode causar hipertensão; não há dados perioperatórios específicos identificados.",
+    situacoesEspeciais: "Nenhuma condicional numérica.",
+    fonteReferenciaNumero: 3,
+    fontePagina: "13",
+  },
+  {
+    id: "mirabegrom",
+    nomeGenerico: "Mirabegrom",
+    nomesComerciais: [],
     classe: "endocrino",
     subclasse: "Outras medicações urológicas",
     regra: { tipo: "suspender_dia_cirurgia" },

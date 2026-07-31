@@ -24,26 +24,164 @@ import { Farmaco } from "@/medperiop/types";
  * ~/Desktop/MedPeriOp-extracao-SPAQI/analgesicos.md e reumatologico-hiv.md
  */
 export const FARMACOS_ANALGESICOS: Farmaco[] = [
-  // ---------------------------------------------------------------------
-  // Opioides agonistas (uso crônico para dor) — Tabela 2
-  // ---------------------------------------------------------------------
   {
-    id: "opioides_agonistas_cronicos",
-    nomeGenerico: "Opioides agonistas (uso crônico para dor)",
-    nomesComerciais: [
-      "Codeína",
-      "Fentanil (Duragesic, Ionsys, Subsys)",
-      "Hidrocodona (Zohydro ER, Hysingla ER, Vantrela ER)",
-      "Hidromorfona (Dilaudid, Palladone, Exalgo)",
-      "Levorfanol (Levo-Dromoran)",
-      "Metadona (Dolophine, Methadose, Diskets Dispersible)",
-      "Morfina (MS Contin, Avinza, Kadian, Roxanol, Arymo, Oramorph SR, RMS, MSIR, MorphaBond ER)",
-      "Oxicodona (Oxycontin, Xtampza ER)",
-      "Oximorfona (Numorphan, Opana, Opana ER)",
-      "Sufentanil (Sufenta, Dsuvia)",
-      "Tapentadol (Nucynta, Nucynta ER)",
-      "Tramadol (Ultram, Ultram ER, Ryzolt, Rybix ODT, ConZip, FusePaq Synapryn)",
-    ],
+    id: "codeina",
+    nomeGenerico: "Codeína",
+    nomesComerciais: [],
+    classe: "analgesicos",
+    subclasse: "Opioides agonistas (uso crônico para dor)",
+    regra: { tipo: "continuar" },
+    racional:
+      "Pacientes opioide-tolerantes têm escores de dor mais altos, resolução mais lenta da dor e internação mais longa quando o opioide é suspenso; risco de hiperalgesia e piora do controle álgico se reduzido abruptamente perto da cirurgia. A tolerância analgésica não 'resolve' rapidamente (meses), enquanto a tolerância ao efeito depressor respiratório resolve em dias a semanas, criando risco de depressão respiratória se doses altas forem mantidas após um período de abstinência involuntária.",
+    situacoesEspeciais:
+      "Pacientes em terapia crônica provavelmente vão precisar de doses de opioide maiores que o usual para controle da dor, ou de analgesia não-opioide adjuvante no perioperatório. Codeína e tramadol são pró-fármacos que dependem de metabolismo via CYP2D6 (inibidores como difenidramina, cimetidina, ropivacaína, metoclopramida podem reduzir a conversão e causar analgesia inadequada). Opioides com atividade inibidora de recaptação de serotonina (levorfanol, meperidina, fentanil, metadona, tapentadol, tramadol) aumentam risco de síndrome serotoninérgica com IMAOs, ISRSs, ISRSNs, tricíclicos terciários, trazodona, dextrometorfano, linezolida, ritonavir, sibutramina, ondansetron, granisetron, metoclopramida, triptanos, triptofano, erva-de-são-joão, ginseng. Adesivo transdérmico de fentanil não deve ficar sob aquecedor de ar forçado (aumenta liberação). Evitar meperidina, codeína e morfina em insuficiência renal (TFG <30 mL/min/1,73m²) e DRC terminal; tramadol e tapentadol não recomendados nesse cenário; hidrocodona, oxicodona e hidromorfona com cautela e ajuste de dose; fentanil, sufentanil e metadona são preferidos em insuficiência renal/DRC terminal. Metadona só deve ser administrada por clínicos experientes (risco de acúmulo). Se redução de dose for desejada por outro motivo, deve ser individualizada e gradual (não mais que 10%/semana) — não deve ser feita apenas por causa da cirurgia. Meperidina tem entrada separada nesta lista (classificação diferente do restante da classe).",
+    fonteReferenciaNumero: 8,
+    fontePagina: "4-5, 7-8",
+  },
+  {
+    id: "fentanil",
+    nomeGenerico: "Fentanil",
+    nomesComerciais: ["Duragesic", "Ionsys", "Subsys"],
+    classe: "analgesicos",
+    subclasse: "Opioides agonistas (uso crônico para dor)",
+    regra: { tipo: "continuar" },
+    racional:
+      "Pacientes opioide-tolerantes têm escores de dor mais altos, resolução mais lenta da dor e internação mais longa quando o opioide é suspenso; risco de hiperalgesia e piora do controle álgico se reduzido abruptamente perto da cirurgia. A tolerância analgésica não 'resolve' rapidamente (meses), enquanto a tolerância ao efeito depressor respiratório resolve em dias a semanas, criando risco de depressão respiratória se doses altas forem mantidas após um período de abstinência involuntária.",
+    situacoesEspeciais:
+      "Pacientes em terapia crônica provavelmente vão precisar de doses de opioide maiores que o usual para controle da dor, ou de analgesia não-opioide adjuvante no perioperatório. Codeína e tramadol são pró-fármacos que dependem de metabolismo via CYP2D6 (inibidores como difenidramina, cimetidina, ropivacaína, metoclopramida podem reduzir a conversão e causar analgesia inadequada). Opioides com atividade inibidora de recaptação de serotonina (levorfanol, meperidina, fentanil, metadona, tapentadol, tramadol) aumentam risco de síndrome serotoninérgica com IMAOs, ISRSs, ISRSNs, tricíclicos terciários, trazodona, dextrometorfano, linezolida, ritonavir, sibutramina, ondansetron, granisetron, metoclopramida, triptanos, triptofano, erva-de-são-joão, ginseng. Adesivo transdérmico de fentanil não deve ficar sob aquecedor de ar forçado (aumenta liberação). Evitar meperidina, codeína e morfina em insuficiência renal (TFG <30 mL/min/1,73m²) e DRC terminal; tramadol e tapentadol não recomendados nesse cenário; hidrocodona, oxicodona e hidromorfona com cautela e ajuste de dose; fentanil, sufentanil e metadona são preferidos em insuficiência renal/DRC terminal. Metadona só deve ser administrada por clínicos experientes (risco de acúmulo). Se redução de dose for desejada por outro motivo, deve ser individualizada e gradual (não mais que 10%/semana) — não deve ser feita apenas por causa da cirurgia. Meperidina tem entrada separada nesta lista (classificação diferente do restante da classe).",
+    fonteReferenciaNumero: 8,
+    fontePagina: "4-5, 7-8",
+  },
+  {
+    id: "hidrocodona",
+    nomeGenerico: "Hidrocodona",
+    nomesComerciais: ["Zohydro ER", "Hysingla ER", "Vantrela ER"],
+    classe: "analgesicos",
+    subclasse: "Opioides agonistas (uso crônico para dor)",
+    regra: { tipo: "continuar" },
+    racional:
+      "Pacientes opioide-tolerantes têm escores de dor mais altos, resolução mais lenta da dor e internação mais longa quando o opioide é suspenso; risco de hiperalgesia e piora do controle álgico se reduzido abruptamente perto da cirurgia. A tolerância analgésica não 'resolve' rapidamente (meses), enquanto a tolerância ao efeito depressor respiratório resolve em dias a semanas, criando risco de depressão respiratória se doses altas forem mantidas após um período de abstinência involuntária.",
+    situacoesEspeciais:
+      "Pacientes em terapia crônica provavelmente vão precisar de doses de opioide maiores que o usual para controle da dor, ou de analgesia não-opioide adjuvante no perioperatório. Codeína e tramadol são pró-fármacos que dependem de metabolismo via CYP2D6 (inibidores como difenidramina, cimetidina, ropivacaína, metoclopramida podem reduzir a conversão e causar analgesia inadequada). Opioides com atividade inibidora de recaptação de serotonina (levorfanol, meperidina, fentanil, metadona, tapentadol, tramadol) aumentam risco de síndrome serotoninérgica com IMAOs, ISRSs, ISRSNs, tricíclicos terciários, trazodona, dextrometorfano, linezolida, ritonavir, sibutramina, ondansetron, granisetron, metoclopramida, triptanos, triptofano, erva-de-são-joão, ginseng. Adesivo transdérmico de fentanil não deve ficar sob aquecedor de ar forçado (aumenta liberação). Evitar meperidina, codeína e morfina em insuficiência renal (TFG <30 mL/min/1,73m²) e DRC terminal; tramadol e tapentadol não recomendados nesse cenário; hidrocodona, oxicodona e hidromorfona com cautela e ajuste de dose; fentanil, sufentanil e metadona são preferidos em insuficiência renal/DRC terminal. Metadona só deve ser administrada por clínicos experientes (risco de acúmulo). Se redução de dose for desejada por outro motivo, deve ser individualizada e gradual (não mais que 10%/semana) — não deve ser feita apenas por causa da cirurgia. Meperidina tem entrada separada nesta lista (classificação diferente do restante da classe).",
+    fonteReferenciaNumero: 8,
+    fontePagina: "4-5, 7-8",
+  },
+  {
+    id: "hidromorfona",
+    nomeGenerico: "Hidromorfona",
+    nomesComerciais: ["Dilaudid", "Palladone", "Exalgo"],
+    classe: "analgesicos",
+    subclasse: "Opioides agonistas (uso crônico para dor)",
+    regra: { tipo: "continuar" },
+    racional:
+      "Pacientes opioide-tolerantes têm escores de dor mais altos, resolução mais lenta da dor e internação mais longa quando o opioide é suspenso; risco de hiperalgesia e piora do controle álgico se reduzido abruptamente perto da cirurgia. A tolerância analgésica não 'resolve' rapidamente (meses), enquanto a tolerância ao efeito depressor respiratório resolve em dias a semanas, criando risco de depressão respiratória se doses altas forem mantidas após um período de abstinência involuntária.",
+    situacoesEspeciais:
+      "Pacientes em terapia crônica provavelmente vão precisar de doses de opioide maiores que o usual para controle da dor, ou de analgesia não-opioide adjuvante no perioperatório. Codeína e tramadol são pró-fármacos que dependem de metabolismo via CYP2D6 (inibidores como difenidramina, cimetidina, ropivacaína, metoclopramida podem reduzir a conversão e causar analgesia inadequada). Opioides com atividade inibidora de recaptação de serotonina (levorfanol, meperidina, fentanil, metadona, tapentadol, tramadol) aumentam risco de síndrome serotoninérgica com IMAOs, ISRSs, ISRSNs, tricíclicos terciários, trazodona, dextrometorfano, linezolida, ritonavir, sibutramina, ondansetron, granisetron, metoclopramida, triptanos, triptofano, erva-de-são-joão, ginseng. Adesivo transdérmico de fentanil não deve ficar sob aquecedor de ar forçado (aumenta liberação). Evitar meperidina, codeína e morfina em insuficiência renal (TFG <30 mL/min/1,73m²) e DRC terminal; tramadol e tapentadol não recomendados nesse cenário; hidrocodona, oxicodona e hidromorfona com cautela e ajuste de dose; fentanil, sufentanil e metadona são preferidos em insuficiência renal/DRC terminal. Metadona só deve ser administrada por clínicos experientes (risco de acúmulo). Se redução de dose for desejada por outro motivo, deve ser individualizada e gradual (não mais que 10%/semana) — não deve ser feita apenas por causa da cirurgia. Meperidina tem entrada separada nesta lista (classificação diferente do restante da classe).",
+    fonteReferenciaNumero: 8,
+    fontePagina: "4-5, 7-8",
+  },
+  {
+    id: "levorfanol",
+    nomeGenerico: "Levorfanol",
+    nomesComerciais: ["Levo-Dromoran"],
+    classe: "analgesicos",
+    subclasse: "Opioides agonistas (uso crônico para dor)",
+    regra: { tipo: "continuar" },
+    racional:
+      "Pacientes opioide-tolerantes têm escores de dor mais altos, resolução mais lenta da dor e internação mais longa quando o opioide é suspenso; risco de hiperalgesia e piora do controle álgico se reduzido abruptamente perto da cirurgia. A tolerância analgésica não 'resolve' rapidamente (meses), enquanto a tolerância ao efeito depressor respiratório resolve em dias a semanas, criando risco de depressão respiratória se doses altas forem mantidas após um período de abstinência involuntária.",
+    situacoesEspeciais:
+      "Pacientes em terapia crônica provavelmente vão precisar de doses de opioide maiores que o usual para controle da dor, ou de analgesia não-opioide adjuvante no perioperatório. Codeína e tramadol são pró-fármacos que dependem de metabolismo via CYP2D6 (inibidores como difenidramina, cimetidina, ropivacaína, metoclopramida podem reduzir a conversão e causar analgesia inadequada). Opioides com atividade inibidora de recaptação de serotonina (levorfanol, meperidina, fentanil, metadona, tapentadol, tramadol) aumentam risco de síndrome serotoninérgica com IMAOs, ISRSs, ISRSNs, tricíclicos terciários, trazodona, dextrometorfano, linezolida, ritonavir, sibutramina, ondansetron, granisetron, metoclopramida, triptanos, triptofano, erva-de-são-joão, ginseng. Adesivo transdérmico de fentanil não deve ficar sob aquecedor de ar forçado (aumenta liberação). Evitar meperidina, codeína e morfina em insuficiência renal (TFG <30 mL/min/1,73m²) e DRC terminal; tramadol e tapentadol não recomendados nesse cenário; hidrocodona, oxicodona e hidromorfona com cautela e ajuste de dose; fentanil, sufentanil e metadona são preferidos em insuficiência renal/DRC terminal. Metadona só deve ser administrada por clínicos experientes (risco de acúmulo). Se redução de dose for desejada por outro motivo, deve ser individualizada e gradual (não mais que 10%/semana) — não deve ser feita apenas por causa da cirurgia. Meperidina tem entrada separada nesta lista (classificação diferente do restante da classe).",
+    fonteReferenciaNumero: 8,
+    fontePagina: "4-5, 7-8",
+  },
+  {
+    id: "metadona",
+    nomeGenerico: "Metadona",
+    nomesComerciais: ["Dolophine", "Methadose", "Diskets Dispersible"],
+    classe: "analgesicos",
+    subclasse: "Opioides agonistas (uso crônico para dor)",
+    regra: { tipo: "continuar" },
+    racional:
+      "Pacientes opioide-tolerantes têm escores de dor mais altos, resolução mais lenta da dor e internação mais longa quando o opioide é suspenso; risco de hiperalgesia e piora do controle álgico se reduzido abruptamente perto da cirurgia. A tolerância analgésica não 'resolve' rapidamente (meses), enquanto a tolerância ao efeito depressor respiratório resolve em dias a semanas, criando risco de depressão respiratória se doses altas forem mantidas após um período de abstinência involuntária.",
+    situacoesEspeciais:
+      "Pacientes em terapia crônica provavelmente vão precisar de doses de opioide maiores que o usual para controle da dor, ou de analgesia não-opioide adjuvante no perioperatório. Codeína e tramadol são pró-fármacos que dependem de metabolismo via CYP2D6 (inibidores como difenidramina, cimetidina, ropivacaína, metoclopramida podem reduzir a conversão e causar analgesia inadequada). Opioides com atividade inibidora de recaptação de serotonina (levorfanol, meperidina, fentanil, metadona, tapentadol, tramadol) aumentam risco de síndrome serotoninérgica com IMAOs, ISRSs, ISRSNs, tricíclicos terciários, trazodona, dextrometorfano, linezolida, ritonavir, sibutramina, ondansetron, granisetron, metoclopramida, triptanos, triptofano, erva-de-são-joão, ginseng. Adesivo transdérmico de fentanil não deve ficar sob aquecedor de ar forçado (aumenta liberação). Evitar meperidina, codeína e morfina em insuficiência renal (TFG <30 mL/min/1,73m²) e DRC terminal; tramadol e tapentadol não recomendados nesse cenário; hidrocodona, oxicodona e hidromorfona com cautela e ajuste de dose; fentanil, sufentanil e metadona são preferidos em insuficiência renal/DRC terminal. Metadona só deve ser administrada por clínicos experientes (risco de acúmulo). Se redução de dose for desejada por outro motivo, deve ser individualizada e gradual (não mais que 10%/semana) — não deve ser feita apenas por causa da cirurgia. Meperidina tem entrada separada nesta lista (classificação diferente do restante da classe).",
+    fonteReferenciaNumero: 8,
+    fontePagina: "4-5, 7-8",
+  },
+  {
+    id: "morfina",
+    nomeGenerico: "Morfina",
+    nomesComerciais: ["MS Contin", "Avinza", "Kadian", "Roxanol", "Arymo", "Oramorph SR", "RMS", "MSIR", "MorphaBond ER"],
+    classe: "analgesicos",
+    subclasse: "Opioides agonistas (uso crônico para dor)",
+    regra: { tipo: "continuar" },
+    racional:
+      "Pacientes opioide-tolerantes têm escores de dor mais altos, resolução mais lenta da dor e internação mais longa quando o opioide é suspenso; risco de hiperalgesia e piora do controle álgico se reduzido abruptamente perto da cirurgia. A tolerância analgésica não 'resolve' rapidamente (meses), enquanto a tolerância ao efeito depressor respiratório resolve em dias a semanas, criando risco de depressão respiratória se doses altas forem mantidas após um período de abstinência involuntária.",
+    situacoesEspeciais:
+      "Pacientes em terapia crônica provavelmente vão precisar de doses de opioide maiores que o usual para controle da dor, ou de analgesia não-opioide adjuvante no perioperatório. Codeína e tramadol são pró-fármacos que dependem de metabolismo via CYP2D6 (inibidores como difenidramina, cimetidina, ropivacaína, metoclopramida podem reduzir a conversão e causar analgesia inadequada). Opioides com atividade inibidora de recaptação de serotonina (levorfanol, meperidina, fentanil, metadona, tapentadol, tramadol) aumentam risco de síndrome serotoninérgica com IMAOs, ISRSs, ISRSNs, tricíclicos terciários, trazodona, dextrometorfano, linezolida, ritonavir, sibutramina, ondansetron, granisetron, metoclopramida, triptanos, triptofano, erva-de-são-joão, ginseng. Adesivo transdérmico de fentanil não deve ficar sob aquecedor de ar forçado (aumenta liberação). Evitar meperidina, codeína e morfina em insuficiência renal (TFG <30 mL/min/1,73m²) e DRC terminal; tramadol e tapentadol não recomendados nesse cenário; hidrocodona, oxicodona e hidromorfona com cautela e ajuste de dose; fentanil, sufentanil e metadona são preferidos em insuficiência renal/DRC terminal. Metadona só deve ser administrada por clínicos experientes (risco de acúmulo). Se redução de dose for desejada por outro motivo, deve ser individualizada e gradual (não mais que 10%/semana) — não deve ser feita apenas por causa da cirurgia. Meperidina tem entrada separada nesta lista (classificação diferente do restante da classe).",
+    fonteReferenciaNumero: 8,
+    fontePagina: "4-5, 7-8",
+  },
+  {
+    id: "oxicodona",
+    nomeGenerico: "Oxicodona",
+    nomesComerciais: ["Oxycontin", "Xtampza ER"],
+    classe: "analgesicos",
+    subclasse: "Opioides agonistas (uso crônico para dor)",
+    regra: { tipo: "continuar" },
+    racional:
+      "Pacientes opioide-tolerantes têm escores de dor mais altos, resolução mais lenta da dor e internação mais longa quando o opioide é suspenso; risco de hiperalgesia e piora do controle álgico se reduzido abruptamente perto da cirurgia. A tolerância analgésica não 'resolve' rapidamente (meses), enquanto a tolerância ao efeito depressor respiratório resolve em dias a semanas, criando risco de depressão respiratória se doses altas forem mantidas após um período de abstinência involuntária.",
+    situacoesEspeciais:
+      "Pacientes em terapia crônica provavelmente vão precisar de doses de opioide maiores que o usual para controle da dor, ou de analgesia não-opioide adjuvante no perioperatório. Codeína e tramadol são pró-fármacos que dependem de metabolismo via CYP2D6 (inibidores como difenidramina, cimetidina, ropivacaína, metoclopramida podem reduzir a conversão e causar analgesia inadequada). Opioides com atividade inibidora de recaptação de serotonina (levorfanol, meperidina, fentanil, metadona, tapentadol, tramadol) aumentam risco de síndrome serotoninérgica com IMAOs, ISRSs, ISRSNs, tricíclicos terciários, trazodona, dextrometorfano, linezolida, ritonavir, sibutramina, ondansetron, granisetron, metoclopramida, triptanos, triptofano, erva-de-são-joão, ginseng. Adesivo transdérmico de fentanil não deve ficar sob aquecedor de ar forçado (aumenta liberação). Evitar meperidina, codeína e morfina em insuficiência renal (TFG <30 mL/min/1,73m²) e DRC terminal; tramadol e tapentadol não recomendados nesse cenário; hidrocodona, oxicodona e hidromorfona com cautela e ajuste de dose; fentanil, sufentanil e metadona são preferidos em insuficiência renal/DRC terminal. Metadona só deve ser administrada por clínicos experientes (risco de acúmulo). Se redução de dose for desejada por outro motivo, deve ser individualizada e gradual (não mais que 10%/semana) — não deve ser feita apenas por causa da cirurgia. Meperidina tem entrada separada nesta lista (classificação diferente do restante da classe).",
+    fonteReferenciaNumero: 8,
+    fontePagina: "4-5, 7-8",
+  },
+  {
+    id: "oximorfona",
+    nomeGenerico: "Oximorfona",
+    nomesComerciais: ["Numorphan", "Opana", "Opana ER"],
+    classe: "analgesicos",
+    subclasse: "Opioides agonistas (uso crônico para dor)",
+    regra: { tipo: "continuar" },
+    racional:
+      "Pacientes opioide-tolerantes têm escores de dor mais altos, resolução mais lenta da dor e internação mais longa quando o opioide é suspenso; risco de hiperalgesia e piora do controle álgico se reduzido abruptamente perto da cirurgia. A tolerância analgésica não 'resolve' rapidamente (meses), enquanto a tolerância ao efeito depressor respiratório resolve em dias a semanas, criando risco de depressão respiratória se doses altas forem mantidas após um período de abstinência involuntária.",
+    situacoesEspeciais:
+      "Pacientes em terapia crônica provavelmente vão precisar de doses de opioide maiores que o usual para controle da dor, ou de analgesia não-opioide adjuvante no perioperatório. Codeína e tramadol são pró-fármacos que dependem de metabolismo via CYP2D6 (inibidores como difenidramina, cimetidina, ropivacaína, metoclopramida podem reduzir a conversão e causar analgesia inadequada). Opioides com atividade inibidora de recaptação de serotonina (levorfanol, meperidina, fentanil, metadona, tapentadol, tramadol) aumentam risco de síndrome serotoninérgica com IMAOs, ISRSs, ISRSNs, tricíclicos terciários, trazodona, dextrometorfano, linezolida, ritonavir, sibutramina, ondansetron, granisetron, metoclopramida, triptanos, triptofano, erva-de-são-joão, ginseng. Adesivo transdérmico de fentanil não deve ficar sob aquecedor de ar forçado (aumenta liberação). Evitar meperidina, codeína e morfina em insuficiência renal (TFG <30 mL/min/1,73m²) e DRC terminal; tramadol e tapentadol não recomendados nesse cenário; hidrocodona, oxicodona e hidromorfona com cautela e ajuste de dose; fentanil, sufentanil e metadona são preferidos em insuficiência renal/DRC terminal. Metadona só deve ser administrada por clínicos experientes (risco de acúmulo). Se redução de dose for desejada por outro motivo, deve ser individualizada e gradual (não mais que 10%/semana) — não deve ser feita apenas por causa da cirurgia. Meperidina tem entrada separada nesta lista (classificação diferente do restante da classe).",
+    fonteReferenciaNumero: 8,
+    fontePagina: "4-5, 7-8",
+  },
+  {
+    id: "sufentanil",
+    nomeGenerico: "Sufentanil",
+    nomesComerciais: ["Sufenta", "Dsuvia"],
+    classe: "analgesicos",
+    subclasse: "Opioides agonistas (uso crônico para dor)",
+    regra: { tipo: "continuar" },
+    racional:
+      "Pacientes opioide-tolerantes têm escores de dor mais altos, resolução mais lenta da dor e internação mais longa quando o opioide é suspenso; risco de hiperalgesia e piora do controle álgico se reduzido abruptamente perto da cirurgia. A tolerância analgésica não 'resolve' rapidamente (meses), enquanto a tolerância ao efeito depressor respiratório resolve em dias a semanas, criando risco de depressão respiratória se doses altas forem mantidas após um período de abstinência involuntária.",
+    situacoesEspeciais:
+      "Pacientes em terapia crônica provavelmente vão precisar de doses de opioide maiores que o usual para controle da dor, ou de analgesia não-opioide adjuvante no perioperatório. Codeína e tramadol são pró-fármacos que dependem de metabolismo via CYP2D6 (inibidores como difenidramina, cimetidina, ropivacaína, metoclopramida podem reduzir a conversão e causar analgesia inadequada). Opioides com atividade inibidora de recaptação de serotonina (levorfanol, meperidina, fentanil, metadona, tapentadol, tramadol) aumentam risco de síndrome serotoninérgica com IMAOs, ISRSs, ISRSNs, tricíclicos terciários, trazodona, dextrometorfano, linezolida, ritonavir, sibutramina, ondansetron, granisetron, metoclopramida, triptanos, triptofano, erva-de-são-joão, ginseng. Adesivo transdérmico de fentanil não deve ficar sob aquecedor de ar forçado (aumenta liberação). Evitar meperidina, codeína e morfina em insuficiência renal (TFG <30 mL/min/1,73m²) e DRC terminal; tramadol e tapentadol não recomendados nesse cenário; hidrocodona, oxicodona e hidromorfona com cautela e ajuste de dose; fentanil, sufentanil e metadona são preferidos em insuficiência renal/DRC terminal. Metadona só deve ser administrada por clínicos experientes (risco de acúmulo). Se redução de dose for desejada por outro motivo, deve ser individualizada e gradual (não mais que 10%/semana) — não deve ser feita apenas por causa da cirurgia. Meperidina tem entrada separada nesta lista (classificação diferente do restante da classe).",
+    fonteReferenciaNumero: 8,
+    fontePagina: "4-5, 7-8",
+  },
+  {
+    id: "tapentadol",
+    nomeGenerico: "Tapentadol",
+    nomesComerciais: ["Nucynta", "Nucynta ER"],
+    classe: "analgesicos",
+    subclasse: "Opioides agonistas (uso crônico para dor)",
+    regra: { tipo: "continuar" },
+    racional:
+      "Pacientes opioide-tolerantes têm escores de dor mais altos, resolução mais lenta da dor e internação mais longa quando o opioide é suspenso; risco de hiperalgesia e piora do controle álgico se reduzido abruptamente perto da cirurgia. A tolerância analgésica não 'resolve' rapidamente (meses), enquanto a tolerância ao efeito depressor respiratório resolve em dias a semanas, criando risco de depressão respiratória se doses altas forem mantidas após um período de abstinência involuntária.",
+    situacoesEspeciais:
+      "Pacientes em terapia crônica provavelmente vão precisar de doses de opioide maiores que o usual para controle da dor, ou de analgesia não-opioide adjuvante no perioperatório. Codeína e tramadol são pró-fármacos que dependem de metabolismo via CYP2D6 (inibidores como difenidramina, cimetidina, ropivacaína, metoclopramida podem reduzir a conversão e causar analgesia inadequada). Opioides com atividade inibidora de recaptação de serotonina (levorfanol, meperidina, fentanil, metadona, tapentadol, tramadol) aumentam risco de síndrome serotoninérgica com IMAOs, ISRSs, ISRSNs, tricíclicos terciários, trazodona, dextrometorfano, linezolida, ritonavir, sibutramina, ondansetron, granisetron, metoclopramida, triptanos, triptofano, erva-de-são-joão, ginseng. Adesivo transdérmico de fentanil não deve ficar sob aquecedor de ar forçado (aumenta liberação). Evitar meperidina, codeína e morfina em insuficiência renal (TFG <30 mL/min/1,73m²) e DRC terminal; tramadol e tapentadol não recomendados nesse cenário; hidrocodona, oxicodona e hidromorfona com cautela e ajuste de dose; fentanil, sufentanil e metadona são preferidos em insuficiência renal/DRC terminal. Metadona só deve ser administrada por clínicos experientes (risco de acúmulo). Se redução de dose for desejada por outro motivo, deve ser individualizada e gradual (não mais que 10%/semana) — não deve ser feita apenas por causa da cirurgia. Meperidina tem entrada separada nesta lista (classificação diferente do restante da classe).",
+    fonteReferenciaNumero: 8,
+    fontePagina: "4-5, 7-8",
+  },
+  {
+    id: "tramadol",
+    nomeGenerico: "Tramadol",
+    nomesComerciais: ["Ultram", "Ultram ER", "Ryzolt", "Rybix ODT", "ConZip", "FusePaq Synapryn"],
     classe: "analgesicos",
     subclasse: "Opioides agonistas (uso crônico para dor)",
     regra: { tipo: "continuar" },
@@ -72,19 +210,52 @@ export const FARMACOS_ANALGESICOS: Farmaco[] = [
     fonteReferenciaNumero: 8,
     fontePagina: "4, 8",
   },
-
-  // ---------------------------------------------------------------------
-  // Opioides antagonistas (ação periférica — OIC) — Tabela 2
-  // ---------------------------------------------------------------------
   {
-    id: "opioides_antagonistas_perifericos",
-    nomeGenerico: "Opioides antagonistas periféricos (para constipação induzida por opioide)",
-    nomesComerciais: [
-      "Alvimopana (Entereg)",
-      "Metilnaltrexona (Relistor)",
-      "Naldemedina (Symproic)",
-      "Naloxegol (Movantik)",
-    ],
+    id: "alvimopana",
+    nomeGenerico: "Alvimopana",
+    nomesComerciais: ["Entereg"],
+    classe: "analgesicos",
+    subclasse: "Opioides antagonistas (ação periférica)",
+    regra: { tipo: "suspender_dia_cirurgia" },
+    racional:
+      "Antagonistas periféricos de receptor mu usados para tratar constipação/disfunção intestinal induzida por opioide (não revertem a analgesia central, exceto se houver ruptura de barreira hematoencefálica). Não há indicação clara para o uso no dia da cirurgia; monitorar para sintomas de abstinência se combinado com outros antagonistas.",
+    situacoesEspeciais:
+      "Naldemedina — evitar uso concomitante com indutores fortes de CYP3A (reduz eficácia); interação relevante com naloxona. Naloxegol — evitar com inibidores moderados/fortes de CYP3A4 (aumenta exposição); pode gerar falso-positivo em triagem de naloxona.",
+    fonteReferenciaNumero: 8,
+    fontePagina: "4, 8-9",
+  },
+  {
+    id: "metilnaltrexona",
+    nomeGenerico: "Metilnaltrexona",
+    nomesComerciais: ["Relistor"],
+    classe: "analgesicos",
+    subclasse: "Opioides antagonistas (ação periférica)",
+    regra: { tipo: "suspender_dia_cirurgia" },
+    racional:
+      "Antagonistas periféricos de receptor mu usados para tratar constipação/disfunção intestinal induzida por opioide (não revertem a analgesia central, exceto se houver ruptura de barreira hematoencefálica). Não há indicação clara para o uso no dia da cirurgia; monitorar para sintomas de abstinência se combinado com outros antagonistas.",
+    situacoesEspeciais:
+      "Naldemedina — evitar uso concomitante com indutores fortes de CYP3A (reduz eficácia); interação relevante com naloxona. Naloxegol — evitar com inibidores moderados/fortes de CYP3A4 (aumenta exposição); pode gerar falso-positivo em triagem de naloxona.",
+    fonteReferenciaNumero: 8,
+    fontePagina: "4, 8-9",
+  },
+  {
+    id: "naldemedina",
+    nomeGenerico: "Naldemedina",
+    nomesComerciais: ["Symproic"],
+    classe: "analgesicos",
+    subclasse: "Opioides antagonistas (ação periférica)",
+    regra: { tipo: "suspender_dia_cirurgia" },
+    racional:
+      "Antagonistas periféricos de receptor mu usados para tratar constipação/disfunção intestinal induzida por opioide (não revertem a analgesia central, exceto se houver ruptura de barreira hematoencefálica). Não há indicação clara para o uso no dia da cirurgia; monitorar para sintomas de abstinência se combinado com outros antagonistas.",
+    situacoesEspeciais:
+      "Naldemedina — evitar uso concomitante com indutores fortes de CYP3A (reduz eficácia); interação relevante com naloxona. Naloxegol — evitar com inibidores moderados/fortes de CYP3A4 (aumenta exposição); pode gerar falso-positivo em triagem de naloxona.",
+    fonteReferenciaNumero: 8,
+    fontePagina: "4, 8-9",
+  },
+  {
+    id: "naloxegol",
+    nomeGenerico: "Naloxegol",
+    nomesComerciais: ["Movantik"],
     classe: "analgesicos",
     subclasse: "Opioides antagonistas (ação periférica)",
     regra: { tipo: "suspender_dia_cirurgia" },
@@ -137,10 +308,6 @@ export const FARMACOS_ANALGESICOS: Farmaco[] = [
     fonteReferenciaNumero: 8,
     fontePagina: "5, 9-10",
   },
-
-  // ---------------------------------------------------------------------
-  // Opioides agonistas-antagonistas — Tabela 2
-  // ---------------------------------------------------------------------
   {
     id: "buprenorfina",
     nomeGenerico: "Buprenorfina / buprenorfina-naloxona (terapia de manutenção)",
@@ -163,9 +330,9 @@ export const FARMACOS_ANALGESICOS: Farmaco[] = [
     fontePagina: "5, 10-11",
   },
   {
-    id: "agonistas_antagonistas_menos_conhecidos",
-    nomeGenerico: "Butorfanol, nalbufina e pentazocina",
-    nomesComerciais: ["Butorfanol (Stadol, Stadol NS)", "Nalbufina (Nubain)", "Pentazocina (Talwin)"],
+    id: "butorfanol",
+    nomeGenerico: "Butorfanol",
+    nomesComerciais: ["Stadol", "Stadol NS"],
     classe: "analgesicos",
     subclasse: "Opioides agonistas-antagonistas",
     regra: { tipo: "continuar" },
@@ -176,10 +343,34 @@ export const FARMACOS_ANALGESICOS: Farmaco[] = [
     fonteReferenciaNumero: 8,
     fontePagina: "5, 10-11",
   },
-
-  // ---------------------------------------------------------------------
-  // Acetaminofeno / paracetamol
-  // ---------------------------------------------------------------------
+  {
+    id: "nalbufina",
+    nomeGenerico: "Nalbufina",
+    nomesComerciais: ["Nubain"],
+    classe: "analgesicos",
+    subclasse: "Opioides agonistas-antagonistas",
+    regra: { tipo: "continuar" },
+    racional:
+      "Agonistas-antagonistas parciais usados como adjuntos anestésicos ou para dor moderada a intensa; nas doses clinicamente relevantes, essas medicações não parecem bloquear a ação de agonistas mu completos, mas sim agir sinergicamente.",
+    situacoesEspeciais:
+      "Uso concomitante de butorfanol ou nalbufina com agentes serotonérgicos, anfetaminas ou IMAOs pode aumentar risco de síndrome serotoninérgica.",
+    fonteReferenciaNumero: 8,
+    fontePagina: "5, 10-11",
+  },
+  {
+    id: "pentazocina",
+    nomeGenerico: "Pentazocina",
+    nomesComerciais: ["Talwin"],
+    classe: "analgesicos",
+    subclasse: "Opioides agonistas-antagonistas",
+    regra: { tipo: "continuar" },
+    racional:
+      "Agonistas-antagonistas parciais usados como adjuntos anestésicos ou para dor moderada a intensa; nas doses clinicamente relevantes, essas medicações não parecem bloquear a ação de agonistas mu completos, mas sim agir sinergicamente.",
+    situacoesEspeciais:
+      "Uso concomitante de butorfanol ou nalbufina com agentes serotonérgicos, anfetaminas ou IMAOs pode aumentar risco de síndrome serotoninérgica.",
+    fonteReferenciaNumero: 8,
+    fontePagina: "5, 10-11",
+  },
   {
     id: "acetaminofeno",
     nomeGenerico: "Acetaminofeno / paracetamol",
@@ -203,10 +394,6 @@ export const FARMACOS_ANALGESICOS: Farmaco[] = [
     fonteReferenciaNumero: 8,
     fontePagina: "6, 14",
   },
-
-  // ---------------------------------------------------------------------
-  // Relaxantes musculares — Tabela 2
-  // ---------------------------------------------------------------------
   {
     id: "baclofeno",
     nomeGenerico: "Baclofeno",
@@ -305,10 +492,6 @@ export const FARMACOS_ANALGESICOS: Farmaco[] = [
     fonteReferenciaNumero: 8,
     fontePagina: "6, 14",
   },
-
-  // ---------------------------------------------------------------------
-  // Medicações para cefaleia/enxaqueca
-  // ---------------------------------------------------------------------
   {
     id: "ergotamina",
     nomeGenerico: "Ergotamina",
@@ -344,17 +527,9 @@ export const FARMACOS_ANALGESICOS: Farmaco[] = [
     fontePagina: "5, 11",
   },
   {
-    id: "triptanos",
-    nomeGenerico: "Triptanos (agonistas de receptor serotonérgico 5-HT1)",
-    nomesComerciais: [
-      "Almotriptana (Axert)",
-      "Eletriptana (Relpax)",
-      "Frovatriptana (Frova)",
-      "Naratriptana (Amerge)",
-      "Rizatriptana (Maxalt)",
-      "Sumatriptana (Imitrex)",
-      "Zolmitriptana (Zomig)",
-    ],
+    id: "almotriptana",
+    nomeGenerico: "Almotriptana",
+    nomesComerciais: ["Axert"],
     classe: "analgesicos",
     subclasse: "Medicações para cefaleia/enxaqueca",
     regra: { tipo: "suspender_dia_cirurgia" },
@@ -366,9 +541,93 @@ export const FARMACOS_ANALGESICOS: Farmaco[] = [
     fontePagina: "11",
   },
   {
-    id: "anticorpos_anti_cgrp",
-    nomeGenerico: "Anticorpos monoclonais anti-CGRP",
-    nomesComerciais: ["Erenumabe-aooe (Aimovig)", "Fremanezumabe (Ajovy)", "Galcanezumabe (Emgality)"],
+    id: "eletriptana",
+    nomeGenerico: "Eletriptana",
+    nomesComerciais: ["Relpax"],
+    classe: "analgesicos",
+    subclasse: "Medicações para cefaleia/enxaqueca",
+    regra: { tipo: "suspender_dia_cirurgia" },
+    racional:
+      "Agonistas de receptores serotonérgicos 5-HT1B/1D usados no tratamento de enxaqueca; risco teórico de síndrome serotoninérgica quando combinados com ISRSs ou ISRSNs (às vezes coprescritos para cefaleia); algumas vias metabólicas incluem MAO-A, CYP3A4, CYP2D6 e CYP1A2, podendo interferir no metabolismo de outros medicamentos perioperatórios comuns.",
+    situacoesEspeciais:
+      "Existem relatos de caso de triptanos usados para tratar cefaleia pós-operatória com anestesia geral subsequente sem intercorrências, mas o consenso do grupo foi evitar essas medicações no dia da cirurgia e usar tratamento alternativo para cefaleia aguda se necessário.",
+    fonteReferenciaNumero: 8,
+    fontePagina: "11",
+  },
+  {
+    id: "frovatriptana",
+    nomeGenerico: "Frovatriptana",
+    nomesComerciais: ["Frova"],
+    classe: "analgesicos",
+    subclasse: "Medicações para cefaleia/enxaqueca",
+    regra: { tipo: "suspender_dia_cirurgia" },
+    racional:
+      "Agonistas de receptores serotonérgicos 5-HT1B/1D usados no tratamento de enxaqueca; risco teórico de síndrome serotoninérgica quando combinados com ISRSs ou ISRSNs (às vezes coprescritos para cefaleia); algumas vias metabólicas incluem MAO-A, CYP3A4, CYP2D6 e CYP1A2, podendo interferir no metabolismo de outros medicamentos perioperatórios comuns.",
+    situacoesEspeciais:
+      "Existem relatos de caso de triptanos usados para tratar cefaleia pós-operatória com anestesia geral subsequente sem intercorrências, mas o consenso do grupo foi evitar essas medicações no dia da cirurgia e usar tratamento alternativo para cefaleia aguda se necessário.",
+    fonteReferenciaNumero: 8,
+    fontePagina: "11",
+  },
+  {
+    id: "naratriptana",
+    nomeGenerico: "Naratriptana",
+    nomesComerciais: ["Amerge"],
+    classe: "analgesicos",
+    subclasse: "Medicações para cefaleia/enxaqueca",
+    regra: { tipo: "suspender_dia_cirurgia" },
+    racional:
+      "Agonistas de receptores serotonérgicos 5-HT1B/1D usados no tratamento de enxaqueca; risco teórico de síndrome serotoninérgica quando combinados com ISRSs ou ISRSNs (às vezes coprescritos para cefaleia); algumas vias metabólicas incluem MAO-A, CYP3A4, CYP2D6 e CYP1A2, podendo interferir no metabolismo de outros medicamentos perioperatórios comuns.",
+    situacoesEspeciais:
+      "Existem relatos de caso de triptanos usados para tratar cefaleia pós-operatória com anestesia geral subsequente sem intercorrências, mas o consenso do grupo foi evitar essas medicações no dia da cirurgia e usar tratamento alternativo para cefaleia aguda se necessário.",
+    fonteReferenciaNumero: 8,
+    fontePagina: "11",
+  },
+  {
+    id: "rizatriptana",
+    nomeGenerico: "Rizatriptana",
+    nomesComerciais: ["Maxalt"],
+    classe: "analgesicos",
+    subclasse: "Medicações para cefaleia/enxaqueca",
+    regra: { tipo: "suspender_dia_cirurgia" },
+    racional:
+      "Agonistas de receptores serotonérgicos 5-HT1B/1D usados no tratamento de enxaqueca; risco teórico de síndrome serotoninérgica quando combinados com ISRSs ou ISRSNs (às vezes coprescritos para cefaleia); algumas vias metabólicas incluem MAO-A, CYP3A4, CYP2D6 e CYP1A2, podendo interferir no metabolismo de outros medicamentos perioperatórios comuns.",
+    situacoesEspeciais:
+      "Existem relatos de caso de triptanos usados para tratar cefaleia pós-operatória com anestesia geral subsequente sem intercorrências, mas o consenso do grupo foi evitar essas medicações no dia da cirurgia e usar tratamento alternativo para cefaleia aguda se necessário.",
+    fonteReferenciaNumero: 8,
+    fontePagina: "11",
+  },
+  {
+    id: "sumatriptana",
+    nomeGenerico: "Sumatriptana",
+    nomesComerciais: ["Imitrex"],
+    classe: "analgesicos",
+    subclasse: "Medicações para cefaleia/enxaqueca",
+    regra: { tipo: "suspender_dia_cirurgia" },
+    racional:
+      "Agonistas de receptores serotonérgicos 5-HT1B/1D usados no tratamento de enxaqueca; risco teórico de síndrome serotoninérgica quando combinados com ISRSs ou ISRSNs (às vezes coprescritos para cefaleia); algumas vias metabólicas incluem MAO-A, CYP3A4, CYP2D6 e CYP1A2, podendo interferir no metabolismo de outros medicamentos perioperatórios comuns.",
+    situacoesEspeciais:
+      "Existem relatos de caso de triptanos usados para tratar cefaleia pós-operatória com anestesia geral subsequente sem intercorrências, mas o consenso do grupo foi evitar essas medicações no dia da cirurgia e usar tratamento alternativo para cefaleia aguda se necessário.",
+    fonteReferenciaNumero: 8,
+    fontePagina: "11",
+  },
+  {
+    id: "zolmitriptana",
+    nomeGenerico: "Zolmitriptana",
+    nomesComerciais: ["Zomig"],
+    classe: "analgesicos",
+    subclasse: "Medicações para cefaleia/enxaqueca",
+    regra: { tipo: "suspender_dia_cirurgia" },
+    racional:
+      "Agonistas de receptores serotonérgicos 5-HT1B/1D usados no tratamento de enxaqueca; risco teórico de síndrome serotoninérgica quando combinados com ISRSs ou ISRSNs (às vezes coprescritos para cefaleia); algumas vias metabólicas incluem MAO-A, CYP3A4, CYP2D6 e CYP1A2, podendo interferir no metabolismo de outros medicamentos perioperatórios comuns.",
+    situacoesEspeciais:
+      "Existem relatos de caso de triptanos usados para tratar cefaleia pós-operatória com anestesia geral subsequente sem intercorrências, mas o consenso do grupo foi evitar essas medicações no dia da cirurgia e usar tratamento alternativo para cefaleia aguda se necessário.",
+    fonteReferenciaNumero: 8,
+    fontePagina: "11",
+  },
+  {
+    id: "erenumabe_aooe",
+    nomeGenerico: "Erenumabe-aooe",
+    nomesComerciais: ["Aimovig"],
     classe: "analgesicos",
     subclasse: "Medicações para cefaleia/enxaqueca",
     regra: { tipo: "continuar" },
@@ -379,11 +638,34 @@ export const FARMACOS_ANALGESICOS: Farmaco[] = [
     fonteReferenciaNumero: 8,
     fontePagina: "6, 11-12",
   },
-
-  // ---------------------------------------------------------------------
-  // AINEs (Anti-inflamatórios não esteroidais) — fonte: artigo reumatológico
-  // (Russell et al. 2022, Tabela 5), agrupados aqui por decisão de UX
-  // ---------------------------------------------------------------------
+  {
+    id: "fremanezumabe",
+    nomeGenerico: "Fremanezumabe",
+    nomesComerciais: ["Ajovy"],
+    classe: "analgesicos",
+    subclasse: "Medicações para cefaleia/enxaqueca",
+    regra: { tipo: "continuar" },
+    racional:
+      "Antagonistas do receptor de CGRP (calcitonin gene-related peptide), anticorpos monoclonais injetados por via subcutânea mensalmente ou a cada 3 meses (conforme o fármaco); sem efeitos adversos cardiovasculares confirmados; preocupações teóricas sobre vasoconstrição não foram confirmadas clinicamente.",
+    situacoesEspeciais:
+      "Continuar ao longo de todo o período perioperatório; o tratamento cirúrgico pode ser agendado a qualquer momento do ciclo, inclusive no dia da injeção. Nenhuma restrição relevante identificada pelo grupo.",
+    fonteReferenciaNumero: 8,
+    fontePagina: "6, 11-12",
+  },
+  {
+    id: "galcanezumabe",
+    nomeGenerico: "Galcanezumabe",
+    nomesComerciais: ["Emgality"],
+    classe: "analgesicos",
+    subclasse: "Medicações para cefaleia/enxaqueca",
+    regra: { tipo: "continuar" },
+    racional:
+      "Antagonistas do receptor de CGRP (calcitonin gene-related peptide), anticorpos monoclonais injetados por via subcutânea mensalmente ou a cada 3 meses (conforme o fármaco); sem efeitos adversos cardiovasculares confirmados; preocupações teóricas sobre vasoconstrição não foram confirmadas clinicamente.",
+    situacoesEspeciais:
+      "Continuar ao longo de todo o período perioperatório; o tratamento cirúrgico pode ser agendado a qualquer momento do ciclo, inclusive no dia da injeção. Nenhuma restrição relevante identificada pelo grupo.",
+    fonteReferenciaNumero: 8,
+    fontePagina: "6, 11-12",
+  },
   {
     id: "aine_diclofenaco",
     nomeGenerico: "Diclofenaco",
