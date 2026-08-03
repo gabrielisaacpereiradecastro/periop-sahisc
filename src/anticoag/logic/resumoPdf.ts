@@ -7,7 +7,85 @@ import { SAHISC_LOGO_BASE64 } from "@/sahiscLogo";
  * etc.). Não repete a lista completa de indicações nem a bibliografia —
  * isso fica só dentro do app.
  */
+function estiloBase(): string {
+  return `
+        @page { margin: 28px; }
+        body { font-family: -apple-system, Helvetica, Arial, sans-serif; color: #1F2937; }
+        .cabecalho { background-color: #0F766E; color: #FFFFFF; padding: 16px 20px; border-radius: 10px; }
+        .cabecalho h1 { margin: 0; font-size: 18px; }
+        .cabecalho p { margin: 4px 0 0; font-size: 12px; opacity: 0.9; }
+        .info { margin-top: 16px; font-size: 13px; }
+        .info td { padding: 3px 0; }
+        .info td.rotulo { color: #4B5563; width: 140px; vertical-align: top; }
+        .info td.valor { font-weight: 600; }
+        .decisao { margin-top: 18px; padding: 14px 16px; border-radius: 10px; border: 1px solid; }
+        .decisao p { margin: 4px 0; font-size: 12.5px; line-height: 1.5; }
+        .rodape { margin-top: 24px; padding-top: 10px; border-top: 1px solid #E5E7EB; font-size: 10px; color: #6B7280; line-height: 1.5; }
+        .rodape-creditos { margin-top: 14px; display: flex; align-items: center; gap: 10px; }
+        .rodape-creditos img { width: 34px; height: auto; }
+        .rodape-creditos span { font-size: 10px; color: #6B7280; }
+  `;
+}
+
+function rodape(): string {
+  return `
+      <div class="rodape">
+        Este resumo não substitui o julgamento do médico anestesiologista responsável, que deve
+        avaliar o caso de forma individualizada. Gerado pelo aplicativo em ${new Date().toLocaleString(
+          "pt-BR"
+        )}.
+        <div class="rodape-creditos">
+          <img src="data:image/png;base64,${SAHISC_LOGO_BASE64}" />
+          <span>Serviço de Anestesiologia de São Carlos (SAHISC)</span>
+        </div>
+      </div>
+  `;
+}
+
+function gerarHtmlResumoFitoterapico(recomendacao: Recomendacao, nomePaciente: string): string {
+  const nome = nomePaciente.trim() || "Não informado";
+  const medicamento = recomendacao.medicamentoNome ?? "Não identificado";
+  const individualizado = recomendacao.diasSuspensao == null && !!recomendacao.motivoIndividualizado;
+
+  const corpoDecisao = individualizado
+    ? `<p><strong>Decisão individualizada.</strong> ${recomendacao.motivoIndividualizado}</p>`
+    : `<p><strong>Suspender ${recomendacao.diasSuspensao} dias antes</strong> de cirurgia eletiva.</p>`;
+
+  return `
+  <html>
+    <head>
+      <meta charset="utf-8" />
+      <style>${estiloBase()}
+        .decisao { border-color: ${individualizado ? "#4B5563" : "#B45309"}; background-color: ${individualizado ? "#F3F4F6" : "#FEF3C7"}; }
+      </style>
+    </head>
+    <body>
+      <div class="cabecalho">
+        <h1>AntiCoag PeriOp — Fitoterápicos</h1>
+        <p>Elvir Lazo OL, White PF, et al. J Clin Anesth. 2024;95:111473 (risco perioperatório geral, não específico de bloqueio neuraxial)</p>
+      </div>
+
+      <table class="info" width="100%">
+        <tr><td class="rotulo">Paciente</td><td class="valor">${nome}</td></tr>
+        <tr><td class="rotulo">Fitoterápico</td><td class="valor">${medicamento}</td></tr>
+      </table>
+
+      <div class="decisao">
+        ${corpoDecisao}
+        ${recomendacao.situacoesEspeciais ? `<p><strong>Interações e recomendação completa:</strong> ${recomendacao.situacoesEspeciais}</p>` : ""}
+      </div>
+
+      ${rodape()}
+    </body>
+  </html>
+  `;
+}
+
 export function gerarHtmlResumo(recomendacao: Recomendacao, nomePaciente: string): string {
+  if (recomendacao.classe === "fitoterapico") {
+    return gerarHtmlResumoFitoterapico(recomendacao, nomePaciente);
+  }
+
   const nome = nomePaciente.trim() || "Não informado";
   const medicamento = recomendacao.medicamentoNome ?? "Não identificado";
   const detalhe = recomendacao.detalhe ?? "Não informado";

@@ -85,6 +85,85 @@ export default function TelaResultado() {
     );
   }
 
+  if (respostas.classe === "fitoterapico") {
+    const individualizado = recomendacao.diasSuspensao === null && !!recomendacao.motivoIndividualizado;
+    return (
+      <ScrollView contentContainerStyle={estilos.container}>
+        <Cartao style={estilos.cartaoInfo}>
+          <Text style={estilos.tituloCartao}>{recomendacao.medicamentoNome}</Text>
+          {recomendacao.detalhe && <Text style={estilos.textoDecisao}>{recomendacao.detalhe}</Text>}
+        </Cartao>
+
+        {individualizado ? (
+          <Cartao style={estilos.cartaoIndividualizado}>
+            <Text style={estilos.tituloIndividualizado}>Decisão individualizada</Text>
+            <Text style={estilos.textoIndividualizado}>{recomendacao.motivoIndividualizado}</Text>
+          </Cartao>
+        ) : (
+          <Cartao style={estilos.cartaoAlerta}>
+            <Text style={estilos.tituloAlerta}>Suspender antes da cirurgia</Text>
+            <Text style={estilos.textoDecisao}>
+              Suspender <Text style={estilos.destaque}>{recomendacao.diasSuspensao} dias antes</Text> de
+              cirurgia eletiva.
+            </Text>
+          </Cartao>
+        )}
+
+        {recomendacao.racional && (
+          <Cartao>
+            <Text style={estilos.tituloCartao}>Racional</Text>
+            <Text style={estilos.textoInformativo}>{recomendacao.racional}</Text>
+          </Cartao>
+        )}
+
+        {recomendacao.situacoesEspeciais && (
+          <Cartao style={estilos.cartaoAlertaClaro}>
+            <Text style={estilos.tituloAtencao}>Interações e recomendação completa</Text>
+            <Text style={estilos.textoAtencao}>{recomendacao.situacoesEspeciais}</Text>
+          </Cartao>
+        )}
+
+        <Cartao style={estilos.cartaoAviso}>
+          <Text style={estilos.avisoTexto}>
+            Esta recomendação segue Elvir Lazo OL, White PF, et al. "Use of herbal medication in
+            the perioperative period." J Clin Anesth. 2024;95:111473 — uma revisão sobre risco de
+            sangramento e outras complicações no perioperatório de cirurgias em GERAL, diferente do
+            guideline ASRA usado no restante deste app (que é específico para bloqueio neuraxial e
+            de plexo profundo/periférico). Não substitui o julgamento do médico anestesiologista
+            responsável, que deve avaliar cada caso de forma individualizada.
+          </Text>
+        </Cartao>
+
+        <Cartao>
+          <Text style={estilos.tituloCartao}>Enviar resumo para interessados</Text>
+          <Text style={[estilos.textoInformativo, { marginBottom: espacamento.sm }]}>
+            Gera um PDF curto, só com o essencial, para enviar ao cirurgião ou a quem precisar.
+          </Text>
+          <TextInput
+            style={estilos.campoNome}
+            placeholder="Nome do paciente (opcional)"
+            accessibilityLabel="Nome do paciente, opcional"
+            value={nomePaciente}
+            onChangeText={setNomePaciente}
+          />
+          <Botao
+            titulo={gerandoPdf ? "Gerando PDF…" : "Baixar PDF resumo"}
+            onPress={baixarPdf}
+            desabilitado={gerandoPdf}
+          />
+          {Platform.OS === "web" && (
+            <Text style={[estilos.textoInformativo, { marginTop: espacamento.sm }]}>
+              Vai abrir o diálogo de impressão do navegador — escolha "Salvar como PDF".
+            </Text>
+          )}
+        </Cartao>
+
+        <Botao titulo="Ver bibliografia completa" onPress={() => router.push("/anticoag/bibliografia")} />
+        <Botao titulo="Refazer questionário" onPress={refazer} variante="secundario" />
+      </ScrollView>
+    );
+  }
+
   return (
     <ScrollView contentContainerStyle={estilos.container}>
       <Cartao style={estilos.cartaoInfo}>
@@ -237,6 +316,36 @@ const estilos = StyleSheet.create({
   },
   cartaoAviso: {
     backgroundColor: cores.fundo,
+  },
+  cartaoIndividualizado: {
+    backgroundColor: "#F3F4F6",
+    borderColor: cores.textoSecundario,
+  },
+  tituloIndividualizado: {
+    fontSize: 16,
+    fontWeight: "800",
+    color: cores.textoSecundario,
+    marginBottom: espacamento.xs,
+  },
+  textoIndividualizado: {
+    fontSize: 14,
+    color: cores.texto,
+    lineHeight: 20,
+  },
+  cartaoAlertaClaro: {
+    backgroundColor: cores.alertaFundo,
+    borderColor: cores.alerta,
+  },
+  tituloAtencao: {
+    fontSize: 13,
+    fontWeight: "700",
+    color: "#78350F",
+    marginBottom: espacamento.xs,
+  },
+  textoAtencao: {
+    fontSize: 13,
+    color: "#78350F",
+    lineHeight: 19,
   },
   tituloAlerta: {
     fontSize: 18,

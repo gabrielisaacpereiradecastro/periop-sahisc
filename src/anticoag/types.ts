@@ -90,16 +90,36 @@ export interface RegraAntiplaquetario {
 }
 
 // --- Fitoterápicos ---
+// Fonte: Elvir Lazo OL, White PF, Lee C, et al. Use of herbal medication in
+// the perioperative period: potential adverse drug interactions. J Clin
+// Anesth. 2024;95:111473 — revisão dedicada a risco de sangramento
+// perioperatório GERAL (não específica de bloqueio neuraxial, diferente do
+// guideline ASRA usado no restante do AntiCoag). Tabela 1 do artigo.
+
+export interface RegraFitoterapico {
+  tipo: "suspender_periodo_fixo" | "individualizado";
+  /** Só quando tipo === "suspender_periodo_fixo" — usa o valor mais
+   * conservador (extremo superior) quando o artigo cita uma faixa. */
+  valorDias?: number;
+  /** Só quando tipo === "individualizado" (ex.: cannabis, cuja
+   * recomendação do próprio artigo é uma faixa ampla e condicional). */
+  motivoIndividualizado?: string;
+}
 
 export interface Fitoterapico {
   id: string;
   nomeGenerico: string;
-  /** Efeitos hemostáticos relevantes citados na Tabela 6 do guideline. */
-  efeitosImportantes: string;
-  preocupacoesPerioperatorias: string;
-  /** Tempo até normalização completa da hemostasia após suspensão — citado
-   * como referência, mas o guideline não recomenda suspender rotineiramente. */
-  tempoNormalizacaoHemostasia: string;
+  /** Outros nomes populares/científicos citados no artigo. */
+  sinonimos: string;
+  usosClinicos: string;
+  mecanismoAcao: string;
+  efeitosAdversos: string;
+  interacoesMedicamentosas: string;
+  regra: RegraFitoterapico;
+  /** Texto literal (traduzido) da coluna "Recommendations for perioperative
+   * management" — inclui a faixa completa e informação de retomada quando
+   * o artigo fornece, não só o número usado em regra.valorDias. */
+  recomendacaoTexto: string;
 }
 
 // --- Questionário e recomendação (comum às classes) ---
@@ -145,4 +165,11 @@ export interface Recomendacao {
   observacaoRetomada: string | null;
   nivelResidualAceitavel: string | null;
   motivoIndeterminado?: string;
+
+  // --- Só preenchidos para classe === "fitoterapico" (fonte diferente do
+  // resto do app — ver src/anticoag/data/fitoterapicos.ts) ---
+  racional?: string | null;
+  situacoesEspeciais?: string | null;
+  diasSuspensao?: number | null;
+  motivoIndividualizado?: string;
 }

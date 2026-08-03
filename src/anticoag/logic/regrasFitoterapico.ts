@@ -15,13 +15,16 @@ const VAZIO: Recomendacao = {
   horasAteRetomar: null,
   observacaoRetomada: null,
   nivelResidualAceitavel: null,
+  racional: null,
+  situacoesEspeciais: null,
+  diasSuspensao: null,
 };
 
 /**
- * Motor de decisão para fitoterápicos, baseado na seção HERBAL MEDICATIONS e
- * na Tabela 6 do guideline ASRA Pain Medicine 5ª edição. A recomendação é
- * única para os três fitoterápicos cobertos: não suspender, sem restrição à
- * técnica (grau 1C) — não há um cálculo de horas/data envolvido.
+ * Motor de decisão para fitoterápicos, baseado na Tabela 1 de Elvir Lazo
+ * OL, White PF, et al. J Clin Anesth. 2024;95:111473 — uma fonte diferente
+ * do guideline ASRA usado no resto do AntiCoag (risco de sangramento
+ * perioperatório geral, não específico de bloqueio neuraxial).
  */
 export function gerarRecomendacaoFitoterapico(respostas: RespostasQuestionario): Recomendacao {
   const fito = buscarFitoterapico(respostas.fitoterapicoId);
@@ -32,11 +35,28 @@ export function gerarRecomendacaoFitoterapico(respostas: RespostasQuestionario):
     };
   }
 
+  const racional = `${fito.mecanismoAcao} ${fito.efeitosAdversos}`;
+  const situacoesEspeciais = `${fito.interacoesMedicamentosas} ${fito.recomendacaoTexto}`;
+
+  if (fito.regra.tipo === "individualizado") {
+    return {
+      ...VAZIO,
+      decisao: "calculada",
+      medicamentoNome: fito.nomeGenerico,
+      detalhe: fito.usosClinicos,
+      racional,
+      situacoesEspeciais,
+      motivoIndividualizado: fito.regra.motivoIndividualizado,
+    };
+  }
+
   return {
     ...VAZIO,
     decisao: "calculada",
     medicamentoNome: fito.nomeGenerico,
-    detalhe: `${fito.efeitosImportantes} ${fito.preocupacoesPerioperatorias} Tempo de referência até a normalização completa da hemostasia após a suspensão (não é necessário aguardar esse prazo): ${fito.tempoNormalizacaoHemostasia}.`,
-    semRestricao: true,
+    detalhe: fito.usosClinicos,
+    racional,
+    situacoesEspeciais,
+    diasSuspensao: fito.regra.valorDias ?? null,
   };
 }

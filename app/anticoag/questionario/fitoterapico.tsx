@@ -1,19 +1,43 @@
-import React from "react";
-import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import React, { useMemo, useState } from "react";
+import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import { router } from "expo-router";
 import { Botao } from "@/components/Botao";
 import { useQuestionario } from "@/anticoag/state/QuestionarioContext";
 import { FITOTERAPICOS } from "@/anticoag/data/fitoterapicos";
 import { cores, espacamento, raio } from "@/theme";
 
+function normalizar(texto: string): string {
+  return texto
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .toLowerCase();
+}
+
 export default function TelaFitoterapico() {
   const { respostas, atualizar } = useQuestionario();
+  const [busca, setBusca] = useState("");
+
+  const filtrados = useMemo(() => {
+    const termo = normalizar(busca.trim());
+    if (!termo) return FITOTERAPICOS;
+    return FITOTERAPICOS.filter(
+      (f) => normalizar(f.nomeGenerico).includes(termo) || normalizar(f.sinonimos).includes(termo)
+    );
+  }, [busca]);
 
   return (
     <ScrollView contentContainerStyle={estilos.container}>
       <Text style={estilos.pergunta}>Qual fitoterápico o paciente usa?</Text>
+      <TextInput
+        value={busca}
+        onChangeText={setBusca}
+        placeholder="Buscar por nome ou sinônimo..."
+        placeholderTextColor={cores.textoSecundario}
+        style={estilos.busca}
+        accessibilityLabel="Buscar fitoterápico"
+      />
       <View style={estilos.lista} accessibilityRole="radiogroup">
-        {FITOTERAPICOS.map((f) => {
+        {filtrados.map((f) => {
           const ativo = respostas.fitoterapicoId === f.id;
           return (
             <Pressable
@@ -27,6 +51,7 @@ export default function TelaFitoterapico() {
               <Text style={[estilos.textoItem, ativo && estilos.textoItemAtivo]}>
                 {f.nomeGenerico}
               </Text>
+              <Text style={estilos.textoSinonimos}>{f.sinonimos}</Text>
             </Pressable>
           );
         })}
@@ -51,6 +76,16 @@ const estilos = StyleSheet.create({
     fontWeight: "700",
     color: cores.texto,
   },
+  busca: {
+    borderWidth: 1,
+    borderColor: cores.borda,
+    borderRadius: raio.md,
+    paddingHorizontal: espacamento.md,
+    paddingVertical: espacamento.sm,
+    fontSize: 15,
+    color: cores.texto,
+    backgroundColor: cores.branco,
+  },
   lista: {
     gap: espacamento.sm,
   },
@@ -72,5 +107,10 @@ const estilos = StyleSheet.create({
   },
   textoItemAtivo: {
     color: cores.primariaEscura,
+  },
+  textoSinonimos: {
+    color: cores.textoSecundario,
+    fontSize: 12,
+    marginTop: espacamento.xs,
   },
 });
