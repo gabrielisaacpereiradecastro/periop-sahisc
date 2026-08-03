@@ -30,6 +30,10 @@ export default function RootLayout() {
           options={{ title: "Antiplaquetário" }}
         />
         <Stack.Screen
+          name="questionario/fitoterapico"
+          options={{ title: "Fitoterápico" }}
+        />
+        <Stack.Screen
           name="questionario/funcao-renal"
           options={{ title: "Função renal" }}
         />

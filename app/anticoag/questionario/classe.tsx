@@ -28,6 +28,11 @@ const OPCOES: { id: ClasseMedicamento; rotulo: string; descricao: string }[] = [
     descricao:
       "AAS/AINEs, clopidogrel, prasugrel, ticagrelor, cilostazol, cangrelor, inibidores IIb/IIIa",
   },
+  {
+    id: "fitoterapico",
+    rotulo: "Fitoterápico",
+    descricao: "Alho, ginkgo biloba ou ginseng",
+  },
 ];
 
 export default function TelaClasse() {
@@ -42,6 +47,8 @@ export default function TelaClasse() {
       router.push("/anticoag/questionario/medicamento");
     } else if (respostas.classe === "antiplaquetario") {
       router.push("/anticoag/questionario/antiplaquetario");
+    } else if (respostas.classe === "fitoterapico") {
+      router.push("/anticoag/questionario/fitoterapico");
     } else {
       router.push("/anticoag/questionario/heparina");
     }

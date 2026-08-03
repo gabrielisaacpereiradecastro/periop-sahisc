@@ -3,7 +3,7 @@ export interface ItemChecklist {
   descricao: string;
 }
 
-export type ClasseMedicamento = "doac" | "hnf" | "hbpm" | "antiplaquetario";
+export type ClasseMedicamento = "doac" | "hnf" | "hbpm" | "antiplaquetario" | "fitoterapico";
 
 export type NivelDose = "baixa" | "alta";
 
@@ -89,6 +89,19 @@ export interface RegraAntiplaquetario {
   observacaoRetomada?: string;
 }
 
+// --- Fitoterápicos ---
+
+export interface Fitoterapico {
+  id: string;
+  nomeGenerico: string;
+  /** Efeitos hemostáticos relevantes citados na Tabela 6 do guideline. */
+  efeitosImportantes: string;
+  preocupacoesPerioperatorias: string;
+  /** Tempo até normalização completa da hemostasia após suspensão — citado
+   * como referência, mas o guideline não recomenda suspender rotineiramente. */
+  tempoNormalizacaoHemostasia: string;
+}
+
 // --- Questionário e recomendação (comum às classes) ---
 
 export interface RespostasQuestionario {
@@ -108,6 +121,9 @@ export interface RespostasQuestionario {
   // Antiplaquetário
   antiplaquetarioId: string | null;
   doseAtaquePosOp: RespostaSimNao;
+
+  // Fitoterápico
+  fitoterapicoId: string | null;
 }
 
 export type Decisao = "calculada" | "indeterminado";

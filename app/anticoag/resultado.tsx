@@ -9,6 +9,7 @@ import { useQuestionario } from "@/anticoag/state/QuestionarioContext";
 import { gerarRecomendacaoDoac } from "@/anticoag/logic/regras";
 import { gerarRecomendacaoHbpm, gerarRecomendacaoHnf } from "@/anticoag/logic/regrasHeparina";
 import { gerarRecomendacaoAntiplaquetario } from "@/anticoag/logic/regrasAntiplaquetario";
+import { gerarRecomendacaoFitoterapico } from "@/anticoag/logic/regrasFitoterapico";
 import { gerarHtmlResumo } from "@/anticoag/logic/resumoPdf";
 import { CalculadoraCateter } from "@/anticoag/components/CalculadoraCateter";
 import { Recomendacao } from "@/anticoag/types";
@@ -25,6 +26,7 @@ function calcular(respostas: ReturnType<typeof useQuestionario>["respostas"]): R
   if (respostas.classe === "hnf") return gerarRecomendacaoHnf(respostas);
   if (respostas.classe === "hbpm") return gerarRecomendacaoHbpm(respostas);
   if (respostas.classe === "antiplaquetario") return gerarRecomendacaoAntiplaquetario(respostas);
+  if (respostas.classe === "fitoterapico") return gerarRecomendacaoFitoterapico(respostas);
   return gerarRecomendacaoDoac(respostas);
 }
 
