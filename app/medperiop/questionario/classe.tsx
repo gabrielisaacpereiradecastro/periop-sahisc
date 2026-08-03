@@ -22,6 +22,10 @@ export default function TelaClasse() {
     router.push("/anticoag/questionario/classe");
   }
 
+  function irParaFitoterapico() {
+    router.push("/anticoag/questionario/fitoterapico");
+  }
+
   function selecionar(classe: ClasseTerapeutica) {
     atualizar({
       classeAtual: classe,
@@ -57,6 +61,9 @@ export default function TelaClasse() {
       </Cartao>
       <Cartao>
         <Botao titulo="Anticoagulante / Antiagregante" variante="secundario" onPress={irParaAnticoag} />
+      </Cartao>
+      <Cartao>
+        <Botao titulo="Fitoterápico" variante="secundario" onPress={irParaFitoterapico} />
       </Cartao>
 
       {CLASSES_TERAPEUTICAS.map((c) => (
