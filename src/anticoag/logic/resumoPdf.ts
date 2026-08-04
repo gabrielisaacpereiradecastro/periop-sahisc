@@ -18,7 +18,7 @@ function estiloBase(): string {
         .info td { padding: 3px 0; }
         .info td.rotulo { color: #4B5563; width: 140px; vertical-align: top; }
         .info td.valor { font-weight: 600; }
-        .decisao { margin-top: 18px; padding: 14px 16px; border-radius: 10px; border: 1px solid; }
+        .decisao { margin-top: 18px; padding: 14px 16px; border-radius: 10px; border: 1px solid; page-break-inside: avoid; break-inside: avoid; }
         .decisao p { margin: 4px 0; font-size: 12.5px; line-height: 1.5; }
         .rodape { margin-top: 24px; padding-top: 10px; border-top: 1px solid #E5E7EB; font-size: 10px; color: #6B7280; line-height: 1.5; }
         .rodape-creditos { margin-top: 14px; display: flex; align-items: center; gap: 10px; }
@@ -89,7 +89,7 @@ export function gerarHtmlResumoFitoterapicos(
     <head>
       <meta charset="utf-8" />
       <style>${estiloBase()}
-        .medicamento { margin-top: 18px; }
+        .medicamento { margin-top: 18px; page-break-inside: avoid; break-inside: avoid; }
         .med-nome { font-size: 14px; font-weight: 700; }
         .decisao { margin-top: 6px; }
       </style>
@@ -161,7 +161,7 @@ export function gerarHtmlResumo(recomendacao: Recomendacao, nomePaciente: string
         .info td { padding: 3px 0; }
         .info td.rotulo { color: #4B5563; width: 140px; vertical-align: top; }
         .info td.valor { font-weight: 600; }
-        .decisao { margin-top: 18px; padding: 14px 16px; border-radius: 10px; border: 1px solid ${corAlerta}; background-color: ${fundoAlerta}; }
+        .decisao { margin-top: 18px; padding: 14px 16px; border-radius: 10px; border: 1px solid ${corAlerta}; background-color: ${fundoAlerta}; page-break-inside: avoid; break-inside: avoid; }
         .decisao p { margin: 4px 0; font-size: 12.5px; line-height: 1.5; }
         .rodape { margin-top: 24px; padding-top: 10px; border-top: 1px solid #E5E7EB; font-size: 10px; color: #6B7280; line-height: 1.5; }
         .rodape-creditos { margin-top: 14px; display: flex; align-items: center; gap: 10px; }

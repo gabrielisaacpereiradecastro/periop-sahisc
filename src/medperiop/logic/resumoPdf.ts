@@ -87,7 +87,7 @@ export function gerarHtmlResumo(
         .info td { padding: 3px 0; }
         .info td.rotulo { color: #4B5563; width: 140px; vertical-align: top; }
         .info td.valor { font-weight: 600; }
-        .medicamento { margin-top: 18px; }
+        .medicamento { margin-top: 18px; page-break-inside: avoid; break-inside: avoid; }
         .med-nome { font-size: 14px; font-weight: 700; }
         .med-indicacao { font-size: 11.5px; color: #4B5563; margin-top: 2px; }
         .decisao { margin-top: 6px; padding: 12px 14px; border-radius: 10px; border: 1px solid; }

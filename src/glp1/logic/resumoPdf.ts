@@ -56,10 +56,10 @@ export function gerarHtmlResumo(
         .info td { padding: 3px 0; }
         .info td.rotulo { color: #4B5563; width: 140px; }
         .info td.valor { font-weight: 600; }
-        .decisao { margin-top: 18px; padding: 14px 16px; border-radius: 10px; border: 1px solid ${corDecisao}; background-color: ${fundoDecisao}; }
+        .decisao { margin-top: 18px; padding: 14px 16px; border-radius: 10px; border: 1px solid ${corDecisao}; background-color: ${fundoDecisao}; page-break-inside: avoid; break-inside: avoid; }
         .decisao h2 { margin: 0 0 6px; font-size: 15px; color: ${corDecisao}; }
         .decisao p { margin: 4px 0; font-size: 12.5px; line-height: 1.5; }
-        .secao { margin-top: 16px; }
+        .secao { margin-top: 16px; page-break-inside: avoid; break-inside: avoid; }
         .secao h3 { font-size: 13px; margin-bottom: 4px; color: #1F2937; }
         .secao p { font-size: 12.5px; line-height: 1.5; margin: 2px 0; color: #374151; }
         .rodape { margin-top: 24px; padding-top: 10px; border-top: 1px solid #E5E7EB; font-size: 10px; color: #6B7280; line-height: 1.5; }
