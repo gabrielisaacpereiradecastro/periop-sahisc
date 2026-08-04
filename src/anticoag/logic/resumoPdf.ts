@@ -42,21 +42,56 @@ function rodape(): string {
   `;
 }
 
-function gerarHtmlResumoFitoterapico(recomendacao: Recomendacao, nomePaciente: string): string {
-  const nome = nomePaciente.trim() || "Não informado";
-  const medicamento = recomendacao.medicamentoNome ?? "Não identificado";
+function corpoDecisaoFitoterapicoItem(recomendacao: Recomendacao): string {
+  if (recomendacao.decisao === "indeterminado") {
+    return `<p><strong>⚠️ ${recomendacao.motivoIndeterminado ?? "Não foi possível gerar uma recomendação."}</strong></p>`;
+  }
   const individualizado = recomendacao.diasSuspensao == null && !!recomendacao.motivoIndividualizado;
-
-  const corpoDecisao = individualizado
+  const decisao = individualizado
     ? `<p><strong>Decisão individualizada.</strong> ${recomendacao.motivoIndividualizado}</p>`
     : `<p><strong>Suspender ${recomendacao.diasSuspensao} dias antes</strong> de cirurgia eletiva.</p>`;
+  const situacoes = recomendacao.situacoesEspeciais
+    ? `<p><strong>Interações e recomendação completa:</strong> ${recomendacao.situacoesEspeciais}</p>`
+    : "";
+  return decisao + situacoes;
+}
+
+/**
+ * HTML enxuto com a recomendação de CADA fitoterápico marcado na sessão
+ * (seleção múltipla) — mesmo padrão do resumo do MedPeriOp para múltiplos
+ * medicamentos.
+ */
+export function gerarHtmlResumoFitoterapicos(
+  recomendacoes: Recomendacao[],
+  nomePaciente: string
+): string {
+  const nome = nomePaciente.trim() || "Não informado";
+
+  const blocos = recomendacoes
+    .map((r) => {
+      const individualizado = r.decisao === "calculada" && r.diasSuspensao == null && !!r.motivoIndividualizado;
+      const corAlerta = r.decisao === "indeterminado" ? "#B91C1C" : individualizado ? "#4B5563" : "#B45309";
+      const fundoAlerta = r.decisao === "indeterminado" ? "#FEE2E2" : individualizado ? "#F3F4F6" : "#FEF3C7";
+      const nomeItem = r.medicamentoNome ?? "Não identificado";
+      return `
+        <div class="medicamento">
+          <div class="med-nome">${nomeItem}</div>
+          <div class="decisao" style="border-color: ${corAlerta}; background-color: ${fundoAlerta};">
+            ${corpoDecisaoFitoterapicoItem(r)}
+          </div>
+        </div>
+      `;
+    })
+    .join("");
 
   return `
   <html>
     <head>
       <meta charset="utf-8" />
       <style>${estiloBase()}
-        .decisao { border-color: ${individualizado ? "#4B5563" : "#B45309"}; background-color: ${individualizado ? "#F3F4F6" : "#FEF3C7"}; }
+        .medicamento { margin-top: 18px; }
+        .med-nome { font-size: 14px; font-weight: 700; }
+        .decisao { margin-top: 6px; }
       </style>
     </head>
     <body>
@@ -67,13 +102,10 @@ function gerarHtmlResumoFitoterapico(recomendacao: Recomendacao, nomePaciente: s
 
       <table class="info" width="100%">
         <tr><td class="rotulo">Paciente</td><td class="valor">${nome}</td></tr>
-        <tr><td class="rotulo">Fitoterápico</td><td class="valor">${medicamento}</td></tr>
+        <tr><td class="rotulo">Fitoterápicos avaliados</td><td class="valor">${recomendacoes.length}</td></tr>
       </table>
 
-      <div class="decisao">
-        ${corpoDecisao}
-        ${recomendacao.situacoesEspeciais ? `<p><strong>Interações e recomendação completa:</strong> ${recomendacao.situacoesEspeciais}</p>` : ""}
-      </div>
+      ${blocos}
 
       ${rodape()}
     </body>
@@ -82,10 +114,6 @@ function gerarHtmlResumoFitoterapico(recomendacao: Recomendacao, nomePaciente: s
 }
 
 export function gerarHtmlResumo(recomendacao: Recomendacao, nomePaciente: string): string {
-  if (recomendacao.classe === "fitoterapico") {
-    return gerarHtmlResumoFitoterapico(recomendacao, nomePaciente);
-  }
-
   const nome = nomePaciente.trim() || "Não informado";
   const medicamento = recomendacao.medicamentoNome ?? "Não identificado";
   const detalhe = recomendacao.detalhe ?? "Não informado";

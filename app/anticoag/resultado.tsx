@@ -9,8 +9,8 @@ import { useQuestionario } from "@/anticoag/state/QuestionarioContext";
 import { gerarRecomendacaoDoac } from "@/anticoag/logic/regras";
 import { gerarRecomendacaoHbpm, gerarRecomendacaoHnf } from "@/anticoag/logic/regrasHeparina";
 import { gerarRecomendacaoAntiplaquetario } from "@/anticoag/logic/regrasAntiplaquetario";
-import { gerarRecomendacaoFitoterapico } from "@/anticoag/logic/regrasFitoterapico";
-import { gerarHtmlResumo } from "@/anticoag/logic/resumoPdf";
+import { gerarRecomendacoesFitoterapico } from "@/anticoag/logic/regrasFitoterapico";
+import { gerarHtmlResumo, gerarHtmlResumoFitoterapicos } from "@/anticoag/logic/resumoPdf";
 import { CalculadoraCateter } from "@/anticoag/components/CalculadoraCateter";
 import { Recomendacao } from "@/anticoag/types";
 import { cores, espacamento, raio } from "@/theme";
@@ -26,13 +26,66 @@ function calcular(respostas: ReturnType<typeof useQuestionario>["respostas"]): R
   if (respostas.classe === "hnf") return gerarRecomendacaoHnf(respostas);
   if (respostas.classe === "hbpm") return gerarRecomendacaoHbpm(respostas);
   if (respostas.classe === "antiplaquetario") return gerarRecomendacaoAntiplaquetario(respostas);
-  if (respostas.classe === "fitoterapico") return gerarRecomendacaoFitoterapico(respostas);
   return gerarRecomendacaoDoac(respostas);
+}
+
+function CartaoDecisaoFito({ recomendacao }: { recomendacao: Recomendacao }) {
+  if (recomendacao.decisao === "indeterminado") {
+    return (
+      <Cartao style={estilos.cartaoPerigo}>
+        <Text style={estilos.tituloPerigo}>Não foi possível gerar uma recomendação</Text>
+        <Text style={estilos.textoPerigo}>{recomendacao.motivoIndeterminado}</Text>
+      </Cartao>
+    );
+  }
+
+  const individualizado = recomendacao.diasSuspensao == null && !!recomendacao.motivoIndividualizado;
+
+  return (
+    <Cartao style={estilos.cartaoMedicamento}>
+      <Text style={estilos.tituloCartao}>{recomendacao.medicamentoNome}</Text>
+      {recomendacao.detalhe && <Text style={estilos.textoInformativo}>{recomendacao.detalhe}</Text>}
+
+      {individualizado ? (
+        <View style={[estilos.subCartao, estilos.subCartaoIndividualizado]}>
+          <Text style={estilos.tituloIndividualizado}>Decisão individualizada</Text>
+          <Text style={estilos.textoIndividualizado}>{recomendacao.motivoIndividualizado}</Text>
+        </View>
+      ) : (
+        <View style={[estilos.subCartao, estilos.subCartaoAlerta]}>
+          <Text style={estilos.tituloAlerta}>Suspender antes da cirurgia</Text>
+          <Text style={estilos.textoDecisao}>
+            Suspender <Text style={estilos.destaque}>{recomendacao.diasSuspensao} dias antes</Text> de
+            cirurgia eletiva.
+          </Text>
+        </View>
+      )}
+
+      {recomendacao.racional && (
+        <View style={estilos.blocoTexto}>
+          <Text style={estilos.subtituloBloco}>Racional</Text>
+          <Text style={estilos.textoInformativo}>{recomendacao.racional}</Text>
+        </View>
+      )}
+
+      {recomendacao.situacoesEspeciais && (
+        <View style={[estilos.blocoTexto, estilos.blocoAtencao]}>
+          <Text style={estilos.tituloAtencao}>Interações e recomendação completa</Text>
+          <Text style={estilos.textoAtencao}>{recomendacao.situacoesEspeciais}</Text>
+        </View>
+      )}
+    </Cartao>
+  );
 }
 
 export default function TelaResultado() {
   const { respostas, reiniciar } = useQuestionario();
+  const ehFitoterapico = respostas.classe === "fitoterapico";
   const recomendacao = useMemo(() => calcular(respostas), [respostas]);
+  const recomendacoesFito = useMemo(
+    () => (ehFitoterapico ? gerarRecomendacoesFitoterapico(respostas) : []),
+    [ehFitoterapico, respostas]
+  );
   const [nomePaciente, setNomePaciente] = useState("");
   const [gerandoPdf, setGerandoPdf] = useState(false);
 
@@ -45,7 +98,9 @@ export default function TelaResultado() {
   async function baixarPdf() {
     setGerandoPdf(true);
     try {
-      const html = gerarHtmlResumo(recomendacao, nomePaciente);
+      const html = ehFitoterapico
+        ? gerarHtmlResumoFitoterapicos(recomendacoesFito, nomePaciente)
+        : gerarHtmlResumo(recomendacao, nomePaciente);
 
       if (Platform.OS === "web") {
         await Print.printAsync({ html });
@@ -72,56 +127,35 @@ export default function TelaResultado() {
     }
   }
 
-  if (recomendacao.decisao === "indeterminado") {
-    return (
-      <ScrollView contentContainerStyle={estilos.container}>
-        <Cartao style={estilos.cartaoPerigo}>
-          <Text style={estilos.tituloPerigo}>Não foi possível gerar uma recomendação</Text>
-          <Text style={estilos.textoPerigo}>{recomendacao.motivoIndeterminado}</Text>
-        </Cartao>
-        <Botao titulo="Refazer questionário" onPress={refazer} variante="secundario" />
-        <Botao titulo="Ver bibliografia" onPress={() => router.push("/anticoag/bibliografia")} />
-      </ScrollView>
-    );
-  }
+  if (ehFitoterapico) {
+    if (recomendacoesFito.length === 0) {
+      return (
+        <ScrollView contentContainerStyle={estilos.container}>
+          <Cartao style={estilos.cartaoPerigo}>
+            <Text style={estilos.tituloPerigo}>Nenhum fitoterápico selecionado</Text>
+            <Text style={estilos.textoPerigo}>
+              Volte e selecione ao menos um fitoterápico antes de ver a recomendação.
+            </Text>
+          </Cartao>
+          <Botao titulo="Voltar" onPress={() => router.back()} variante="secundario" />
+          <Botao titulo="Refazer questionário" onPress={refazer} variante="secundario" />
+        </ScrollView>
+      );
+    }
 
-  if (respostas.classe === "fitoterapico") {
-    const individualizado = recomendacao.diasSuspensao === null && !!recomendacao.motivoIndividualizado;
     return (
       <ScrollView contentContainerStyle={estilos.container}>
         <Cartao style={estilos.cartaoInfo}>
-          <Text style={estilos.tituloCartao}>{recomendacao.medicamentoNome}</Text>
-          {recomendacao.detalhe && <Text style={estilos.textoDecisao}>{recomendacao.detalhe}</Text>}
+          <Text style={estilos.tituloCartao}>Resumo do caso</Text>
+          <Text style={estilos.textoDecisao}>
+            {recomendacoesFito.length} fitoterápico{recomendacoesFito.length !== 1 ? "s" : ""} avaliado
+            {recomendacoesFito.length !== 1 ? "s" : ""}
+          </Text>
         </Cartao>
 
-        {individualizado ? (
-          <Cartao style={estilos.cartaoIndividualizado}>
-            <Text style={estilos.tituloIndividualizado}>Decisão individualizada</Text>
-            <Text style={estilos.textoIndividualizado}>{recomendacao.motivoIndividualizado}</Text>
-          </Cartao>
-        ) : (
-          <Cartao style={estilos.cartaoAlerta}>
-            <Text style={estilos.tituloAlerta}>Suspender antes da cirurgia</Text>
-            <Text style={estilos.textoDecisao}>
-              Suspender <Text style={estilos.destaque}>{recomendacao.diasSuspensao} dias antes</Text> de
-              cirurgia eletiva.
-            </Text>
-          </Cartao>
-        )}
-
-        {recomendacao.racional && (
-          <Cartao>
-            <Text style={estilos.tituloCartao}>Racional</Text>
-            <Text style={estilos.textoInformativo}>{recomendacao.racional}</Text>
-          </Cartao>
-        )}
-
-        {recomendacao.situacoesEspeciais && (
-          <Cartao style={estilos.cartaoAlertaClaro}>
-            <Text style={estilos.tituloAtencao}>Interações e recomendação completa</Text>
-            <Text style={estilos.textoAtencao}>{recomendacao.situacoesEspeciais}</Text>
-          </Cartao>
-        )}
+        {recomendacoesFito.map((r, i) => (
+          <CartaoDecisaoFito key={r.medicamentoNome ?? i} recomendacao={r} />
+        ))}
 
         <Cartao style={estilos.cartaoAviso}>
           <Text style={estilos.avisoTexto}>
@@ -137,7 +171,8 @@ export default function TelaResultado() {
         <Cartao>
           <Text style={estilos.tituloCartao}>Enviar resumo para interessados</Text>
           <Text style={[estilos.textoInformativo, { marginBottom: espacamento.sm }]}>
-            Gera um PDF curto, só com o essencial, para enviar ao cirurgião ou a quem precisar.
+            Gera um PDF curto, só com o essencial, para enviar ao cirurgião, ao paciente ou a quem
+            precisar.
           </Text>
           <TextInput
             style={estilos.campoNome}
@@ -160,6 +195,19 @@ export default function TelaResultado() {
 
         <Botao titulo="Ver bibliografia completa" onPress={() => router.push("/anticoag/bibliografia")} />
         <Botao titulo="Refazer questionário" onPress={refazer} variante="secundario" />
+      </ScrollView>
+    );
+  }
+
+  if (recomendacao.decisao === "indeterminado") {
+    return (
+      <ScrollView contentContainerStyle={estilos.container}>
+        <Cartao style={estilos.cartaoPerigo}>
+          <Text style={estilos.tituloPerigo}>Não foi possível gerar uma recomendação</Text>
+          <Text style={estilos.textoPerigo}>{recomendacao.motivoIndeterminado}</Text>
+        </Cartao>
+        <Botao titulo="Refazer questionário" onPress={refazer} variante="secundario" />
+        <Botao titulo="Ver bibliografia" onPress={() => router.push("/anticoag/bibliografia")} />
       </ScrollView>
     );
   }
@@ -296,6 +344,9 @@ const estilos = StyleSheet.create({
   cartaoInfo: {
     backgroundColor: cores.fundoCartao,
   },
+  cartaoMedicamento: {
+    gap: 0,
+  },
   cartaoSucesso: {
     backgroundColor: cores.sucessoFundo,
     borderColor: cores.sucesso,
@@ -317,7 +368,17 @@ const estilos = StyleSheet.create({
   cartaoAviso: {
     backgroundColor: cores.fundo,
   },
-  cartaoIndividualizado: {
+  subCartao: {
+    marginTop: espacamento.md,
+    padding: espacamento.md,
+    borderRadius: raio.md,
+    borderWidth: 1,
+  },
+  subCartaoAlerta: {
+    backgroundColor: cores.alertaFundo,
+    borderColor: cores.alerta,
+  },
+  subCartaoIndividualizado: {
     backgroundColor: "#F3F4F6",
     borderColor: cores.textoSecundario,
   },
@@ -332,9 +393,21 @@ const estilos = StyleSheet.create({
     color: cores.texto,
     lineHeight: 20,
   },
-  cartaoAlertaClaro: {
+  blocoTexto: {
+    marginTop: espacamento.md,
+  },
+  blocoAtencao: {
+    padding: espacamento.md,
+    borderRadius: raio.md,
+    borderWidth: 1,
     backgroundColor: cores.alertaFundo,
     borderColor: cores.alerta,
+  },
+  subtituloBloco: {
+    fontSize: 13,
+    fontWeight: "700",
+    color: cores.texto,
+    marginBottom: espacamento.xs,
   },
   tituloAtencao: {
     fontSize: 13,

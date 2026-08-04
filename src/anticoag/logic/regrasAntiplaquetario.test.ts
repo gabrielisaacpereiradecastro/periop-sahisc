@@ -13,7 +13,7 @@ function base(overrides: Partial<RespostasQuestionario> = {}): RespostasQuestion
     frequenciaHbpm: null,
     antiplaquetarioId: null,
     doseAtaquePosOp: null,
-    fitoterapicoId: null,
+    fitoterapicoIds: [],
     ...overrides,
   };
 }

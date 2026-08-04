@@ -12,7 +12,7 @@ const RESPOSTAS_INICIAIS: RespostasQuestionario = {
   frequenciaHbpm: null,
   antiplaquetarioId: null,
   doseAtaquePosOp: null,
-  fitoterapicoId: null,
+  fitoterapicoIds: [],
 };
 
 interface QuestionarioContextValor {

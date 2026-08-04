@@ -142,8 +142,8 @@ export interface RespostasQuestionario {
   antiplaquetarioId: string | null;
   doseAtaquePosOp: RespostaSimNao;
 
-  // Fitoterápico
-  fitoterapicoId: string | null;
+  // Fitoterápico (seleção múltipla — o paciente pode usar mais de um)
+  fitoterapicoIds: string[];
 }
 
 export type Decisao = "calculada" | "indeterminado";

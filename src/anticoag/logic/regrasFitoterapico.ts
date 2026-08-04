@@ -21,17 +21,17 @@ const VAZIO: Recomendacao = {
 };
 
 /**
- * Motor de decisão para fitoterápicos, baseado na Tabela 1 de Elvir Lazo
- * OL, White PF, et al. J Clin Anesth. 2024;95:111473 — uma fonte diferente
- * do guideline ASRA usado no resto do AntiCoag (risco de sangramento
- * perioperatório geral, não específico de bloqueio neuraxial).
+ * Motor de decisão para um único fitoterápico, baseado na Tabela 1 de
+ * Elvir Lazo OL, White PF, et al. J Clin Anesth. 2024;95:111473 — uma
+ * fonte diferente do guideline ASRA usado no resto do AntiCoag (risco de
+ * sangramento perioperatório geral, não específico de bloqueio neuraxial).
  */
-export function gerarRecomendacaoFitoterapico(respostas: RespostasQuestionario): Recomendacao {
-  const fito = buscarFitoterapico(respostas.fitoterapicoId);
+export function gerarRecomendacaoFitoterapicoItem(fitoterapicoId: string): Recomendacao {
+  const fito = buscarFitoterapico(fitoterapicoId);
   if (!fito) {
     return {
       ...VAZIO,
-      motivoIndeterminado: "Selecione qual fitoterápico o paciente utiliza.",
+      motivoIndeterminado: "Este fitoterápico não consta na base de dados do aplicativo.",
     };
   }
 
@@ -59,4 +59,9 @@ export function gerarRecomendacaoFitoterapico(respostas: RespostasQuestionario):
     situacoesEspeciais,
     diasSuspensao: fito.regra.valorDias ?? null,
   };
+}
+
+/** Gera uma recomendação para cada fitoterápico marcado na sessão. */
+export function gerarRecomendacoesFitoterapico(respostas: RespostasQuestionario): Recomendacao[] {
+  return respostas.fitoterapicoIds.map((id) => gerarRecomendacaoFitoterapicoItem(id));
 }
