@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo } from "react";
 import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import { Farmaco } from "@/medperiop/types";
 import { cores, espacamento, raio } from "@/theme";
@@ -11,6 +11,12 @@ interface Props {
    * em cardiovascular e em psiquiátrico — a identidade real é classe+id). */
   isSelecionado: (farmaco: Farmaco) => boolean;
   onAlternar: (farmaco: Farmaco) => void;
+  /** Controlado pelo chamador (em vez de estado interno) para que a tela
+   * que usa este seletor também possa reagir ao termo digitado — ex.:
+   * sugerir a categoria "Fitoterápico" quando a busca não acha nada aqui
+   * mas bate com um fitoterápico (área com fonte/dados separados). */
+  busca: string;
+  onBuscaChange: (busca: string) => void;
 }
 
 /**
@@ -19,9 +25,7 @@ interface Props {
  * necessário aqui porque algumas classes chegam a ter ~40 fármacos
  * (inviável como grade de botões) e o usuário pode marcar vários de uma vez.
  */
-export function SeletorFarmaco({ farmacos, isSelecionado, onAlternar }: Props) {
-  const [busca, setBusca] = useState("");
-
+export function SeletorFarmaco({ farmacos, isSelecionado, onAlternar, busca, onBuscaChange }: Props) {
   const grupos = useMemo(() => {
     const termo = busca.trim().toLowerCase();
     const filtrados = termo
@@ -46,7 +50,7 @@ export function SeletorFarmaco({ farmacos, isSelecionado, onAlternar }: Props) {
     <View style={estilos.container}>
       <TextInput
         value={busca}
-        onChangeText={setBusca}
+        onChangeText={onBuscaChange}
         placeholder="Buscar por nome genérico, comercial ou subclasse..."
         placeholderTextColor={cores.textoSecundario}
         style={estilos.busca}

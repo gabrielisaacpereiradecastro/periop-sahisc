@@ -1,9 +1,11 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import { router } from "expo-router";
 import { Botao } from "@/components/Botao";
+import { Cartao } from "@/components/Cartao";
 import { useQuestionario } from "@/anticoag/state/QuestionarioContext";
 import { FITOTERAPICOS } from "@/anticoag/data/fitoterapicos";
+import { TODOS_FARMACOS } from "@/medperiop/data/farmacos";
 import { cores, espacamento, raio } from "@/theme";
 
 function normalizar(texto: string): string {
@@ -18,6 +20,17 @@ export default function TelaFitoterapico() {
   const [busca, setBusca] = useState("");
   const [selecionados, setSelecionados] = useState<string[]>(respostas.fitoterapicoIds);
 
+  // Garante classe: "fitoterapico" mesmo quando esta tela é aberta por um
+  // atalho direto (ex.: botão "Fitoterápico" na tela única de entrada, que
+  // não passa pelo próprio classe.tsx do AntiCoag) — sem isso, a tela de
+  // resultado não sabe qual motor de recomendação usar e cai no de DOAC,
+  // mostrando "medicamento não consta no protocolo" por engano.
+  useEffect(() => {
+    if (respostas.classe !== "fitoterapico") {
+      atualizar({ classe: "fitoterapico" });
+    }
+  }, [respostas.classe, atualizar]);
+
   const filtrados = useMemo(() => {
     const termo = normalizar(busca.trim());
     if (!termo) return FITOTERAPICOS;
@@ -25,6 +38,19 @@ export default function TelaFitoterapico() {
       (f) => normalizar(f.nomeGenerico).includes(termo) || normalizar(f.sinonimos).includes(termo)
     );
   }, [busca]);
+
+  /** As 7 classes do MedPeriOp (cardiovascular, endócrino etc.) vêm de outra
+   * fonte e outra tela — se o termo bater com um fármaco de lá, avisa em
+   * vez de só dizer "não encontrado". */
+  const farmacosSugeridos = useMemo(() => {
+    const termo = normalizar(busca.trim());
+    if (termo.length < 3 || filtrados.length > 0) return [];
+    return TODOS_FARMACOS.filter(
+      (f) =>
+        normalizar(f.nomeGenerico).includes(termo) ||
+        f.nomesComerciais.some((n) => normalizar(n).includes(termo))
+    );
+  }, [busca, filtrados.length]);
 
   function alternar(id: string) {
     setSelecionados((atual) => (atual.includes(id) ? atual.filter((x) => x !== id) : [...atual, id]));
@@ -49,6 +75,23 @@ export default function TelaFitoterapico() {
         />
         {filtrados.length === 0 && (
           <Text style={estilos.semResultado}>Nenhum fitoterápico encontrado para "{busca}".</Text>
+        )}
+        {farmacosSugeridos.length > 0 && (
+          <Cartao style={estilos.cartaoSugestao}>
+            <Text style={estilos.tituloSugestao}>
+              {farmacosSugeridos.map((f) => f.nomeGenerico).join(", ")}{" "}
+              {farmacosSugeridos.length > 1 ? "não são fitoterápicos" : "não é fitoterápico"}
+            </Text>
+            <Text style={estilos.textoSugestao}>
+              Fica na categoria "Todos os medicamentos", com fonte própria — toque abaixo para
+              avaliar por lá.
+            </Text>
+            <Botao
+              titulo="Ir para classes de medicamentos"
+              variante="secundario"
+              onPress={() => router.push("/medperiop/questionario/classe")}
+            />
+          </Cartao>
         )}
         <View style={estilos.lista}>
           {filtrados.map((f) => {
@@ -152,6 +195,21 @@ const estilos = StyleSheet.create({
     color: cores.branco,
     fontSize: 14,
     fontWeight: "700",
+  },
+  cartaoSugestao: {
+    backgroundColor: cores.primariaClara,
+    borderColor: cores.primaria,
+    gap: espacamento.sm,
+  },
+  tituloSugestao: {
+    fontSize: 14,
+    fontWeight: "700",
+    color: cores.primariaEscura,
+  },
+  textoSugestao: {
+    fontSize: 13,
+    color: cores.primariaEscura,
+    lineHeight: 19,
   },
   itemTexto: {
     flex: 1,
