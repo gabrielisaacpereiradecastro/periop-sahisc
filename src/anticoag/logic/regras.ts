@@ -1,5 +1,5 @@
 import { buscarDoac, buscarIndicacao, rotuloDoac } from "@/anticoag/data/doacs";
-import { FaixaCrCl, Recomendacao, RespostasQuestionario } from "@/anticoag/types";
+import { FaixaCrCl, ItemMedicamentoAntiCoag, Recomendacao } from "@/anticoag/types";
 
 /** Valor representativo de CrCl usado quando o médico indica função renal
  * normal, sem exame em mãos. Bem acima de qualquer limiar de redução de
@@ -27,7 +27,7 @@ function faixaParaCrCl(faixas: FaixaCrCl[], crCl: number): FaixaCrCl | null {
  * doi:10.1136/rapm-2024-105766), Tabela 1 e seções de recomendação
  * específicas por fármaco/dose.
  */
-export function gerarRecomendacaoDoac(respostas: RespostasQuestionario): Recomendacao {
+export function gerarRecomendacaoDoac(respostas: ItemMedicamentoAntiCoag): Recomendacao {
   const doac = buscarDoac(respostas.medicamentoId);
 
   const vazio: Recomendacao = {

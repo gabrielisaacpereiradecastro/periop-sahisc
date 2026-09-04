@@ -1,8 +1,9 @@
 import { gerarRecomendacaoDoac } from "./regras";
-import { RespostasQuestionario } from "@/anticoag/types";
+import { ItemMedicamentoAntiCoag } from "@/anticoag/types";
 
-function base(overrides: Partial<RespostasQuestionario> = {}): RespostasQuestionario {
+function base(overrides: Partial<ItemMedicamentoAntiCoag> = {}): ItemMedicamentoAntiCoag {
   return {
+    id: "item-teste",
     classe: "doac",
     medicamentoId: "apixaban",
     indicacaoId: "apixaban_tvp_recorrencia",
@@ -13,7 +14,7 @@ function base(overrides: Partial<RespostasQuestionario> = {}): RespostasQuestion
     frequenciaHbpm: null,
     antiplaquetarioId: null,
     doseAtaquePosOp: null,
-    fitoterapicoIds: [],
+    fitoterapicoId: null,
     ...overrides,
   };
 }

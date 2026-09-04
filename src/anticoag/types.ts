@@ -122,10 +122,19 @@ export interface Fitoterapico {
   recomendacaoTexto: string;
 }
 
-// --- Questionário e recomendação (comum às classes) ---
+// --- Questionário e recomendação ---
 
-export interface RespostasQuestionario {
-  classe: ClasseMedicamento | null;
+/**
+ * Um medicamento já confirmado na sessão — carrega a classe e só os campos
+ * relevantes para ela (os de outras classes ficam null). Diferente do
+ * MedPeriOp (que tem uma tabela única de Farmaco por classe+id), o AntiCoag
+ * tem 4 fontes/motores de decisão estruturalmente diferentes, então o item
+ * precisa guardar as respostas em vez de só um id de fármaco.
+ */
+export interface ItemMedicamentoAntiCoag {
+  /** Identificador único do item na lista (não é o id do medicamento). */
+  id: string;
+  classe: ClasseMedicamento;
 
   // DOAC
   medicamentoId: string | null;
@@ -142,7 +151,37 @@ export interface RespostasQuestionario {
   antiplaquetarioId: string | null;
   doseAtaquePosOp: RespostaSimNao;
 
-  // Fitoterápico (seleção múltipla — o paciente pode usar mais de um)
+  // Fitoterápico
+  fitoterapicoId: string | null;
+}
+
+export interface RespostasQuestionario {
+  /** Medicamentos já confirmados nesta sessão, de qualquer classe. */
+  medicamentos: ItemMedicamentoAntiCoag[];
+
+  /** Classe sendo escolhida agora (rascunho — só vira item confirmado
+   * quando a pessoa conclui a etapa daquela classe). */
+  classeAtual: ClasseMedicamento | null;
+
+  // DOAC (rascunho)
+  medicamentoId: string | null;
+  indicacaoId: string | null;
+  funcaoRenalOpcao: OpcaoFuncaoRenal | null;
+  crClExata: number | null;
+
+  // Heparina (rascunho)
+  viaHnf: ViaHnf | null;
+  doseHbpm: NivelDose | null;
+  frequenciaHbpm: FrequenciaHbpm | null;
+
+  // Antiplaquetário (rascunho) — seleção múltipla; os que precisam da
+  // pergunta extra de dose de ataque (clopidogrel/prasugrel/ticagrelor)
+  // entram numa fila e são resolvidos um de cada vez.
+  antiplaquetarioIdAtual: string | null;
+  doseAtaquePosOp: RespostaSimNao;
+  filaAntiplaquetarioPendente: string[];
+
+  // Fitoterápico (rascunho) — seleção múltipla, sem pergunta extra.
   fitoterapicoIds: string[];
 }
 

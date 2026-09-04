@@ -5,7 +5,7 @@ import {
   REGRA_HBPM_BAIXA,
   observacaoHbpmBaixa,
 } from "@/anticoag/data/heparinas";
-import { Recomendacao, RegraHeparina, RespostasQuestionario } from "@/anticoag/types";
+import { ItemMedicamentoAntiCoag, Recomendacao, RegraHeparina } from "@/anticoag/types";
 
 const VAZIO_BASE: Omit<Recomendacao, "classe" | "motivoIndeterminado"> = {
   decisao: "indeterminado",
@@ -45,7 +45,7 @@ function montarRecomendacao(
  * Motor de decisão para heparina não fracionada (HNF), baseado nas seções
  * de recomendação específicas do guideline ASRA Pain Medicine 5ª edição.
  */
-export function gerarRecomendacaoHnf(respostas: RespostasQuestionario): Recomendacao {
+export function gerarRecomendacaoHnf(respostas: ItemMedicamentoAntiCoag): Recomendacao {
   if (!respostas.viaHnf) {
     return {
       ...VAZIO_BASE,
@@ -66,7 +66,7 @@ export function gerarRecomendacaoHnf(respostas: RespostasQuestionario): Recomend
 /**
  * Motor de decisão para heparina de baixo peso molecular (HBPM).
  */
-export function gerarRecomendacaoHbpm(respostas: RespostasQuestionario): Recomendacao {
+export function gerarRecomendacaoHbpm(respostas: ItemMedicamentoAntiCoag): Recomendacao {
   if (!respostas.doseHbpm) {
     return {
       ...VAZIO_BASE,

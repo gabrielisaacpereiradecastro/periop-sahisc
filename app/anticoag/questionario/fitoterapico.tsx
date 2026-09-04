@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import { router } from "expo-router";
 import { Botao } from "@/components/Botao";
@@ -16,20 +16,9 @@ function normalizar(texto: string): string {
 }
 
 export default function TelaFitoterapico() {
-  const { respostas, atualizar } = useQuestionario();
+  const { confirmarFitoterapicos } = useQuestionario();
   const [busca, setBusca] = useState("");
-  const [selecionados, setSelecionados] = useState<string[]>(respostas.fitoterapicoIds);
-
-  // Garante classe: "fitoterapico" mesmo quando esta tela é aberta por um
-  // atalho direto (ex.: botão "Fitoterápico" na tela única de entrada, que
-  // não passa pelo próprio classe.tsx do AntiCoag) — sem isso, a tela de
-  // resultado não sabe qual motor de recomendação usar e cai no de DOAC,
-  // mostrando "medicamento não consta no protocolo" por engano.
-  useEffect(() => {
-    if (respostas.classe !== "fitoterapico") {
-      atualizar({ classe: "fitoterapico" });
-    }
-  }, [respostas.classe, atualizar]);
+  const [selecionados, setSelecionados] = useState<string[]>([]);
 
   const filtrados = useMemo(() => {
     const termo = normalizar(busca.trim());
@@ -57,8 +46,8 @@ export default function TelaFitoterapico() {
   }
 
   function concluir() {
-    atualizar({ fitoterapicoIds: selecionados });
-    router.push("/anticoag/resultado");
+    confirmarFitoterapicos(selecionados);
+    router.push("/anticoag/questionario/mais-medicamentos");
   }
 
   return (

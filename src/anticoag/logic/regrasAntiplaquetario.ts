@@ -1,14 +1,14 @@
 import { buscarAntiplaquetario, rotuloAntiplaquetario } from "@/anticoag/data/antiplaquetarios";
-import { Recomendacao, RespostasQuestionario } from "@/anticoag/types";
+import { ItemMedicamentoAntiCoag, Recomendacao } from "@/anticoag/types";
 
-const PRECISA_PERGUNTAR_DOSE_ATAQUE = ["clopidogrel", "prasugrel", "ticagrelor"];
+export const PRECISA_PERGUNTAR_DOSE_ATAQUE = ["clopidogrel", "prasugrel", "ticagrelor"];
 
 /**
  * Motor de decisão para antiplaquetários, baseado nas seções de recomendação
  * específicas do guideline ASRA Pain Medicine 5ª edição.
  */
 export function gerarRecomendacaoAntiplaquetario(
-  respostas: RespostasQuestionario
+  respostas: ItemMedicamentoAntiCoag
 ): Recomendacao {
   const vazio: Recomendacao = {
     decisao: "indeterminado",

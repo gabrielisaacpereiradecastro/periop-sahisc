@@ -1,5 +1,5 @@
 import { buscarFitoterapico } from "@/anticoag/data/fitoterapicos";
-import { Recomendacao, RespostasQuestionario } from "@/anticoag/types";
+import { Recomendacao } from "@/anticoag/types";
 
 const VAZIO: Recomendacao = {
   decisao: "indeterminado",
@@ -59,9 +59,4 @@ export function gerarRecomendacaoFitoterapicoItem(fitoterapicoId: string): Recom
     situacoesEspeciais,
     diasSuspensao: fito.regra.valorDias ?? null,
   };
-}
-
-/** Gera uma recomendação para cada fitoterápico marcado na sessão. */
-export function gerarRecomendacoesFitoterapico(respostas: RespostasQuestionario): Recomendacao[] {
-  return respostas.fitoterapicoIds.map((id) => gerarRecomendacaoFitoterapicoItem(id));
 }

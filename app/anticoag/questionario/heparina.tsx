@@ -14,8 +14,8 @@ import { ViaHnf } from "@/anticoag/types";
 import { cores, espacamento } from "@/theme";
 
 export default function TelaHeparina() {
-  const { respostas, atualizar } = useQuestionario();
-  const ehHnf = respostas.classe === "hnf";
+  const { respostas, atualizar, confirmarHeparina } = useQuestionario();
+  const ehHnf = respostas.classeAtual === "hnf";
 
   const podeAvancar = ehHnf
     ? respostas.viaHnf !== null
@@ -72,8 +72,11 @@ export default function TelaHeparina() {
       )}
 
       <Botao
-        titulo="Ver recomendação"
-        onPress={() => router.push("/anticoag/resultado")}
+        titulo="Confirmar medicamento"
+        onPress={() => {
+          confirmarHeparina();
+          router.push("/anticoag/questionario/mais-medicamentos");
+        }}
         desabilitado={!podeAvancar}
       />
     </ScrollView>

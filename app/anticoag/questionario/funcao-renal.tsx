@@ -9,7 +9,7 @@ import { OpcaoFuncaoRenal } from "@/anticoag/types";
 import { cores, espacamento, raio } from "@/theme";
 
 export default function TelaFuncaoRenal() {
-  const { respostas, atualizar } = useQuestionario();
+  const { respostas, atualizar, confirmarDoac } = useQuestionario();
 
   function selecionarOpcao(opcao: OpcaoFuncaoRenal) {
     atualizar({
@@ -74,8 +74,11 @@ export default function TelaFuncaoRenal() {
       </Cartao>
 
       <Botao
-        titulo="Ver recomendação"
-        onPress={() => router.push("/anticoag/resultado")}
+        titulo="Confirmar medicamento"
+        onPress={() => {
+          confirmarDoac();
+          router.push("/anticoag/questionario/mais-medicamentos");
+        }}
         desabilitado={!podeAvancar}
       />
     </ScrollView>

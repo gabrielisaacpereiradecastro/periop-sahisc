@@ -1,15 +1,23 @@
 import { Recomendacao } from "@/anticoag/types";
+import { horasComDias } from "@/anticoag/utils/formato";
 import { SAHISC_LOGO_BASE64 } from "@/sahiscLogo";
 
 /**
  * HTML enxuto (pensado para impressão em A4) com só o essencial da
- * recomendação, para o médico enviar a quem precisar (cirurgião, equipe,
- * etc.). Não repete a lista completa de indicações nem a bibliografia —
- * isso fica só dentro do app.
+ * recomendação de CADA medicamento adicionado na sessão (podem ser de
+ * classes diferentes — DOAC, heparina, antiplaquetário, fitoterápico —
+ * todos acumulados numa lista só), para o médico enviar a quem precisar
+ * (cirurgião, paciente, equipe). Não repete a lista completa de
+ * indicações nem a bibliografia — isso fica só dentro do app.
+ *
+ * `size: A4` no @page é importante: sem isso, o diálogo de impressão de
+ * alguns navegadores (principalmente mobile) pode renderizar tudo
+ * espremido numa página só, tipo print de tela, em vez de paginar.
  */
 function estiloBase(): string {
   return `
-        @page { margin: 28px; }
+        @page { size: A4; margin: 28px; }
+        html, body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
         body { font-family: -apple-system, Helvetica, Arial, sans-serif; color: #1F2937; }
         .cabecalho { background-color: #0F766E; color: #FFFFFF; padding: 16px 20px; border-radius: 10px; }
         .cabecalho h1 { margin: 0; font-size: 18px; }
@@ -18,8 +26,12 @@ function estiloBase(): string {
         .info td { padding: 3px 0; }
         .info td.rotulo { color: #4B5563; width: 140px; vertical-align: top; }
         .info td.valor { font-weight: 600; }
-        .decisao { margin-top: 18px; padding: 14px 16px; border-radius: 10px; border: 1px solid; page-break-inside: avoid; break-inside: avoid; }
+        .medicamento { margin-top: 18px; page-break-inside: avoid; break-inside: avoid; }
+        .med-nome { font-size: 14px; font-weight: 700; }
+        .med-detalhe { font-size: 11.5px; color: #4B5563; margin-top: 2px; }
+        .decisao { margin-top: 6px; padding: 12px 14px; border-radius: 10px; border: 1px solid; }
         .decisao p { margin: 4px 0; font-size: 12.5px; line-height: 1.5; }
+        .fonte-fito { margin-top: 4px; font-size: 10px; color: #6B7280; font-style: italic; }
         .rodape { margin-top: 24px; padding-top: 10px; border-top: 1px solid #E5E7EB; font-size: 10px; color: #6B7280; line-height: 1.5; }
         .rodape-creditos { margin-top: 14px; display: flex; align-items: center; gap: 10px; }
         .rodape-creditos img { width: 34px; height: auto; }
@@ -42,164 +54,114 @@ function rodape(): string {
   `;
 }
 
-function corpoDecisaoFitoterapicoItem(recomendacao: Recomendacao): string {
-  if (recomendacao.decisao === "indeterminado") {
-    return `<p><strong>⚠️ ${recomendacao.motivoIndeterminado ?? "Não foi possível gerar uma recomendação."}</strong></p>`;
-  }
-  const individualizado = recomendacao.diasSuspensao == null && !!recomendacao.motivoIndividualizado;
+function corpoDecisaoFitoterapico(r: Recomendacao): string {
+  const individualizado = r.diasSuspensao == null && !!r.motivoIndividualizado;
   const decisao = individualizado
-    ? `<p><strong>Decisão individualizada.</strong> ${recomendacao.motivoIndividualizado}</p>`
-    : `<p><strong>Suspender ${recomendacao.diasSuspensao} dias antes</strong> de cirurgia eletiva.</p>`;
-  const situacoes = recomendacao.situacoesEspeciais
-    ? `<p><strong>Interações e recomendação completa:</strong> ${recomendacao.situacoesEspeciais}</p>`
+    ? `<p><strong>Decisão individualizada.</strong> ${r.motivoIndividualizado}</p>`
+    : `<p><strong>Suspender ${r.diasSuspensao} dias antes</strong> de cirurgia eletiva.</p>`;
+  const situacoes = r.situacoesEspeciais
+    ? `<p><strong>Interações e recomendação completa:</strong> ${r.situacoesEspeciais}</p>`
     : "";
-  return decisao + situacoes;
+  return (
+    decisao +
+    situacoes +
+    `<p class="fonte-fito">Fonte: Elvir Lazo OL, White PF, et al. J Clin Anesth. 2024;95:111473 — risco de sangramento cirúrgico geral, não específico de bloqueio neuraxial.</p>`
+  );
 }
 
-/**
- * HTML enxuto com a recomendação de CADA fitoterápico marcado na sessão
- * (seleção múltipla) — mesmo padrão do resumo do MedPeriOp para múltiplos
- * medicamentos.
- */
-export function gerarHtmlResumoFitoterapicos(
+function corpoDecisaoAsra(r: Recomendacao): string {
+  let corpo = "";
+  if (r.semRestricao) {
+    corpo +=
+      "<p><strong>Não é necessário suspender.</strong> O guideline não identifica risco adicional relevante de sangramento com este medicamento, nem restringe a técnica, monitorização ou retirada de cateter.</p>";
+  } else {
+    if (r.contraindicado) {
+      corpo += `<p><strong>⚠️ Bloqueio não recomendado nessa função renal</strong>, a menos que um nível plasmático do medicamento seja dosado e esteja ${r.nivelResidualAceitavel}.</p>`;
+    }
+    corpo += `<p><strong>Suspender nas ${r.horasSuspensao !== null ? horasComDias(r.horasSuspensao) : "—"} antes</strong> do bloqueio.</p>`;
+    corpo +=
+      r.horasAteRetomar !== null
+        ? `<p><strong>Retomar:</strong> aguardar pelo menos ${horasComDias(r.horasAteRetomar)} após a colocação da agulha ou retirada do cateter, antes da próxima dose.</p>`
+        : "<p><strong>Retomar:</strong> sem número fixo de horas — ver observação.</p>";
+    if (r.observacaoRetomada) {
+      corpo += `<p><strong>Observação:</strong> ${r.observacaoRetomada}</p>`;
+    }
+  }
+  return corpo;
+}
+
+function blocoMedicamento(r: Recomendacao): string {
+  const nome = r.medicamentoNome ?? "Não identificado";
+
+  if (r.decisao === "indeterminado") {
+    return `
+      <div class="medicamento">
+        <div class="med-nome">${nome}</div>
+        <div class="decisao" style="border-color: #B91C1C; background-color: #FEE2E2;">
+          <p><strong>⚠️ ${r.motivoIndeterminado ?? "Não foi possível gerar uma recomendação."}</strong></p>
+        </div>
+      </div>
+    `;
+  }
+
+  if (r.classe === "fitoterapico") {
+    const individualizado = r.diasSuspensao == null && !!r.motivoIndividualizado;
+    const corAlerta = individualizado ? "#4B5563" : "#B45309";
+    const fundoAlerta = individualizado ? "#F3F4F6" : "#FEF3C7";
+    return `
+      <div class="medicamento">
+        <div class="med-nome">${nome}</div>
+        ${r.detalhe ? `<div class="med-detalhe">${r.detalhe}</div>` : ""}
+        <div class="decisao" style="border-color: ${corAlerta}; background-color: ${fundoAlerta};">
+          ${corpoDecisaoFitoterapico(r)}
+        </div>
+      </div>
+    `;
+  }
+
+  const corAlerta = r.semRestricao ? "#15803D" : r.contraindicado ? "#B91C1C" : "#B45309";
+  const fundoAlerta = r.semRestricao ? "#DCFCE7" : r.contraindicado ? "#FEE2E2" : "#FEF3C7";
+  const detalhe = [r.detalhe, r.crClUsada !== null ? `CrCl usada: ${r.crClUsada} mL/min` : null]
+    .filter(Boolean)
+    .join(" · ");
+  return `
+    <div class="medicamento">
+      <div class="med-nome">${nome}</div>
+      ${detalhe ? `<div class="med-detalhe">${detalhe}</div>` : ""}
+      <div class="decisao" style="border-color: ${corAlerta}; background-color: ${fundoAlerta};">
+        ${corpoDecisaoAsra(r)}
+      </div>
+    </div>
+  `;
+}
+
+export function gerarHtmlResumoConsolidado(
   recomendacoes: Recomendacao[],
   nomePaciente: string
 ): string {
   const nome = nomePaciente.trim() || "Não informado";
-
-  const blocos = recomendacoes
-    .map((r) => {
-      const individualizado = r.decisao === "calculada" && r.diasSuspensao == null && !!r.motivoIndividualizado;
-      const corAlerta = r.decisao === "indeterminado" ? "#B91C1C" : individualizado ? "#4B5563" : "#B45309";
-      const fundoAlerta = r.decisao === "indeterminado" ? "#FEE2E2" : individualizado ? "#F3F4F6" : "#FEF3C7";
-      const nomeItem = r.medicamentoNome ?? "Não identificado";
-      return `
-        <div class="medicamento">
-          <div class="med-nome">${nomeItem}</div>
-          <div class="decisao" style="border-color: ${corAlerta}; background-color: ${fundoAlerta};">
-            ${corpoDecisaoFitoterapicoItem(r)}
-          </div>
-        </div>
-      `;
-    })
-    .join("");
+  const blocos = recomendacoes.map(blocoMedicamento).join("");
 
   return `
   <html>
     <head>
       <meta charset="utf-8" />
-      <style>${estiloBase()}
-        .medicamento { margin-top: 18px; page-break-inside: avoid; break-inside: avoid; }
-        .med-nome { font-size: 14px; font-weight: 700; }
-        .decisao { margin-top: 6px; }
-      </style>
+      <style>${estiloBase()}</style>
     </head>
     <body>
       <div class="cabecalho">
-        <h1>AntiCoag PeriOp — Fitoterápicos</h1>
-        <p>Elvir Lazo OL, White PF, et al. J Clin Anesth. 2024;95:111473 (risco perioperatório geral, não específico de bloqueio neuraxial)</p>
+        <h1>AntiCoag PeriOp</h1>
+        <p>DOAC/heparina/antiplaquetários: ASRA Pain Medicine, 5ª edição (Kopp SL, et al. 2025). Fitoterápicos: fonte separada (ver cada item).</p>
       </div>
 
       <table class="info" width="100%">
         <tr><td class="rotulo">Paciente</td><td class="valor">${nome}</td></tr>
-        <tr><td class="rotulo">Fitoterápicos avaliados</td><td class="valor">${recomendacoes.length}</td></tr>
+        <tr><td class="rotulo">Medicamentos avaliados</td><td class="valor">${recomendacoes.length}</td></tr>
       </table>
 
       ${blocos}
 
       ${rodape()}
-    </body>
-  </html>
-  `;
-}
-
-export function gerarHtmlResumo(recomendacao: Recomendacao, nomePaciente: string): string {
-  const nome = nomePaciente.trim() || "Não informado";
-  const medicamento = recomendacao.medicamentoNome ?? "Não identificado";
-  const detalhe = recomendacao.detalhe ?? "Não informado";
-
-  const corAlerta = recomendacao.semRestricao
-    ? "#15803D"
-    : recomendacao.contraindicado
-      ? "#B91C1C"
-      : "#B45309";
-  const fundoAlerta = recomendacao.semRestricao
-    ? "#DCFCE7"
-    : recomendacao.contraindicado
-      ? "#FEE2E2"
-      : "#FEF3C7";
-
-  let corpoDecisao = "";
-  if (recomendacao.semRestricao) {
-    corpoDecisao +=
-      "<p><strong>Não é necessário suspender.</strong> O guideline não identifica risco adicional relevante de sangramento com este medicamento, nem restringe a técnica, monitorização ou retirada de cateter.</p>";
-  } else {
-    if (recomendacao.contraindicado) {
-      corpoDecisao += `<p><strong>⚠️ Bloqueio não recomendado nessa função renal</strong>, a menos que um nível plasmático do medicamento seja dosado e esteja ${recomendacao.nivelResidualAceitavel}.</p>`;
-    }
-    corpoDecisao += `<p><strong>Suspender nas ${recomendacao.horasSuspensao} horas antes</strong> do bloqueio.</p>`;
-    corpoDecisao +=
-      recomendacao.horasAteRetomar !== null
-        ? `<p><strong>Retomar:</strong> aguardar pelo menos ${recomendacao.horasAteRetomar} horas após a colocação da agulha ou retirada do cateter, antes da próxima dose.</p>`
-        : "<p><strong>Retomar:</strong> sem número fixo de horas — ver observação.</p>";
-    if (recomendacao.observacaoRetomada) {
-      corpoDecisao += `<p><strong>Observação:</strong> ${recomendacao.observacaoRetomada}</p>`;
-    }
-  }
-
-  return `
-  <html>
-    <head>
-      <meta charset="utf-8" />
-      <style>
-        @page { margin: 28px; }
-        body { font-family: -apple-system, Helvetica, Arial, sans-serif; color: #1F2937; }
-        .cabecalho { background-color: #0F766E; color: #FFFFFF; padding: 16px 20px; border-radius: 10px; }
-        .cabecalho h1 { margin: 0; font-size: 18px; }
-        .cabecalho p { margin: 4px 0 0; font-size: 12px; opacity: 0.9; }
-        .info { margin-top: 16px; font-size: 13px; }
-        .info td { padding: 3px 0; }
-        .info td.rotulo { color: #4B5563; width: 140px; vertical-align: top; }
-        .info td.valor { font-weight: 600; }
-        .decisao { margin-top: 18px; padding: 14px 16px; border-radius: 10px; border: 1px solid ${corAlerta}; background-color: ${fundoAlerta}; page-break-inside: avoid; break-inside: avoid; }
-        .decisao p { margin: 4px 0; font-size: 12.5px; line-height: 1.5; }
-        .rodape { margin-top: 24px; padding-top: 10px; border-top: 1px solid #E5E7EB; font-size: 10px; color: #6B7280; line-height: 1.5; }
-        .rodape-creditos { margin-top: 14px; display: flex; align-items: center; gap: 10px; }
-        .rodape-creditos img { width: 34px; height: auto; }
-        .rodape-creditos span { font-size: 10px; color: #6B7280; }
-      </style>
-    </head>
-    <body>
-      <div class="cabecalho">
-        <h1>AntiCoag PeriOp</h1>
-        <p>Baseado em ASRA Pain Medicine, 5ª edição (Kopp SL, et al. Reg Anesth Pain Med 2025)</p>
-      </div>
-
-      <table class="info" width="100%">
-        <tr><td class="rotulo">Paciente</td><td class="valor">${nome}</td></tr>
-        <tr><td class="rotulo">Medicamento</td><td class="valor">${medicamento}</td></tr>
-        <tr><td class="rotulo">Detalhe</td><td class="valor">${detalhe}</td></tr>
-        ${
-          recomendacao.crClUsada !== null
-            ? `<tr><td class="rotulo">CrCl usada</td><td class="valor">${recomendacao.crClUsada} mL/min</td></tr>`
-            : ""
-        }
-      </table>
-
-      <div class="decisao">
-        ${corpoDecisao}
-      </div>
-
-      <div class="rodape">
-        Este resumo não substitui o julgamento do médico anestesiologista responsável, que deve
-        avaliar o caso de forma individualizada. Gerado pelo aplicativo em ${new Date().toLocaleString(
-          "pt-BR"
-        )}.
-        <div class="rodape-creditos">
-          <img src="data:image/png;base64,${SAHISC_LOGO_BASE64}" />
-          <span>Serviço de Anestesiologia de São Carlos (SAHISC)</span>
-        </div>
-      </div>
     </body>
   </html>
   `;

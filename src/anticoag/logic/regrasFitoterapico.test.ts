@@ -1,26 +1,5 @@
-import {
-  gerarRecomendacaoFitoterapicoItem,
-  gerarRecomendacoesFitoterapico,
-} from "./regrasFitoterapico";
+import { gerarRecomendacaoFitoterapicoItem } from "./regrasFitoterapico";
 import { FITOTERAPICOS } from "@/anticoag/data/fitoterapicos";
-import { RespostasQuestionario } from "@/anticoag/types";
-
-function respostasBase(overrides: Partial<RespostasQuestionario> = {}): RespostasQuestionario {
-  return {
-    classe: "fitoterapico",
-    medicamentoId: null,
-    indicacaoId: null,
-    funcaoRenalOpcao: null,
-    crClExata: null,
-    viaHnf: null,
-    doseHbpm: null,
-    frequenciaHbpm: null,
-    antiplaquetarioId: null,
-    doseAtaquePosOp: null,
-    fitoterapicoIds: [],
-    ...overrides,
-  };
-}
 
 describe("fitoterápicos", () => {
   test("todos os 33 fitoterápicos do artigo estão cadastrados", () => {
@@ -54,21 +33,5 @@ describe("fitoterápicos", () => {
     const r = gerarRecomendacaoFitoterapicoItem("nao_existe");
     expect(r.decisao).toBe("indeterminado");
     expect(r.motivoIndeterminado).toBeTruthy();
-  });
-
-  describe("gerarRecomendacoesFitoterapico (seleção múltipla)", () => {
-    test("gera uma recomendação por fitoterápico selecionado, na mesma ordem", () => {
-      const recomendacoes = gerarRecomendacoesFitoterapico(
-        respostasBase({ fitoterapicoIds: ["alho", "ginkgo", "cannabis"] })
-      );
-      expect(recomendacoes).toHaveLength(3);
-      expect(recomendacoes[0].medicamentoNome).toMatch(/Alho/);
-      expect(recomendacoes[1].diasSuspensao).toBe(14);
-      expect(recomendacoes[2].motivoIndividualizado).toBeTruthy();
-    });
-
-    test("nenhum selecionado gera lista vazia", () => {
-      expect(gerarRecomendacoesFitoterapico(respostasBase())).toEqual([]);
-    });
   });
 });

@@ -39,15 +39,15 @@ export default function TelaClasse() {
   const { respostas, atualizar } = useQuestionario();
 
   function selecionar(id: ClasseMedicamento) {
-    atualizar({ classe: id });
+    atualizar({ classeAtual: id });
   }
 
   function avancar() {
-    if (respostas.classe === "doac") {
+    if (respostas.classeAtual === "doac") {
       router.push("/anticoag/questionario/medicamento");
-    } else if (respostas.classe === "antiplaquetario") {
+    } else if (respostas.classeAtual === "antiplaquetario") {
       router.push("/anticoag/questionario/antiplaquetario");
-    } else if (respostas.classe === "fitoterapico") {
+    } else if (respostas.classeAtual === "fitoterapico") {
       router.push("/anticoag/questionario/fitoterapico");
     } else {
       router.push("/anticoag/questionario/heparina");
@@ -56,10 +56,14 @@ export default function TelaClasse() {
 
   return (
     <ScrollView contentContainerStyle={estilos.container}>
-      <Text style={estilos.pergunta}>Qual classe de medicamento o paciente usa?</Text>
+      <Text style={estilos.pergunta}>
+        {respostas.medicamentos.length > 0
+          ? `Qual a classe do próximo medicamento? (${respostas.medicamentos.length} já adicionado${respostas.medicamentos.length > 1 ? "s" : ""})`
+          : "Qual classe de medicamento o paciente usa?"}
+      </Text>
       <View style={estilos.lista} accessibilityRole="radiogroup">
         {OPCOES.map((op) => {
-          const ativo = respostas.classe === op.id;
+          const ativo = respostas.classeAtual === op.id;
           return (
             <Pressable
               key={op.id}
@@ -78,7 +82,7 @@ export default function TelaClasse() {
         })}
       </View>
 
-      <Botao titulo="Próximo" onPress={avancar} desabilitado={respostas.classe === null} />
+      <Botao titulo="Próximo" onPress={avancar} desabilitado={respostas.classeAtual === null} />
     </ScrollView>
   );
 }
