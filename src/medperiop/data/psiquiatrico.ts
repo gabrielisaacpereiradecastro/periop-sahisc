@@ -1,6 +1,19 @@
 import { Farmaco } from "@/medperiop/types";
 
 /**
+ * Nomes comerciais (nome genérico -> marcas) verificados um a um via busca
+ * (bulário ANVISA / ConsultaRemédios) em 2026-09 — não é uma tradução
+ * automática do inglês. Nomes de fora do Brasil (ex.: US-only) foram
+ * deliberadamente OMITIDOS em vez de adivinhados. Fármacos sem entrada
+ * aqui (ficam com `?? []`) são os que a busca não encontrou nenhum
+ * registro comercial brasileiro.
+ */
+const NOMES_COMERCIAIS_PSIQUIATRICO: Record<string, string[]> = {
+  Estazolam: ["Noctal"],
+  Flurazepam: ["Dalmadorm"],
+};
+
+/**
  * Dados extraídos de: Oprea AD, Keshock MC, Cummings KC III, et al.
  * Preoperative Management of Medications for Psychiatric Diseases: SPAQI
  * Consensus Statement. Mayo Clin Proc. 2022;97(2):397-416.
@@ -213,7 +226,7 @@ export const FARMACOS_PSIQUIATRICO: Farmaco[] = [
   {
     id: "estazolam",
     nomeGenerico: "Estazolam",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_PSIQUIATRICO["Estazolam"] ?? [],
     classe: "psiquiatrico",
     subclasse: "Benzodiazepínico",
     regra: { tipo: "continuar" },
@@ -227,7 +240,7 @@ export const FARMACOS_PSIQUIATRICO: Farmaco[] = [
   {
     id: "flurazepam",
     nomeGenerico: "Flurazepam",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_PSIQUIATRICO["Flurazepam"] ?? [],
     classe: "psiquiatrico",
     subclasse: "Benzodiazepínico",
     regra: { tipo: "continuar" },

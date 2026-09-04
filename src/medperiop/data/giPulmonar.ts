@@ -1,6 +1,129 @@
 import { Farmaco } from "@/medperiop/types";
 
 /**
+ * Nomes comerciais (nome genérico -> marcas) verificados um a um via busca
+ * (bulário ANVISA / ConsultaRemédios) em 2026-09 — não é uma tradução
+ * automática do inglês. Nomes de fora do Brasil (ex.: US-only, como
+ * Xopenex/levalbuterol, Brovana/arformoterol ou Arcapta/indacaterol nos
+ * EUA) foram deliberadamente OMITIDOS em vez de adivinhados. Fármacos sem
+ * entrada aqui (ficam com `?? []`) são os que a busca não encontrou
+ * registro comercial brasileiro confirmado — por nunca terem sido
+ * comercializados no país (ex.: balsalazida, olsalazina, linaclotida,
+ * plecanatida, ozanimode, alosetrona, dolasetrona), por serem hoje apenas
+ * de uso hospitalar/manipulação sem marca própria de mercado (ex.:
+ * hiosciamina, diciclomina, hidróxido de alumínio e carbonato de cálcio
+ * isolados como antiácido, citrato de sódio e trisilicato de magnésio), ou
+ * por não ter sido possível confirmar com segurança uma marca brasileira
+ * distinta no momento da busca (ex.: umeclidínio e vilanterol isolados —
+ * só existem em combinações —, epoprostenol, iloprosta e treprostinil
+ * isolados, metotrexato e fentermina/fentermina-topiramato). Marcas
+ * descontinuadas mas reais (ex.: Serevent/salmeterol, Zelmac/tegaserode)
+ * foram mantidas porque ainda ajudam a busca — prescrições/relatos antigos
+ * podem referenciá-las mesmo fora de linha hoje.
+ */
+const NOMES_COMERCIAIS_GIPULMONAR: Record<string, string[]> = {
+  // --- Pulmonar ---
+  Ipratrópio: ["Atrovent"],
+  Tiotrópio: ["Spiriva"],
+  Aclidínio: ["Eklira Genuair"],
+  "Glicopirrolato inalatório": ["Seebri Breezhaler"],
+  Revefenacina: ["Yupelri"],
+  Albuterol: ["Aerolin"],
+  Salmeterol: ["Serevent"],
+  Formoterol: ["Fluir", "Foradil"],
+  Indacaterol: ["Onbrize"],
+  Olodaterol: ["Striverdi Respimat"],
+  Fluticasona: ["Flixotide", "Flixonase"],
+  Budesonida: ["Busonid", "Pulmicort"],
+  Mometasona: ["Oximax"],
+  Beclometasona: ["Clenil"],
+  Teofilina: ["Teolong"],
+  Roflumilaste: ["Daxas"],
+  Montelucaste: ["Singulair"],
+  Zafirlucaste: ["Accolate"],
+  "N-acetilcisteína": ["Fluimucil"],
+  Hidroxizina: ["Hixizine"],
+  Dimenidrinato: ["Dramin"],
+  Difenidramina: ["Difenidrin"],
+  Cetirizina: ["Zyrtec"],
+  Loratadina: ["Claritin"],
+  Levocetirizina: ["Zyxem"],
+  Fexofenadina: ["Allegra"],
+  Desloratadina: ["Desalex"],
+  Nintedanibe: ["Ofev"],
+  Pirfenidona: ["Esbriet"],
+  Selexipague: ["Uptravi"],
+  Bosentana: ["Tracleer"],
+  Macitentana: ["Opsumit"],
+  Ambrisentana: ["Volibris"],
+  Sildenafila: ["Viagra"],
+  Tadalafila: ["Cialis"],
+  Riociguate: ["Adempas"],
+
+  // --- Gastrointestinal ---
+  Pantoprazol: ["Pantozol"],
+  Omeprazol: ["Losec"],
+  Lansoprazol: ["Prazol"],
+  Esomeprazol: ["Nexium"],
+  Dexlansoprazol: ["Dexilant"],
+  Ranitidina: ["Antak"],
+  Famotidina: ["Famox"],
+  Sucralfato: ["Sucrafilm"],
+  Ondansetrona: ["Vonau"],
+  Granisetrona: ["Kytril"],
+  Palonosetrona: ["Onicit"],
+  Prometazina: ["Pamergan"],
+  Droperidol: ["Droperdal"],
+  Metoclopramida: ["Plasil"],
+  Aprepitanto: ["Emend"],
+  "Sene (sennosídeos)": ["Tamarine"],
+  "Polietilenoglicol (PEG 3350)": ["Muvinlax"],
+  Bisacodil: ["Dulcolax"],
+  "Citrato/hidróxido de magnésio (laxante)": ["Leite de Magnésia de Phillips"],
+  Lactulose: ["Farlac"],
+  Loperamida: ["Imosec"],
+  "Difenoxilato/atropina": ["Lomotil"],
+  Mesalamina: ["Mesacol", "Pentasa", "Asalit"],
+  Sulfassalazina: ["Azulfin"],
+
+  // --- Doença inflamatória intestinal — imunomoduladores ---
+  "6-mercaptopurina": ["Purinethol"],
+  Azatioprina: ["Imuran"],
+  "Infliximabe (e biosimilares)": ["Remicade"],
+  "Adalimumabe (e biosimilares)": ["Humira"],
+  Golimumabe: ["Simponi"],
+  Certolizumabe: ["Cimzia"],
+  Ustekinumabe: ["Stelara"],
+  Natalizumabe: ["Tysabri"],
+  Vedolizumabe: ["Entyvio"],
+  Tofacitinibe: ["Xeljanz"],
+
+  // --- Antivirais para hepatite B e C ---
+  Entecavir: ["Baraclude"],
+  Tenofovir: ["Viread"],
+  Lamivudina: ["Epivir"],
+  Adefovir: ["Hepsera"],
+  "Interferon alfa-2a peguilado": ["Pegasys"],
+  "Interferon alfa-2b peguilado": ["PegIntron"],
+  Ribavirina: ["Rebetol"],
+  Sofosbuvir: ["Sovaldi"],
+  "Ledipasvir/sofosbuvir": ["Harvoni"],
+  "Sofosbuvir/velpatasvir": ["Epclusa"],
+  "Glecaprevir/pibrentasvir": ["Maviret"],
+  "Elbasvir/grazoprevir": ["Zepatier"],
+
+  // --- Outros GI de menor prioridade ---
+  Ursodiol: ["Ursacol"],
+  "Pancrelipase (enzimas pancreáticas)": ["Creon"],
+  Lubiprostona: ["Amitiza"],
+  Tegaserode: ["Zelmac"],
+  Prucaloprida: ["Resolor"],
+  Lisdexanfetamina: ["Venvanse"],
+  Orlistate: ["Xenical"],
+  "Bupropiona/naltrexona": ["Contrave"],
+};
+
+/**
  * Dados extraídos de: Pfeifer KJ, Selzer A, Whinney CM, et al. Preoperative
  * Management of Gastrointestinal and Pulmonary Medications: SPAQI Consensus
  * Statement. Mayo Clin Proc. 2021;96(12):3158-3177.
@@ -39,7 +162,7 @@ export const FARMACOS_GI_PULMONAR: Farmaco[] = [
   ).map(([id, nome]) => ({
     id,
     nomeGenerico: nome,
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_GIPULMONAR[nome] ?? [],
     classe: "gi-pulmonar" as const,
     subclasse: "Anticolinérgicos inalatórios",
     regra: { tipo: "continuar" as const },
@@ -60,7 +183,7 @@ export const FARMACOS_GI_PULMONAR: Farmaco[] = [
   ).map(([id, nome]) => ({
     id,
     nomeGenerico: nome,
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_GIPULMONAR[nome] ?? [],
     classe: "gi-pulmonar" as const,
     subclasse: "Beta-2 agonistas inalatórios, curta ação",
     regra: { tipo: "continuar" as const },
@@ -84,7 +207,7 @@ export const FARMACOS_GI_PULMONAR: Farmaco[] = [
   ).map(([id, nome]) => ({
     id,
     nomeGenerico: nome,
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_GIPULMONAR[nome] ?? [],
     classe: "gi-pulmonar" as const,
     subclasse: "Beta-2 agonistas inalatórios, longa ação",
     regra: { tipo: "continuar" as const },
@@ -106,7 +229,7 @@ export const FARMACOS_GI_PULMONAR: Farmaco[] = [
   ).map(([id, nome]) => ({
     id,
     nomeGenerico: nome,
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_GIPULMONAR[nome] ?? [],
     classe: "gi-pulmonar" as const,
     subclasse: "Corticosteroide inalatório",
     regra: { tipo: "continuar" as const },
@@ -122,7 +245,7 @@ export const FARMACOS_GI_PULMONAR: Farmaco[] = [
   {
     id: "teofilina",
     nomeGenerico: "Teofilina",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_GIPULMONAR["Teofilina"] ?? [],
     classe: "gi-pulmonar",
     subclasse: "Metilxantina oral",
     regra: { tipo: "suspender_dia_cirurgia" },
@@ -138,7 +261,7 @@ export const FARMACOS_GI_PULMONAR: Farmaco[] = [
   {
     id: "roflumilaste",
     nomeGenerico: "Roflumilaste",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_GIPULMONAR["Roflumilaste"] ?? [],
     classe: "gi-pulmonar",
     subclasse: "Inibidor de PDE-4",
     regra: { tipo: "continuar" },
@@ -160,7 +283,7 @@ export const FARMACOS_GI_PULMONAR: Farmaco[] = [
   ).map(([id, nome]) => ({
     id,
     nomeGenerico: nome,
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_GIPULMONAR[nome] ?? [],
     classe: "gi-pulmonar" as const,
     subclasse: "Modificadores de leucotrieno",
     regra: { tipo: "continuar" as const },
@@ -176,7 +299,7 @@ export const FARMACOS_GI_PULMONAR: Farmaco[] = [
   {
     id: "n_acetilcisteina",
     nomeGenerico: "N-acetilcisteína",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_GIPULMONAR["N-acetilcisteína"] ?? [],
     classe: "gi-pulmonar",
     subclasse: "Mucolítico (uso em DPOC)",
     regra: { tipo: "continuar" },
@@ -198,7 +321,7 @@ export const FARMACOS_GI_PULMONAR: Farmaco[] = [
   ).map(([id, nome]) => ({
     id,
     nomeGenerico: nome,
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_GIPULMONAR[nome] ?? [],
     classe: "gi-pulmonar" as const,
     subclasse: "Anti-histamínicos H1, 1ª geração",
     regra: { tipo: "suspender_dia_cirurgia" as const },
@@ -214,7 +337,7 @@ export const FARMACOS_GI_PULMONAR: Farmaco[] = [
   {
     id: "cetirizina",
     nomeGenerico: "Cetirizina",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_GIPULMONAR["Cetirizina"] ?? [],
     classe: "gi-pulmonar",
     subclasse: "Anti-histamínicos H1, 2ª geração (exceção — penetração relevante no SNC)",
     regra: { tipo: "suspender_dia_cirurgia" },
@@ -237,7 +360,7 @@ export const FARMACOS_GI_PULMONAR: Farmaco[] = [
   ).map(([id, nome]) => ({
     id,
     nomeGenerico: nome,
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_GIPULMONAR[nome] ?? [],
     classe: "gi-pulmonar" as const,
     subclasse: "Anti-histamínicos H1, 2ª geração",
     regra: { tipo: "continuar" as const },
@@ -256,7 +379,7 @@ export const FARMACOS_GI_PULMONAR: Farmaco[] = [
   ).map(([id, nome]) => ({
     id,
     nomeGenerico: nome,
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_GIPULMONAR[nome] ?? [],
     classe: "gi-pulmonar" as const,
     subclasse: "Descongestionante arilalquilamina",
     regra: { tipo: "suspender_dia_cirurgia" as const },
@@ -275,7 +398,7 @@ export const FARMACOS_GI_PULMONAR: Farmaco[] = [
   ).map(([id, nome]) => ({
     id,
     nomeGenerico: nome,
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_GIPULMONAR[nome] ?? [],
     classe: "gi-pulmonar" as const,
     subclasse: "Antifibrótico (fibrose pulmonar idiopática)",
     regra: { tipo: "continuar" as const },
@@ -297,7 +420,7 @@ export const FARMACOS_GI_PULMONAR: Farmaco[] = [
   ).map(([id, nome]) => ({
     id,
     nomeGenerico: nome,
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_GIPULMONAR[nome] ?? [],
     classe: "gi-pulmonar" as const,
     subclasse: "Análogo de prostaciclina (hipertensão pulmonar)",
     regra: { tipo: "continuar" as const },
@@ -313,7 +436,7 @@ export const FARMACOS_GI_PULMONAR: Farmaco[] = [
   {
     id: "selexipague",
     nomeGenerico: "Selexipague",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_GIPULMONAR["Selexipague"] ?? [],
     classe: "gi-pulmonar",
     subclasse: "Agonista do receptor de prostaciclina, oral (hipertensão pulmonar)",
     regra: { tipo: "continuar" },
@@ -329,7 +452,7 @@ export const FARMACOS_GI_PULMONAR: Farmaco[] = [
   {
     id: "bosentana",
     nomeGenerico: "Bosentana",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_GIPULMONAR["Bosentana"] ?? [],
     classe: "gi-pulmonar",
     subclasse: "Antagonista do receptor de endotelina (hipertensão pulmonar)",
     regra: { tipo: "continuar" },
@@ -343,7 +466,7 @@ export const FARMACOS_GI_PULMONAR: Farmaco[] = [
   {
     id: "macitentana",
     nomeGenerico: "Macitentana",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_GIPULMONAR["Macitentana"] ?? [],
     classe: "gi-pulmonar",
     subclasse: "Antagonista do receptor de endotelina (hipertensão pulmonar)",
     regra: { tipo: "continuar" },
@@ -357,7 +480,7 @@ export const FARMACOS_GI_PULMONAR: Farmaco[] = [
   {
     id: "ambrisentana",
     nomeGenerico: "Ambrisentana",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_GIPULMONAR["Ambrisentana"] ?? [],
     classe: "gi-pulmonar",
     subclasse: "Antagonista do receptor de endotelina (hipertensão pulmonar)",
     regra: { tipo: "continuar" },
@@ -378,7 +501,7 @@ export const FARMACOS_GI_PULMONAR: Farmaco[] = [
   ).map(([id, nome]) => ({
     id,
     nomeGenerico: nome,
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_GIPULMONAR[nome] ?? [],
     classe: "gi-pulmonar" as const,
     subclasse: "Inibidor de PDE-5 (hipertensão pulmonar)",
     indicacoes: [
@@ -406,7 +529,7 @@ export const FARMACOS_GI_PULMONAR: Farmaco[] = [
   {
     id: "riociguate",
     nomeGenerico: "Riociguate",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_GIPULMONAR["Riociguate"] ?? [],
     classe: "gi-pulmonar",
     subclasse: "Estimulador da guanilato ciclase solúvel (hipertensão pulmonar grupo 4)",
     regra: { tipo: "continuar" },
@@ -434,7 +557,7 @@ export const FARMACOS_GI_PULMONAR: Farmaco[] = [
   ).map(([id, nome]) => ({
     id,
     nomeGenerico: nome,
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_GIPULMONAR[nome] ?? [],
     classe: "gi-pulmonar" as const,
     subclasse: "Inibidor da bomba de prótons (IBP)",
     regra: { tipo: "continuar" as const },
@@ -450,7 +573,7 @@ export const FARMACOS_GI_PULMONAR: Farmaco[] = [
   {
     id: "ranitidina",
     nomeGenerico: "Ranitidina",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_GIPULMONAR["Ranitidina"] ?? [],
     classe: "gi-pulmonar",
     subclasse: "Antagonista H2",
     regra: { tipo: "continuar" },
@@ -464,7 +587,7 @@ export const FARMACOS_GI_PULMONAR: Farmaco[] = [
   {
     id: "famotidina",
     nomeGenerico: "Famotidina",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_GIPULMONAR["Famotidina"] ?? [],
     classe: "gi-pulmonar",
     subclasse: "Antagonista H2",
     regra: { tipo: "continuar" },
@@ -485,7 +608,7 @@ export const FARMACOS_GI_PULMONAR: Farmaco[] = [
   ).map(([id, nome]) => ({
     id,
     nomeGenerico: nome,
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_GIPULMONAR[nome] ?? [],
     classe: "gi-pulmonar" as const,
     subclasse: "Antiácido não particulado",
     regra: { tipo: "suspender_dia_cirurgia" as const },
@@ -505,7 +628,7 @@ export const FARMACOS_GI_PULMONAR: Farmaco[] = [
   ).map(([id, nome]) => ({
     id,
     nomeGenerico: nome,
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_GIPULMONAR[nome] ?? [],
     classe: "gi-pulmonar" as const,
     subclasse: "Antiácido particulado",
     regra: { tipo: "suspender_dia_cirurgia" as const },
@@ -528,7 +651,7 @@ export const FARMACOS_GI_PULMONAR: Farmaco[] = [
   ).map(([id, nome]) => ({
     id,
     nomeGenerico: nome,
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_GIPULMONAR[nome] ?? [],
     classe: "gi-pulmonar" as const,
     subclasse: "Antiemético — antagonista do receptor 5-HT3",
     regra: { tipo: "continuar" as const },
@@ -551,7 +674,7 @@ export const FARMACOS_GI_PULMONAR: Farmaco[] = [
   ).map(([id, nome]) => ({
     id,
     nomeGenerico: nome,
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_GIPULMONAR[nome] ?? [],
     classe: "gi-pulmonar" as const,
     subclasse: "Antiemético — antagonista de dopamina",
     regra: { tipo: "continuar" as const },
@@ -567,7 +690,7 @@ export const FARMACOS_GI_PULMONAR: Farmaco[] = [
   {
     id: "aprepitanto",
     nomeGenerico: "Aprepitanto",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_GIPULMONAR["Aprepitanto"] ?? [],
     classe: "gi-pulmonar",
     subclasse: "Antiemético — antagonista de neurocinina-1",
     regra: { tipo: "continuar" },
@@ -592,7 +715,7 @@ export const FARMACOS_GI_PULMONAR: Farmaco[] = [
   ).map(([id, nome]) => ({
     id,
     nomeGenerico: nome,
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_GIPULMONAR[nome] ?? [],
     classe: "gi-pulmonar" as const,
     subclasse: "Laxante",
     regra: { tipo: "suspender_dia_cirurgia" as const },
@@ -612,7 +735,7 @@ export const FARMACOS_GI_PULMONAR: Farmaco[] = [
   ).map(([id, nome]) => ({
     id,
     nomeGenerico: nome,
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_GIPULMONAR[nome] ?? [],
     classe: "gi-pulmonar" as const,
     subclasse: "Antidiarreico",
     regra: { tipo: "suspender_dia_cirurgia" as const },
@@ -633,7 +756,7 @@ export const FARMACOS_GI_PULMONAR: Farmaco[] = [
   ).map(([id, nome]) => ({
     id,
     nomeGenerico: nome,
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_GIPULMONAR[nome] ?? [],
     classe: "gi-pulmonar" as const,
     subclasse: "Anticolinérgico/antiespasmódico gastrointestinal",
     regra: { tipo: "suspender_dia_cirurgia" as const },
@@ -656,7 +779,7 @@ export const FARMACOS_GI_PULMONAR: Farmaco[] = [
   ).map(([id, nome]) => ({
     id,
     nomeGenerico: nome,
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_GIPULMONAR[nome] ?? [],
     classe: "gi-pulmonar" as const,
     subclasse: "5-ácido aminossalicílico (5-ASA) — doença inflamatória intestinal",
     condicaoClinica: {
@@ -685,7 +808,7 @@ export const FARMACOS_GI_PULMONAR: Farmaco[] = [
   ).map(([id, nome]) => ({
     id,
     nomeGenerico: nome,
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_GIPULMONAR[nome] ?? [],
     classe: "gi-pulmonar" as const,
     subclasse: "Análogo de purina — imunomodulador (DII)",
     regra: { tipo: "continuar" as const },
@@ -700,7 +823,7 @@ export const FARMACOS_GI_PULMONAR: Farmaco[] = [
   {
     id: "metotrexato_dii",
     nomeGenerico: "Metotrexato",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_GIPULMONAR["Metotrexato"] ?? [],
     classe: "gi-pulmonar",
     subclasse: "Imunomodulador — doença inflamatória intestinal",
     regra: { tipo: "continuar" },
@@ -722,7 +845,7 @@ export const FARMACOS_GI_PULMONAR: Farmaco[] = [
   ).map(([id, nome]) => ({
     id,
     nomeGenerico: nome,
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_GIPULMONAR[nome] ?? [],
     classe: "gi-pulmonar" as const,
     subclasse: "Inibidor de TNF — imunomodulador biológico (DII)",
     regra: { tipo: "suspender_intervalo_dose" as const, numeroIntervalos: 1 },
@@ -738,7 +861,7 @@ export const FARMACOS_GI_PULMONAR: Farmaco[] = [
   {
     id: "ustekinumabe",
     nomeGenerico: "Ustekinumabe",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_GIPULMONAR["Ustekinumabe"] ?? [],
     classe: "gi-pulmonar",
     subclasse: "Imunomodulador biológico — anti-IL-12/23 (DII)",
     regra: { tipo: "suspender_intervalo_dose", numeroIntervalos: 1 },
@@ -754,7 +877,7 @@ export const FARMACOS_GI_PULMONAR: Farmaco[] = [
   {
     id: "natalizumabe",
     nomeGenerico: "Natalizumabe",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_GIPULMONAR["Natalizumabe"] ?? [],
     classe: "gi-pulmonar",
     subclasse: "Imunomodulador biológico — anti-integrina alfa-4 (DII)",
     regra: { tipo: "suspender_intervalo_dose", numeroIntervalos: 1 },
@@ -769,7 +892,7 @@ export const FARMACOS_GI_PULMONAR: Farmaco[] = [
   {
     id: "vedolizumabe",
     nomeGenerico: "Vedolizumabe",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_GIPULMONAR["Vedolizumabe"] ?? [],
     classe: "gi-pulmonar",
     subclasse: "Imunomodulador biológico — anti-integrina alfa-4-beta-7, gut-specific (DII)",
     regra: { tipo: "suspender_intervalo_dose", numeroIntervalos: 1 },
@@ -785,7 +908,7 @@ export const FARMACOS_GI_PULMONAR: Farmaco[] = [
   {
     id: "ozanimode",
     nomeGenerico: "Ozanimode",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_GIPULMONAR["Ozanimode"] ?? [],
     classe: "gi-pulmonar",
     subclasse: "Modulador do receptor de esfingosina-1-fosfato — imunomodulador (DII)",
     regra: { tipo: "suspender_periodo_fixo", valor: 60, unidade: "dias" },
@@ -800,7 +923,7 @@ export const FARMACOS_GI_PULMONAR: Farmaco[] = [
   {
     id: "tofacitinibe",
     nomeGenerico: "Tofacitinibe",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_GIPULMONAR["Tofacitinibe"] ?? [],
     classe: "gi-pulmonar",
     subclasse: "Inibidor de Janus quinase (JAK) — imunomodulador (DII)",
     regra: { tipo: "suspender_periodo_fixo", valor: 7, unidade: "dias" },
@@ -826,7 +949,7 @@ export const FARMACOS_GI_PULMONAR: Farmaco[] = [
   ).map(([id, nome]) => ({
     id,
     nomeGenerico: nome,
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_GIPULMONAR[nome] ?? [],
     classe: "gi-pulmonar" as const,
     subclasse: "Inibidor da transcriptase reversa — antiviral anti-HBV",
     regra: { tipo: "continuar" as const },
@@ -847,7 +970,7 @@ export const FARMACOS_GI_PULMONAR: Farmaco[] = [
   ).map(([id, nome]) => ({
     id,
     nomeGenerico: nome,
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_GIPULMONAR[nome] ?? [],
     classe: "gi-pulmonar" as const,
     subclasse: "Interferon peguilado — antiviral para hepatite viral",
     regra: { tipo: "suspender_periodo_fixo" as const, valor: 7, unidade: "dias" as const },
@@ -863,7 +986,7 @@ export const FARMACOS_GI_PULMONAR: Farmaco[] = [
   {
     id: "ribavirina",
     nomeGenerico: "Ribavirina",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_GIPULMONAR["Ribavirina"] ?? [],
     classe: "gi-pulmonar",
     subclasse: "Análogo nucleosídeo — antiviral anti-HCV",
     regra: { tipo: "suspender_dia_cirurgia" },
@@ -884,7 +1007,7 @@ export const FARMACOS_GI_PULMONAR: Farmaco[] = [
   ).map(([id, nome]) => ({
     id,
     nomeGenerico: nome,
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_GIPULMONAR[nome] ?? [],
     classe: "gi-pulmonar" as const,
     subclasse: "Antiviral oral anti-HCV (ação direta)",
     regra: { tipo: "continuar" as const },
@@ -909,7 +1032,7 @@ export const FARMACOS_GI_PULMONAR: Farmaco[] = [
   ).map(([id, nome]) => ({
     id,
     nomeGenerico: nome,
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_GIPULMONAR[nome] ?? [],
     classe: "gi-pulmonar" as const,
     subclasse: "Antiviral oral anti-HCV (ação direta)",
     regra: { tipo: "suspender_dia_cirurgia" as const },
@@ -934,7 +1057,7 @@ export const FARMACOS_GI_PULMONAR: Farmaco[] = [
   ).map(([id, nome]) => ({
     id,
     nomeGenerico: nome,
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_GIPULMONAR[nome] ?? [],
     classe: "gi-pulmonar" as const,
     subclasse: "Agente solubilizador de cálculo biliar",
     regra: { tipo: "suspender_dia_cirurgia" as const },
@@ -948,7 +1071,7 @@ export const FARMACOS_GI_PULMONAR: Farmaco[] = [
   {
     id: "pancrelipase",
     nomeGenerico: "Pancrelipase (enzimas pancreáticas)",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_GIPULMONAR["Pancrelipase (enzimas pancreáticas)"] ?? [],
     classe: "gi-pulmonar",
     subclasse: "Enzima pancreática",
     regra: { tipo: "suspender_dia_cirurgia" },
@@ -961,7 +1084,7 @@ export const FARMACOS_GI_PULMONAR: Farmaco[] = [
   {
     id: "lubiprostona",
     nomeGenerico: "Lubiprostona",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_GIPULMONAR["Lubiprostona"] ?? [],
     classe: "gi-pulmonar",
     subclasse: "Agente pró-secretório intestinal",
     regra: { tipo: "continuar" },
@@ -979,7 +1102,7 @@ export const FARMACOS_GI_PULMONAR: Farmaco[] = [
   ).map(([id, nome]) => ({
     id,
     nomeGenerico: nome,
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_GIPULMONAR[nome] ?? [],
     classe: "gi-pulmonar" as const,
     subclasse: "Agonista da guanilato ciclase C",
     regra: { tipo: "continuar" as const },
@@ -999,7 +1122,7 @@ export const FARMACOS_GI_PULMONAR: Farmaco[] = [
   ).map(([id, nome]) => ({
     id,
     nomeGenerico: nome,
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_GIPULMONAR[nome] ?? [],
     classe: "gi-pulmonar" as const,
     subclasse: "Modulador serotoninérgico neuroentérico",
     regra: { tipo: "continuar" as const },
@@ -1013,7 +1136,7 @@ export const FARMACOS_GI_PULMONAR: Farmaco[] = [
   {
     id: "fentermina",
     nomeGenerico: "Fentermina",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_GIPULMONAR["Fentermina"] ?? [],
     classe: "gi-pulmonar",
     subclasse: "Medicação para perda de peso (simpatomimético)",
     regra: { tipo: "suspender_periodo_fixo", valor: 4, unidade: "dias" },
@@ -1026,7 +1149,7 @@ export const FARMACOS_GI_PULMONAR: Farmaco[] = [
   {
     id: "fentermina_topiramato",
     nomeGenerico: "Fentermina/topiramato",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_GIPULMONAR["Fentermina/topiramato"] ?? [],
     classe: "gi-pulmonar",
     subclasse: "Medicação para perda de peso (simpatomimético + anticonvulsivante)",
     regra: { tipo: "suspender_periodo_fixo", valor: 4, unidade: "dias" },
@@ -1040,7 +1163,7 @@ export const FARMACOS_GI_PULMONAR: Farmaco[] = [
   {
     id: "lisdexanfetamina",
     nomeGenerico: "Lisdexanfetamina",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_GIPULMONAR["Lisdexanfetamina"] ?? [],
     classe: "gi-pulmonar",
     subclasse: "Medicação para perda de peso / estimulante",
     condicaoClinica: {
@@ -1057,7 +1180,7 @@ export const FARMACOS_GI_PULMONAR: Farmaco[] = [
   {
     id: "orlistate",
     nomeGenerico: "Orlistate",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_GIPULMONAR["Orlistate"] ?? [],
     classe: "gi-pulmonar",
     subclasse: "Medicação para perda de peso (inibidor de lipase)",
     regra: { tipo: "suspender_dia_cirurgia" },
@@ -1068,7 +1191,7 @@ export const FARMACOS_GI_PULMONAR: Farmaco[] = [
   {
     id: "bupropiona_naltrexona",
     nomeGenerico: "Bupropiona/naltrexona",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_GIPULMONAR["Bupropiona/naltrexona"] ?? [],
     classe: "gi-pulmonar",
     subclasse: "Medicação para perda de peso (bupropiona/naltrexona)",
     condicaoClinica: {

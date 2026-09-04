@@ -1,6 +1,129 @@
 import { Farmaco } from "@/medperiop/types";
 
 /**
+ * Nomes comerciais (nome genérico -> marcas) verificados um a um via busca
+ * (bulário ANVISA / ConsultaRemédios) em 2026-09 — não é uma tradução
+ * automática do inglês. Nomes de fora do Brasil (ex.: US-only) foram
+ * deliberadamente OMITIDOS em vez de adivinhados. Fármacos sem entrada
+ * aqui (ficam com `?? []`) são os que a busca não encontrou nenhum
+ * registro comercial brasileiro confiável — por exemplo, por nunca terem
+ * sido comercializados no país (ex.: abaloparatida, etelcalcetida,
+ * avanafila, fesoterodina — sem registro ANVISA confirmado), por terem
+ * tido o registro cancelado/expirado (ex.: liotironina, extrato de
+ * tireoide dessecado — não autorizados pela ANVISA), por serem nomes de
+ * classe farmacológica ambíguos que cobrem várias moléculas distintas
+ * (ex.: "Bifosfonados" — alendronato, risedronato etc. são drogas
+ * diferentes, então não há uma marca única correta) ou por representarem
+ * uma via de administração e não um princípio ativo comercializável
+ * isoladamente (ex.: insulina em bomba de infusão contínua). Marcas
+ * descontinuadas mas reais (ex.: Parlodel) foram mantidas porque ainda
+ * ajudam a busca — prescrições/relatos antigos podem referenciá-las mesmo
+ * fora de linha hoje.
+ */
+const NOMES_COMERCIAIS_ENDOCRINO: Record<string, string[]> = {
+  Glargina: ["Lantus", "Toujeo", "Basaglar"],
+  Detemir: ["Levemir"],
+  Degludeca: ["Tresiba"],
+  "Insulina NPH (ação intermediária)": ["Novolin N", "Humulin N"],
+  "Insulina pré-misturada (premixed)": [
+    "Humulin 70/30",
+    "Humalog Mix25",
+    "Humalog Mix50",
+  ],
+  Regular: ["Novolin R", "Humulin R"],
+  Aspart: ["NovoRapid", "Fiasp"],
+  Lispro: ["Humalog"],
+  Glulisina: ["Apidra"],
+  Acarbose: ["Glucobay", "Aglucose"],
+  Metformina: ["Glifage", "Glifage XR"],
+  Vildagliptina: ["Galvus"],
+  Sitagliptina: ["Januvia"],
+  Saxagliptina: ["Onglyza"],
+  Linagliptina: ["Trajenta"],
+  Alogliptina: ["Nesina"],
+  Glipizida: ["Minidiab"],
+  "Glibenclamida (glyburide)": ["Daonil"],
+  Glimepirida: ["Amaryl"],
+  Repaglinida: ["Novonorm", "Prandim"],
+  Nateglinida: ["Starlix"],
+  Canagliflozina: ["Invokana"],
+  Dapagliflozina: ["Forxiga"],
+  Empagliflozina: ["Jardiance"],
+  Tiazolidinedionas: ["Actos"],
+  Levotiroxina: ["Puran T4", "Euthyrox", "Synthroid"],
+  Metimazol: ["Tapazol"],
+  Propiltiouracila: ["Propilracil"],
+  Betametasona: ["Celestone"],
+  Triancinolona: ["Triancil"],
+  Hidrocortisona: ["Solu-Cortef"],
+  Prednisona: ["Meticorten", "Predsin"],
+  Metilprednisolona: ["Depo-Medrol", "Solu-Medrol"],
+  Budesonida: ["Pulmicort", "Entocort"],
+  Dexametasona: ["Decadron"],
+  Fludrocortisona: ["Florinefe"],
+  "Hormônio do crescimento (somatotropina)": [
+    "Genotropin",
+    "Norditropin",
+    "Saizen",
+    "Omnitrope",
+    "Criscy",
+  ],
+  Desmopressina: ["DDAVP"],
+  Cabergolina: ["Dostinex"],
+  Bromocriptina: ["Parlodel"],
+  Pegvisomanto: ["Somavert"],
+  Octreotide: ["Sandostatin"],
+  Lanreotide: ["Somatuline"],
+  Pasireotide: ["Signifor"],
+  Testosterona: ["Durateston", "Deposteron", "Androgel"],
+  Metiltestosterona: ["Gerosenil", "Testofran", "Testonus"],
+  Estradiol: ["Estreva"],
+  "Estrogênios conjugados": ["Premarin"],
+  Megestrol: ["Megestat"],
+  Levonorgestrel: ["Postinor 2", "Mirena"],
+  Progesterona: ["Utrogestan"],
+  Hidroxiprogesterona: ["Proluton"],
+  Medroxiprogesterona: ["Depo-Provera"],
+  Etonogestrel: ["Implanon NXT"],
+  Drospirenona: ["Slinda"],
+  Toremifeno: ["Fareston"],
+  Tamoxifeno: ["Nolvadex-D", "Taxofen"],
+  Raloxifeno: ["Evista"],
+  Anastrozol: ["Arimidex"],
+  Exemestano: ["Aromasin"],
+  Letrozol: ["Femara"],
+  Teriparatida: ["Forteo"],
+  Cinacalcete: ["Mimpara"],
+  Calcitonina: ["Miacalcic"],
+  Denosumabe: ["Prolia", "Xgeva"],
+  Alfuzosina: ["Xatral OD"],
+  Doxazosina: ["Carduran"],
+  Prazosina: ["Minipress"],
+  Silodosina: ["Rapaflo", "SIL-HP"],
+  Tansulosina: ["Omnic Ocas", "Secotex", "Tamsulon"],
+  Terazosina: ["Hytrin"],
+  Dutasterida: ["Avodart"],
+  Finasterida: ["Propecia"],
+  Darifenacina: ["Enablex"],
+  Flavoxato: ["Genurin"],
+  Oxibutinina: ["Retemic", "Incontinol"],
+  Solifenacina: ["Vesicare"],
+  Tolterodina: ["Detrusitol"],
+  "Acetato de abiraterona": ["Zytiga"],
+  Apalutamida: ["Erleada"],
+  Bicalutamida: ["Casodex"],
+  Degarelix: ["Firmagon"],
+  Enzalutamida: ["Xtandi"],
+  "Acetato de goserrelina": ["Zoladex"],
+  "Acetato de leuprolida": ["Lupron", "Lupron Depot"],
+  Sildenafila: ["Viagra"],
+  Tadalafila: ["Cialis"],
+  Vardenafila: ["Levitra"],
+  "Cloreto de betanecol (Bethanechol chloride)": ["Miotonachol"],
+  Mirabegrom: ["Betmiga"],
+};
+
+/**
  * Dados extraídos de: Pfeifer KJ, Selzer A, Mendez CE, et al. Preoperative
  * Management of Endocrine, Hormonal, and Urologic Medications: SPAQI
  * Consensus Statement. Mayo Clin Proc. 2021;96(6):1655-1669.
@@ -19,7 +142,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "glargina",
     nomeGenerico: "Glargina",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Glargina"] ?? [],
     classe: "endocrino",
     subclasse: "Insulina, ação longa (basal)",
     regra: {
@@ -37,7 +160,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "detemir",
     nomeGenerico: "Detemir",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Detemir"] ?? [],
     classe: "endocrino",
     subclasse: "Insulina, ação longa (basal)",
     regra: {
@@ -55,7 +178,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "degludeca",
     nomeGenerico: "Degludeca",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Degludeca"] ?? [],
     classe: "endocrino",
     subclasse: "Insulina, ação longa (basal)",
     regra: {
@@ -73,7 +196,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "insulina_nph",
     nomeGenerico: "Insulina NPH (ação intermediária)",
-    nomesComerciais: ["NPH"],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Insulina NPH (ação intermediária)"] ?? [],
     classe: "endocrino",
     subclasse: "Insulina, ação intermediária (NPH)",
     regra: {
@@ -91,11 +214,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "insulina_premisturada",
     nomeGenerico: "Insulina pré-misturada (premixed)",
-    nomesComerciais: [
-      "NPH/regular humana 70/30",
-      "Lispro protamina/lispro 75/25",
-      "Lispro protamina/lispro 50/50",
-    ],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Insulina pré-misturada (premixed)"] ?? [],
     classe: "endocrino",
     subclasse: "Insulina pré-misturada",
     regra: {
@@ -113,7 +232,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "insulina_bomba",
     nomeGenerico: "Insulina em bomba de infusão contínua",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Insulina em bomba de infusão contínua"] ?? [],
     classe: "endocrino",
     subclasse: "Insulina em bomba (pump)",
     regra: {
@@ -131,7 +250,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "regular",
     nomeGenerico: "Regular",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Regular"] ?? [],
     classe: "endocrino",
     subclasse: "Insulina, ação curta/rápida (prandial)",
     regra: { tipo: "suspender_dia_cirurgia" },
@@ -145,7 +264,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "aspart",
     nomeGenerico: "Aspart",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Aspart"] ?? [],
     classe: "endocrino",
     subclasse: "Insulina, ação curta/rápida (prandial)",
     regra: { tipo: "suspender_dia_cirurgia" },
@@ -159,7 +278,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "lispro",
     nomeGenerico: "Lispro",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Lispro"] ?? [],
     classe: "endocrino",
     subclasse: "Insulina, ação curta/rápida (prandial)",
     regra: { tipo: "suspender_dia_cirurgia" },
@@ -173,7 +292,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "glulisina",
     nomeGenerico: "Glulisina",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Glulisina"] ?? [],
     classe: "endocrino",
     subclasse: "Insulina, ação curta/rápida (prandial)",
     regra: { tipo: "suspender_dia_cirurgia" },
@@ -187,7 +306,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "insulina_u500",
     nomeGenerico: "Insulina regular U-500 (concentrada)",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Insulina regular U-500 (concentrada)"] ?? [],
     classe: "endocrino",
     subclasse: "Insulina U-500 (concentrada)",
     regra: {
@@ -205,7 +324,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "acarbose",
     nomeGenerico: "Acarbose",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Acarbose"] ?? [],
     classe: "endocrino",
     subclasse: "Alfa-glicosidase inibidores",
     regra: { tipo: "suspender_dia_cirurgia" },
@@ -219,7 +338,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "miglitol",
     nomeGenerico: "Miglitol",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Miglitol"] ?? [],
     classe: "endocrino",
     subclasse: "Alfa-glicosidase inibidores",
     regra: { tipo: "suspender_dia_cirurgia" },
@@ -233,7 +352,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "metformina",
     nomeGenerico: "Metformina",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Metformina"] ?? [],
     classe: "endocrino",
     subclasse: "Metformina (biguanida)",
     condicaoClinica: {
@@ -252,7 +371,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "vildagliptina",
     nomeGenerico: "Vildagliptina",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Vildagliptina"] ?? [],
     classe: "endocrino",
     subclasse: "DPP-4 inibidores",
     condicaoClinica: {
@@ -271,7 +390,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "sitagliptina",
     nomeGenerico: "Sitagliptina",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Sitagliptina"] ?? [],
     classe: "endocrino",
     subclasse: "DPP-4 inibidores",
     condicaoClinica: {
@@ -290,7 +409,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "saxagliptina",
     nomeGenerico: "Saxagliptina",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Saxagliptina"] ?? [],
     classe: "endocrino",
     subclasse: "DPP-4 inibidores",
     condicaoClinica: {
@@ -309,7 +428,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "linagliptina",
     nomeGenerico: "Linagliptina",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Linagliptina"] ?? [],
     classe: "endocrino",
     subclasse: "DPP-4 inibidores",
     condicaoClinica: {
@@ -328,7 +447,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "alogliptina",
     nomeGenerico: "Alogliptina",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Alogliptina"] ?? [],
     classe: "endocrino",
     subclasse: "DPP-4 inibidores",
     condicaoClinica: {
@@ -347,7 +466,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "glipizida",
     nomeGenerico: "Glipizida",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Glipizida"] ?? [],
     classe: "endocrino",
     subclasse: "Sulfonilureias e glinidas (secretagogos de insulina)",
     regra: { tipo: "suspender_dia_cirurgia" },
@@ -361,7 +480,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "glibenclamida",
     nomeGenerico: "Glibenclamida (glyburide)",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Glibenclamida (glyburide)"] ?? [],
     classe: "endocrino",
     subclasse: "Sulfonilureias e glinidas (secretagogos de insulina)",
     regra: { tipo: "suspender_dia_cirurgia" },
@@ -375,7 +494,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "glimepirida",
     nomeGenerico: "Glimepirida",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Glimepirida"] ?? [],
     classe: "endocrino",
     subclasse: "Sulfonilureias e glinidas (secretagogos de insulina)",
     regra: { tipo: "suspender_dia_cirurgia" },
@@ -389,7 +508,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "repaglinida",
     nomeGenerico: "Repaglinida",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Repaglinida"] ?? [],
     classe: "endocrino",
     subclasse: "Sulfonilureias e glinidas (secretagogos de insulina)",
     regra: { tipo: "suspender_dia_cirurgia" },
@@ -403,7 +522,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "nateglinida",
     nomeGenerico: "Nateglinida",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Nateglinida"] ?? [],
     classe: "endocrino",
     subclasse: "Sulfonilureias e glinidas (secretagogos de insulina)",
     regra: { tipo: "suspender_dia_cirurgia" },
@@ -417,7 +536,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "canagliflozina",
     nomeGenerico: "Canagliflozina",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Canagliflozina"] ?? [],
     classe: "endocrino",
     subclasse: "Inibidores de SGLT2",
     regra: { tipo: "suspender_periodo_fixo", valor: 3, unidade: "dias" },
@@ -431,7 +550,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "dapagliflozina",
     nomeGenerico: "Dapagliflozina",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Dapagliflozina"] ?? [],
     classe: "endocrino",
     subclasse: "Inibidores de SGLT2",
     regra: { tipo: "suspender_periodo_fixo", valor: 3, unidade: "dias" },
@@ -445,7 +564,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "empagliflozina",
     nomeGenerico: "Empagliflozina",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Empagliflozina"] ?? [],
     classe: "endocrino",
     subclasse: "Inibidores de SGLT2",
     regra: { tipo: "suspender_periodo_fixo", valor: 3, unidade: "dias" },
@@ -459,7 +578,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "ertugliflozina",
     nomeGenerico: "Ertugliflozina (inibidor de SGLT2)",
-    nomesComerciais: ["Ertugliflozina"],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Ertugliflozina (inibidor de SGLT2)"] ?? [],
     classe: "endocrino",
     subclasse: "Inibidores de SGLT2",
     regra: { tipo: "suspender_periodo_fixo", valor: 4, unidade: "dias" },
@@ -473,7 +592,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "tiazolidinedionas",
     nomeGenerico: "Tiazolidinedionas",
-    nomesComerciais: ["Pioglitazona"],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Tiazolidinedionas"] ?? [],
     classe: "endocrino",
     subclasse: "Tiazolidinedionas",
     regra: { tipo: "suspender_dia_cirurgia" },
@@ -486,7 +605,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "levotiroxina",
     nomeGenerico: "Levotiroxina",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Levotiroxina"] ?? [],
     classe: "endocrino",
     subclasse: "Reposição de hormônio tireoidiano",
     regra: { tipo: "continuar" },
@@ -498,7 +617,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "liotironina",
     nomeGenerico: "Liotironina",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Liotironina"] ?? [],
     classe: "endocrino",
     subclasse: "Reposição de hormônio tireoidiano",
     regra: { tipo: "continuar" },
@@ -510,7 +629,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "extrato_de_tireoide_dessecado",
     nomeGenerico: "Extrato de tireoide dessecado",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Extrato de tireoide dessecado"] ?? [],
     classe: "endocrino",
     subclasse: "Reposição de hormônio tireoidiano",
     regra: { tipo: "continuar" },
@@ -522,7 +641,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "metimazol",
     nomeGenerico: "Metimazol",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Metimazol"] ?? [],
     classe: "endocrino",
     subclasse: "Antitireoidianos",
     regra: { tipo: "continuar" },
@@ -534,7 +653,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "propiltiouracila",
     nomeGenerico: "Propiltiouracila",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Propiltiouracila"] ?? [],
     classe: "endocrino",
     subclasse: "Antitireoidianos",
     regra: { tipo: "continuar" },
@@ -546,7 +665,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "betametasona",
     nomeGenerico: "Betametasona",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Betametasona"] ?? [],
     classe: "endocrino",
     subclasse: "Corticosteroides sistêmicos",
     regra: { tipo: "continuar" },
@@ -560,7 +679,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "triancinolona",
     nomeGenerico: "Triancinolona",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Triancinolona"] ?? [],
     classe: "endocrino",
     subclasse: "Corticosteroides sistêmicos",
     regra: { tipo: "continuar" },
@@ -574,7 +693,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "hidrocortisona",
     nomeGenerico: "Hidrocortisona",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Hidrocortisona"] ?? [],
     classe: "endocrino",
     subclasse: "Corticosteroides sistêmicos",
     regra: { tipo: "continuar" },
@@ -588,7 +707,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "cortisona",
     nomeGenerico: "Cortisona",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Cortisona"] ?? [],
     classe: "endocrino",
     subclasse: "Corticosteroides sistêmicos",
     regra: { tipo: "continuar" },
@@ -602,7 +721,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "prednisona",
     nomeGenerico: "Prednisona",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Prednisona"] ?? [],
     classe: "endocrino",
     subclasse: "Corticosteroides sistêmicos",
     regra: { tipo: "continuar" },
@@ -616,7 +735,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "metilprednisolona",
     nomeGenerico: "Metilprednisolona",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Metilprednisolona"] ?? [],
     classe: "endocrino",
     subclasse: "Corticosteroides sistêmicos",
     regra: { tipo: "continuar" },
@@ -630,7 +749,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "budesonida",
     nomeGenerico: "Budesonida",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Budesonida"] ?? [],
     classe: "endocrino",
     subclasse: "Corticosteroides sistêmicos",
     regra: { tipo: "continuar" },
@@ -644,7 +763,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "dexametasona",
     nomeGenerico: "Dexametasona",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Dexametasona"] ?? [],
     classe: "endocrino",
     subclasse: "Corticosteroides sistêmicos",
     regra: { tipo: "continuar" },
@@ -658,7 +777,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "fludrocortisona",
     nomeGenerico: "Fludrocortisona",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Fludrocortisona"] ?? [],
     classe: "endocrino",
     subclasse: "Corticosteroides sistêmicos",
     regra: { tipo: "continuar" },
@@ -672,7 +791,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "hormonio_do_crescimento",
     nomeGenerico: "Hormônio do crescimento (somatotropina)",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Hormônio do crescimento (somatotropina)"] ?? [],
     classe: "endocrino",
     subclasse: "Medicações hipofisárias (pituitária)",
     regra: { tipo: "continuar" },
@@ -684,7 +803,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "desmopressina",
     nomeGenerico: "Desmopressina",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Desmopressina"] ?? [],
     classe: "endocrino",
     subclasse: "Medicações hipofisárias (pituitária)",
     regra: { tipo: "continuar" },
@@ -696,7 +815,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "cabergolina",
     nomeGenerico: "Cabergolina",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Cabergolina"] ?? [],
     classe: "endocrino",
     subclasse: "Medicações hipofisárias (pituitária)",
     regra: { tipo: "continuar" },
@@ -708,7 +827,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "bromocriptina",
     nomeGenerico: "Bromocriptina",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Bromocriptina"] ?? [],
     classe: "endocrino",
     subclasse: "Medicações hipofisárias (pituitária)",
     regra: { tipo: "continuar" },
@@ -720,7 +839,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "pegvisomanto",
     nomeGenerico: "Pegvisomanto",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Pegvisomanto"] ?? [],
     classe: "endocrino",
     subclasse: "Medicações hipofisárias (pituitária)",
     regra: { tipo: "continuar" },
@@ -732,7 +851,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "tesamorelina",
     nomeGenerico: "Tesamorelina",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Tesamorelina"] ?? [],
     classe: "endocrino",
     subclasse: "Medicações hipofisárias (pituitária)",
     regra: { tipo: "continuar" },
@@ -744,7 +863,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "octreotide",
     nomeGenerico: "Octreotide",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Octreotide"] ?? [],
     classe: "endocrino",
     subclasse: "Medicações hipofisárias (pituitária)",
     regra: { tipo: "continuar" },
@@ -756,7 +875,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "lanreotide",
     nomeGenerico: "Lanreotide",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Lanreotide"] ?? [],
     classe: "endocrino",
     subclasse: "Medicações hipofisárias (pituitária)",
     regra: { tipo: "continuar" },
@@ -768,7 +887,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "pasireotide",
     nomeGenerico: "Pasireotide",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Pasireotide"] ?? [],
     classe: "endocrino",
     subclasse: "Medicações hipofisárias (pituitária)",
     regra: { tipo: "continuar" },
@@ -780,7 +899,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "mecasermina",
     nomeGenerico: "Mecasermina",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Mecasermina"] ?? [],
     classe: "endocrino",
     subclasse: "Medicações hipofisárias (pituitária)",
     regra: { tipo: "continuar" },
@@ -792,7 +911,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "corticotropina_de_deposito",
     nomeGenerico: "Corticotropina de depósito",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Corticotropina de depósito"] ?? [],
     classe: "endocrino",
     subclasse: "Medicações hipofisárias (pituitária)",
     regra: { tipo: "continuar" },
@@ -804,7 +923,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "testosterona",
     nomeGenerico: "Testosterona",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Testosterona"] ?? [],
     classe: "endocrino",
     subclasse: "Hormônios androgênicos",
     regra: { tipo: "continuar" },
@@ -818,7 +937,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "metiltestosterona",
     nomeGenerico: "Metiltestosterona",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Metiltestosterona"] ?? [],
     classe: "endocrino",
     subclasse: "Hormônios androgênicos",
     regra: { tipo: "continuar" },
@@ -832,7 +951,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "estradiol",
     nomeGenerico: "Estradiol",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Estradiol"] ?? [],
     classe: "endocrino",
     subclasse: "Estrogênios",
     regra: { tipo: "continuar" },
@@ -846,7 +965,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "estrogenios_conjugados",
     nomeGenerico: "Estrogênios conjugados",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Estrogênios conjugados"] ?? [],
     classe: "endocrino",
     subclasse: "Estrogênios",
     regra: { tipo: "continuar" },
@@ -860,7 +979,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "estropipato",
     nomeGenerico: "Estropipato",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Estropipato"] ?? [],
     classe: "endocrino",
     subclasse: "Estrogênios",
     regra: { tipo: "continuar" },
@@ -874,7 +993,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "etinilestradiol",
     nomeGenerico: "Etinilestradiol",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Etinilestradiol"] ?? [],
     classe: "endocrino",
     subclasse: "Estrogênios",
     regra: { tipo: "continuar" },
@@ -888,7 +1007,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "megestrol",
     nomeGenerico: "Megestrol",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Megestrol"] ?? [],
     classe: "endocrino",
     subclasse: "Progestágenos",
     regra: { tipo: "continuar" },
@@ -900,7 +1019,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "levonorgestrel",
     nomeGenerico: "Levonorgestrel",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Levonorgestrel"] ?? [],
     classe: "endocrino",
     subclasse: "Progestágenos",
     regra: { tipo: "continuar" },
@@ -912,7 +1031,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "progesterona",
     nomeGenerico: "Progesterona",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Progesterona"] ?? [],
     classe: "endocrino",
     subclasse: "Progestágenos",
     regra: { tipo: "continuar" },
@@ -924,7 +1043,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "hidroxiprogesterona",
     nomeGenerico: "Hidroxiprogesterona",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Hidroxiprogesterona"] ?? [],
     classe: "endocrino",
     subclasse: "Progestágenos",
     regra: { tipo: "continuar" },
@@ -936,7 +1055,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "noretindrona",
     nomeGenerico: "Noretindrona",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Noretindrona"] ?? [],
     classe: "endocrino",
     subclasse: "Progestágenos",
     regra: { tipo: "continuar" },
@@ -948,7 +1067,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "medroxiprogesterona",
     nomeGenerico: "Medroxiprogesterona",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Medroxiprogesterona"] ?? [],
     classe: "endocrino",
     subclasse: "Progestágenos",
     regra: { tipo: "continuar" },
@@ -960,7 +1079,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "etonogestrel",
     nomeGenerico: "Etonogestrel",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Etonogestrel"] ?? [],
     classe: "endocrino",
     subclasse: "Progestágenos",
     regra: { tipo: "continuar" },
@@ -972,7 +1091,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "drospirenona",
     nomeGenerico: "Drospirenona",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Drospirenona"] ?? [],
     classe: "endocrino",
     subclasse: "Progestágenos",
     regra: { tipo: "continuar" },
@@ -984,7 +1103,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "toremifeno",
     nomeGenerico: "Toremifeno",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Toremifeno"] ?? [],
     classe: "endocrino",
     subclasse: "SERMs (moduladores seletivos do receptor de estrogênio)",
     indicacoes: [
@@ -1010,7 +1129,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "tamoxifeno",
     nomeGenerico: "Tamoxifeno",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Tamoxifeno"] ?? [],
     classe: "endocrino",
     subclasse: "SERMs (moduladores seletivos do receptor de estrogênio)",
     indicacoes: [
@@ -1036,7 +1155,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "raloxifeno",
     nomeGenerico: "Raloxifeno",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Raloxifeno"] ?? [],
     classe: "endocrino",
     subclasse: "SERMs (moduladores seletivos do receptor de estrogênio)",
     indicacoes: [
@@ -1062,7 +1181,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "ospemifeno",
     nomeGenerico: "Ospemifeno",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Ospemifeno"] ?? [],
     classe: "endocrino",
     subclasse: "SERMs (moduladores seletivos do receptor de estrogênio)",
     indicacoes: [
@@ -1088,7 +1207,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "anastrozol",
     nomeGenerico: "Anastrozol",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Anastrozol"] ?? [],
     classe: "endocrino",
     subclasse: "Inibidores de aromatase",
     regra: { tipo: "continuar" },
@@ -1102,7 +1221,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "exemestano",
     nomeGenerico: "Exemestano",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Exemestano"] ?? [],
     classe: "endocrino",
     subclasse: "Inibidores de aromatase",
     regra: { tipo: "continuar" },
@@ -1116,7 +1235,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "letrozol",
     nomeGenerico: "Letrozol",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Letrozol"] ?? [],
     classe: "endocrino",
     subclasse: "Inibidores de aromatase",
     regra: { tipo: "continuar" },
@@ -1130,7 +1249,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "teriparatida",
     nomeGenerico: "Teriparatida",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Teriparatida"] ?? [],
     classe: "endocrino",
     subclasse: "Medicações de osso/cálcio",
     regra: { tipo: "continuar" },
@@ -1142,7 +1261,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "abaloparatida",
     nomeGenerico: "Abaloparatida",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Abaloparatida"] ?? [],
     classe: "endocrino",
     subclasse: "Medicações de osso/cálcio",
     regra: { tipo: "continuar" },
@@ -1154,7 +1273,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "cinacalcete",
     nomeGenerico: "Cinacalcete",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Cinacalcete"] ?? [],
     classe: "endocrino",
     subclasse: "Medicações de osso/cálcio",
     regra: { tipo: "continuar" },
@@ -1166,7 +1285,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "etelcalcetida",
     nomeGenerico: "Etelcalcetida",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Etelcalcetida"] ?? [],
     classe: "endocrino",
     subclasse: "Medicações de osso/cálcio",
     regra: { tipo: "continuar" },
@@ -1178,7 +1297,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "calcitonina",
     nomeGenerico: "Calcitonina",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Calcitonina"] ?? [],
     classe: "endocrino",
     subclasse: "Medicações de osso/cálcio",
     regra: { tipo: "continuar" },
@@ -1190,7 +1309,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "denosumabe",
     nomeGenerico: "Denosumabe",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Denosumabe"] ?? [],
     classe: "endocrino",
     subclasse: "Medicações de osso/cálcio",
     regra: { tipo: "continuar" },
@@ -1202,7 +1321,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "bifosfonados",
     nomeGenerico: "Bifosfonados",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Bifosfonados"] ?? [],
     classe: "endocrino",
     subclasse: "Medicações de osso/cálcio",
     regra: { tipo: "suspender_dia_cirurgia" },
@@ -1215,7 +1334,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "alfuzosina",
     nomeGenerico: "Alfuzosina",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Alfuzosina"] ?? [],
     classe: "endocrino",
     subclasse: "Alfa-1 bloqueadores adrenérgicos (uso urológico)",
     regra: { tipo: "continuar" },
@@ -1229,7 +1348,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "doxazosina",
     nomeGenerico: "Doxazosina",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Doxazosina"] ?? [],
     classe: "endocrino",
     subclasse: "Alfa-1 bloqueadores adrenérgicos (uso urológico)",
     regra: { tipo: "continuar" },
@@ -1243,7 +1362,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "prazosina",
     nomeGenerico: "Prazosina",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Prazosina"] ?? [],
     classe: "endocrino",
     subclasse: "Alfa-1 bloqueadores adrenérgicos (uso urológico)",
     regra: { tipo: "continuar" },
@@ -1257,7 +1376,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "silodosina",
     nomeGenerico: "Silodosina",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Silodosina"] ?? [],
     classe: "endocrino",
     subclasse: "Alfa-1 bloqueadores adrenérgicos (uso urológico)",
     regra: { tipo: "continuar" },
@@ -1271,7 +1390,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "tansulosina",
     nomeGenerico: "Tansulosina",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Tansulosina"] ?? [],
     classe: "endocrino",
     subclasse: "Alfa-1 bloqueadores adrenérgicos (uso urológico)",
     regra: { tipo: "continuar" },
@@ -1285,7 +1404,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "terazosina",
     nomeGenerico: "Terazosina",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Terazosina"] ?? [],
     classe: "endocrino",
     subclasse: "Alfa-1 bloqueadores adrenérgicos (uso urológico)",
     regra: { tipo: "continuar" },
@@ -1299,7 +1418,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "dutasterida",
     nomeGenerico: "Dutasterida",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Dutasterida"] ?? [],
     classe: "endocrino",
     subclasse: "Inibidores da 5-alfa redutase",
     regra: { tipo: "continuar" },
@@ -1311,7 +1430,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "finasterida",
     nomeGenerico: "Finasterida",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Finasterida"] ?? [],
     classe: "endocrino",
     subclasse: "Inibidores da 5-alfa redutase",
     regra: { tipo: "continuar" },
@@ -1323,7 +1442,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "darifenacina",
     nomeGenerico: "Darifenacina",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Darifenacina"] ?? [],
     classe: "endocrino",
     subclasse: "Anticolinérgicos para disfunção vesical",
     regra: { tipo: "suspender_dia_cirurgia" },
@@ -1336,7 +1455,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "fesoterodina",
     nomeGenerico: "Fesoterodina",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Fesoterodina"] ?? [],
     classe: "endocrino",
     subclasse: "Anticolinérgicos para disfunção vesical",
     regra: { tipo: "suspender_dia_cirurgia" },
@@ -1349,7 +1468,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "flavoxato",
     nomeGenerico: "Flavoxato",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Flavoxato"] ?? [],
     classe: "endocrino",
     subclasse: "Anticolinérgicos para disfunção vesical",
     regra: { tipo: "suspender_dia_cirurgia" },
@@ -1362,7 +1481,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "oxibutinina",
     nomeGenerico: "Oxibutinina",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Oxibutinina"] ?? [],
     classe: "endocrino",
     subclasse: "Anticolinérgicos para disfunção vesical",
     regra: { tipo: "suspender_dia_cirurgia" },
@@ -1375,7 +1494,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "solifenacina",
     nomeGenerico: "Solifenacina",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Solifenacina"] ?? [],
     classe: "endocrino",
     subclasse: "Anticolinérgicos para disfunção vesical",
     regra: { tipo: "suspender_dia_cirurgia" },
@@ -1388,7 +1507,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "tolterodina",
     nomeGenerico: "Tolterodina",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Tolterodina"] ?? [],
     classe: "endocrino",
     subclasse: "Anticolinérgicos para disfunção vesical",
     regra: { tipo: "suspender_dia_cirurgia" },
@@ -1401,7 +1520,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "trospio",
     nomeGenerico: "Trospio",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Trospio"] ?? [],
     classe: "endocrino",
     subclasse: "Anticolinérgicos para disfunção vesical",
     regra: { tipo: "suspender_dia_cirurgia" },
@@ -1414,7 +1533,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "acetato_de_abiraterona",
     nomeGenerico: "Acetato de abiraterona",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Acetato de abiraterona"] ?? [],
     classe: "endocrino",
     subclasse: "Medicações antineoplásicas urológicas",
     regra: { tipo: "continuar" },
@@ -1427,7 +1546,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "apalutamida",
     nomeGenerico: "Apalutamida",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Apalutamida"] ?? [],
     classe: "endocrino",
     subclasse: "Medicações antineoplásicas urológicas",
     regra: { tipo: "continuar" },
@@ -1440,7 +1559,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "bicalutamida",
     nomeGenerico: "Bicalutamida",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Bicalutamida"] ?? [],
     classe: "endocrino",
     subclasse: "Medicações antineoplásicas urológicas",
     regra: { tipo: "continuar" },
@@ -1453,7 +1572,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "degarelix",
     nomeGenerico: "Degarelix",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Degarelix"] ?? [],
     classe: "endocrino",
     subclasse: "Medicações antineoplásicas urológicas",
     regra: { tipo: "continuar" },
@@ -1466,7 +1585,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "enzalutamida",
     nomeGenerico: "Enzalutamida",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Enzalutamida"] ?? [],
     classe: "endocrino",
     subclasse: "Medicações antineoplásicas urológicas",
     regra: { tipo: "continuar" },
@@ -1479,7 +1598,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "acetato_de_goserrelina",
     nomeGenerico: "Acetato de goserrelina",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Acetato de goserrelina"] ?? [],
     classe: "endocrino",
     subclasse: "Medicações antineoplásicas urológicas",
     regra: { tipo: "continuar" },
@@ -1492,7 +1611,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "acetato_de_leuprolida",
     nomeGenerico: "Acetato de leuprolida",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Acetato de leuprolida"] ?? [],
     classe: "endocrino",
     subclasse: "Medicações antineoplásicas urológicas",
     regra: { tipo: "continuar" },
@@ -1505,7 +1624,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "nilutamida",
     nomeGenerico: "Nilutamida",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Nilutamida"] ?? [],
     classe: "endocrino",
     subclasse: "Medicações antineoplásicas urológicas",
     regra: { tipo: "continuar" },
@@ -1518,7 +1637,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "sildenafila",
     nomeGenerico: "Sildenafila",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Sildenafila"] ?? [],
     classe: "endocrino",
     subclasse: "Inibidores da PDE-5",
     indicacoes: [
@@ -1543,7 +1662,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "tadalafila",
     nomeGenerico: "Tadalafila",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Tadalafila"] ?? [],
     classe: "endocrino",
     subclasse: "Inibidores da PDE-5",
     indicacoes: [
@@ -1568,7 +1687,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "avanafila",
     nomeGenerico: "Avanafila",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Avanafila"] ?? [],
     classe: "endocrino",
     subclasse: "Inibidores da PDE-5",
     indicacoes: [
@@ -1593,7 +1712,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "vardenafila",
     nomeGenerico: "Vardenafila",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Vardenafila"] ?? [],
     classe: "endocrino",
     subclasse: "Inibidores da PDE-5",
     indicacoes: [
@@ -1618,7 +1737,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "cloreto_de_betanecol",
     nomeGenerico: "Cloreto de betanecol (Bethanechol chloride)",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Cloreto de betanecol (Bethanechol chloride)"] ?? [],
     classe: "endocrino",
     subclasse: "Outras medicações urológicas",
     regra: { tipo: "suspender_dia_cirurgia" },
@@ -1631,7 +1750,7 @@ export const FARMACOS_ENDOCRINO: Farmaco[] = [
   {
     id: "mirabegrom",
     nomeGenerico: "Mirabegrom",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_ENDOCRINO["Mirabegrom"] ?? [],
     classe: "endocrino",
     subclasse: "Outras medicações urológicas",
     regra: { tipo: "suspender_dia_cirurgia" },

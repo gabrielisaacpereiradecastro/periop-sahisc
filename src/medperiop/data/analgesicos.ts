@@ -1,6 +1,18 @@
 import { Farmaco } from "@/medperiop/types";
 
 /**
+ * Nomes comerciais (nome genérico -> marcas) verificados um a um via busca
+ * (bulário ANVISA / ConsultaRemédios) em 2026-09 — não é uma tradução
+ * automática do inglês. Nomes de fora do Brasil (ex.: US-only) foram
+ * deliberadamente OMITIDOS em vez de adivinhados. Fármacos sem entrada
+ * aqui (ficam com `?? []`) são os que a busca não encontrou nenhum
+ * registro comercial brasileiro.
+ */
+const NOMES_COMERCIAIS_ANALGESICOS: Record<string, string[]> = {
+  Codeína: ["Codein"],
+};
+
+/**
  * Dados extraídos de DUAS fontes:
  *
  * 1) O'Rourke MJ, Keshock MC, Boxhorn CE, et al. Preoperative Management of
@@ -27,7 +39,7 @@ export const FARMACOS_ANALGESICOS: Farmaco[] = [
   {
     id: "codeina",
     nomeGenerico: "Codeína",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_ANALGESICOS["Codeína"] ?? [],
     classe: "analgesicos",
     subclasse: "Opioides agonistas (uso crônico para dor)",
     regra: { tipo: "continuar" },

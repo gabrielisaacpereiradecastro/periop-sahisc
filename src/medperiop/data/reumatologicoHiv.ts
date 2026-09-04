@@ -1,6 +1,108 @@
 import { Farmaco } from "@/medperiop/types";
 
 /**
+ * Nomes comerciais (nome genérico -> marcas) verificados um a um via busca
+ * (bulário ANVISA / ConsultaRemédios) em 2026-09 — não é uma tradução
+ * automática do inglês. Nomes de fora do Brasil (ex.: US-only, como Otrexup,
+ * Rasuvo, Trexall, Rheumatrex para metotrexato) foram deliberadamente
+ * OMITIDOS em vez de adivinhados. Fármacos sem entrada aqui (ficam com
+ * `?? []`) são os que a busca não encontrou nenhum registro comercial
+ * brasileiro confirmado — por exemplo, por nunca terem sido comercializados
+ * no país, por serem distribuídos pelo SUS apenas sob o nome genérico (comum
+ * em vários antirretrovirais e combinações de dose fixa mais recentes), ou
+ * por terem uso restrito a importação/farmácia de manipulação (ex.:
+ * voclosporina, rilonacepte, sarilumabe, saquinavir isolado). Marcas
+ * descontinuadas mas reais (ex.: Otezla, Crixivan, Viracept, Agenerase,
+ * Telzir, Viramune, Videx, Zerit, Invirase, Aptivus) foram mantidas porque
+ * ainda ajudam a busca — prescrições/relatos antigos podem referenciá-las
+ * mesmo fora de linha hoje.
+ */
+const NOMES_COMERCIAIS_REUMATOLOGICO_HIV: Record<string, string[]> = {
+  "Metotrexato": ["Metrexato"],
+  "Auranofina": ["Ridaura"],
+  "Hidroxicloroquina": ["Reuquinol", "Plaquinol"],
+  "Ciclofosfamida": ["Genuxal"],
+  "Glicocorticoides (uso reumatológico)": ["Meticorten", "Predmetil", "Depo-Medrol", "Solu-Medrol"],
+  "Apremilaste": ["Otezla"],
+  "Sulfassalazina": ["Azulfin"],
+  "Leflunomida": ["Arava"],
+  "Micofenolato": ["CellCept", "Myfortic"],
+  "Azatioprina": ["Imuran"],
+  "Ciclosporina": ["Sandimmun", "Sandimmun Neoral"],
+  "Tacrolimo": ["Prograf"],
+  "Adalimumabe": ["Humira", "Hyrimoz"],
+  "Certolizumabe": ["Cimzia"],
+  "Etanercepte": ["Enbrel", "Brenzys", "Nepexto"],
+  "Golimumabe": ["Simponi", "Simponi Aria"],
+  "Infliximabe": ["Remicade", "Remsima", "Avsola"],
+  "Anakinra": ["Kineret"],
+  "Canakinumabe": ["Ilaris"],
+  "Tocilizumabe": ["Actemra"],
+  "Secukinumabe": ["Cosentyx"],
+  "Brodalumabe": ["Kyntheum"],
+  "Ixekizumabe": ["Taltz"],
+  "Ustequinumabe": ["Stelara"],
+  "Guselcumabe": ["Tremfya"],
+  "Risanquizumabe": ["Skyrizi"],
+  "Abatacepte": ["Orencia"],
+  "Rituximabe": ["MabThera", "Riximyo"],
+  "Belimumabe": ["Benlysta"],
+  "Anifrolumabe": ["Saphnelo"],
+  "Baricitinibe": ["Olumiant"],
+  "Tofacitinibe": ["Xeljanz"],
+  "Upadacitinibe": ["Rinvoq"],
+  "Abacavir (ABC)": ["Ziagenavir"],
+  "Didanosina (ddI)": ["Videx"],
+  "Estavudina (d4T)": ["Zerit"],
+  "Lamivudina (3TC)": ["Epivir"],
+  "Tenofovir disoproxila fumarato (TDF)": ["Viread"],
+  "Zidovudina (AZT)": ["Retrovir"],
+  "Combivir": ["Biovir"],
+  "Descovy": ["Descovy"],
+  "Truvada": ["Truvada"],
+  "Doravirina (DOR)": ["Pifeltro"],
+  "Efavirenz (EFV)": ["Stocrin"],
+  "Etravirina (ETR)": ["Intelence"],
+  "Nevirapina (NVP)": ["Viramune"],
+  "Rilpivirina (RPV)": ["Edurant"],
+  "Atripla": ["Atripla"],
+  "Amprenavir (APV)": ["Agenerase"],
+  "Atazanavir (ATV)": ["Reyataz"],
+  "Darunavir (DRV)": ["Prezista"],
+  "Fosamprenavir (FPV)": ["Telzir"],
+  "Indinavir (IDV)": ["Crixivan"],
+  "Nelfinavir (NFV)": ["Viracept"],
+  "Ritonavir (RTV)": ["Norvir"],
+  "Saquinavir (SQV)": ["Invirase"],
+  "Tipranavir (TPV)": ["Aptivus"],
+  "Kaletra": ["Kaletra"],
+  "Cabotegravir (CAB)": ["Vocabria"],
+  "Dolutegravir (DTG)": ["Tivicay"],
+  "Raltegravir (RAL)": ["Isentress"],
+  "Biktarvy": ["Biktarvy"],
+  "Triumeq": ["Triumeq"],
+  "Dovato": ["Dovato"],
+  "Juluca": ["Juluca"],
+  "Genvoya": ["Genvoya"],
+  "Stribild": ["Stribild"],
+  "Symtuza": ["Symtuza"],
+  "Enfuvirtida (Fuzeon)": ["Fuzeon"],
+  "Fostemsavir (Rukobia)": ["Rukobia"],
+  "Maraviroque (Selzentry)": ["Celsentri"],
+  "Ibalizumabe": ["Trogarzo"],
+  "Diclofenaco": ["Voltaren", "Cataflam", "Biofenac"],
+  "Etodolaco": ["Flancox"],
+  "Ibuprofeno": ["Advil", "Alivium", "Buscofem"],
+  "Indometacina": ["Indocid"],
+  "Cetoprofeno": ["Profenid"],
+  "Cetorolaco": ["Toragesic"],
+  "Meloxicam": ["Movatec"],
+  "Naproxeno": ["Flanax"],
+  "Piroxicam": ["Feldene"],
+  "Celecoxibe": ["Celebra"],
+};
+
+/**
  * Dados extraídos de: Russell LA, Craig C, Flores EK, et al. Preoperative
  * Management of Medications for Rheumatologic and HIV Diseases: SPAQI
  * Consensus Statement. Mayo Clin Proc. 2022;97(8):1551-1571.
@@ -47,7 +149,7 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
   {
     id: "metotrexato",
     nomeGenerico: "Metotrexato",
-    nomesComerciais: ["Otrexup", "Rasuvo", "Trexall", "Rheumatrex"],
+    nomesComerciais: NOMES_COMERCIAIS_REUMATOLOGICO_HIV["Metotrexato"] ?? [],
     classe: "reumatologico-hiv",
     subclasse: "Imunossupressor convencional",
     regra: { tipo: "continuar" },
@@ -61,7 +163,7 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
   {
     id: "auranofina",
     nomeGenerico: "Auranofina",
-    nomesComerciais: ["Ridaura"],
+    nomesComerciais: NOMES_COMERCIAIS_REUMATOLOGICO_HIV["Auranofina"] ?? [],
     classe: "reumatologico-hiv",
     subclasse: "Imunossupressor convencional",
     regra: { tipo: "continuar" },
@@ -73,7 +175,7 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
   {
     id: "hidroxicloroquina",
     nomeGenerico: "Hidroxicloroquina",
-    nomesComerciais: ["Plaquenil"],
+    nomesComerciais: NOMES_COMERCIAIS_REUMATOLOGICO_HIV["Hidroxicloroquina"] ?? [],
     classe: "reumatologico-hiv",
     subclasse: "Imunossupressor convencional",
     regra: { tipo: "continuar" },
@@ -87,7 +189,7 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
   {
     id: "ciclofosfamida",
     nomeGenerico: "Ciclofosfamida",
-    nomesComerciais: ["Cytoxan", "Neosar"],
+    nomesComerciais: NOMES_COMERCIAIS_REUMATOLOGICO_HIV["Ciclofosfamida"] ?? [],
     classe: "reumatologico-hiv",
     subclasse: "Imunossupressor convencional",
     regra: { tipo: "suspender_periodo_fixo", valor: 28, unidade: "dias" },
@@ -101,7 +203,7 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
   {
     id: "glicocorticoides_reumatologicos",
     nomeGenerico: "Glicocorticoides (uso reumatológico)",
-    nomesComerciais: ["Prednisona", "Medrol (metilprednisolona)"],
+    nomesComerciais: NOMES_COMERCIAIS_REUMATOLOGICO_HIV["Glicocorticoides (uso reumatológico)"] ?? [],
     classe: "reumatologico-hiv",
     subclasse: "Imunossupressor convencional",
     regra: { tipo: "continuar" },
@@ -115,7 +217,7 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
   {
     id: "apremilaste",
     nomeGenerico: "Apremilaste",
-    nomesComerciais: ["Otezla"],
+    nomesComerciais: NOMES_COMERCIAIS_REUMATOLOGICO_HIV["Apremilaste"] ?? [],
     classe: "reumatologico-hiv",
     subclasse: "Imunossupressor convencional",
     regra: { tipo: "continuar" },
@@ -127,7 +229,7 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
   {
     id: "sulfassalazina",
     nomeGenerico: "Sulfassalazina",
-    nomesComerciais: ["Azulfidine"],
+    nomesComerciais: NOMES_COMERCIAIS_REUMATOLOGICO_HIV["Sulfassalazina"] ?? [],
     classe: "reumatologico-hiv",
     subclasse: "Imunossupressor convencional",
     regra: { tipo: "continuar" },
@@ -140,7 +242,7 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
   {
     id: "leflunomida",
     nomeGenerico: "Leflunomida",
-    nomesComerciais: ["Arava"],
+    nomesComerciais: NOMES_COMERCIAIS_REUMATOLOGICO_HIV["Leflunomida"] ?? [],
     classe: "reumatologico-hiv",
     subclasse: "Imunossupressor convencional",
     regra: { tipo: "continuar" },
@@ -152,7 +254,7 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
   {
     id: "micofenolato",
     nomeGenerico: "Micofenolato",
-    nomesComerciais: ["CellCept", "Myfortic"],
+    nomesComerciais: NOMES_COMERCIAIS_REUMATOLOGICO_HIV["Micofenolato"] ?? [],
     classe: "reumatologico-hiv",
     subclasse: "Imunossupressor para LES",
     indicacoes: [
@@ -176,7 +278,7 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
   {
     id: "azatioprina",
     nomeGenerico: "Azatioprina",
-    nomesComerciais: ["Imuran", "Azasan"],
+    nomesComerciais: NOMES_COMERCIAIS_REUMATOLOGICO_HIV["Azatioprina"] ?? [],
     classe: "reumatologico-hiv",
     subclasse: "Imunossupressor para LES",
     indicacoes: [
@@ -200,7 +302,7 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
   {
     id: "ciclosporina",
     nomeGenerico: "Ciclosporina",
-    nomesComerciais: ["Gengraf", "Neoral", "Sandimmune"],
+    nomesComerciais: NOMES_COMERCIAIS_REUMATOLOGICO_HIV["Ciclosporina"] ?? [],
     classe: "reumatologico-hiv",
     subclasse: "Imunossupressor para LES",
     indicacoes: [
@@ -226,7 +328,7 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
   {
     id: "tacrolimo",
     nomeGenerico: "Tacrolimo",
-    nomesComerciais: ["Prograf", "Astagraf", "Hecoria", "Protopic", "Envarsus"],
+    nomesComerciais: NOMES_COMERCIAIS_REUMATOLOGICO_HIV["Tacrolimo"] ?? [],
     classe: "reumatologico-hiv",
     subclasse: "Imunossupressor para LES",
     indicacoes: [
@@ -252,7 +354,7 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
   {
     id: "voclosporina",
     nomeGenerico: "Voclosporina",
-    nomesComerciais: ["Lupkynis"],
+    nomesComerciais: NOMES_COMERCIAIS_REUMATOLOGICO_HIV["Voclosporina"] ?? [],
     classe: "reumatologico-hiv",
     subclasse: "Imunossupressor para LES",
     // Sem distinção grave/não-grave documentada para este fármaco
@@ -269,7 +371,7 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
   {
     id: "adalimumabe",
     nomeGenerico: "Adalimumabe",
-    nomesComerciais: ["Humira e biossimilares"],
+    nomesComerciais: NOMES_COMERCIAIS_REUMATOLOGICO_HIV["Adalimumabe"] ?? [],
     classe: "reumatologico-hiv",
     subclasse: "Inibidor de TNF-α",
     regra: { tipo: "suspender_intervalo_dose", numeroIntervalos: 1 },
@@ -283,7 +385,7 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
   {
     id: "certolizumabe",
     nomeGenerico: "Certolizumabe",
-    nomesComerciais: ["Cimzia"],
+    nomesComerciais: NOMES_COMERCIAIS_REUMATOLOGICO_HIV["Certolizumabe"] ?? [],
     classe: "reumatologico-hiv",
     subclasse: "Inibidor de TNF-α",
     regra: { tipo: "suspender_intervalo_dose", numeroIntervalos: 1 },
@@ -297,7 +399,7 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
   {
     id: "etanercepte",
     nomeGenerico: "Etanercepte",
-    nomesComerciais: ["Enbrel"],
+    nomesComerciais: NOMES_COMERCIAIS_REUMATOLOGICO_HIV["Etanercepte"] ?? [],
     classe: "reumatologico-hiv",
     subclasse: "Inibidor de TNF-α",
     regra: { tipo: "suspender_intervalo_dose", numeroIntervalos: 1 },
@@ -311,7 +413,7 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
   {
     id: "golimumabe",
     nomeGenerico: "Golimumabe",
-    nomesComerciais: ["Simponi", "Simponi Aria"],
+    nomesComerciais: NOMES_COMERCIAIS_REUMATOLOGICO_HIV["Golimumabe"] ?? [],
     classe: "reumatologico-hiv",
     subclasse: "Inibidor de TNF-α",
     regra: { tipo: "suspender_intervalo_dose", numeroIntervalos: 1 },
@@ -325,7 +427,7 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
   {
     id: "infliximabe",
     nomeGenerico: "Infliximabe",
-    nomesComerciais: ["Remicade e biossimilares"],
+    nomesComerciais: NOMES_COMERCIAIS_REUMATOLOGICO_HIV["Infliximabe"] ?? [],
     classe: "reumatologico-hiv",
     subclasse: "Inibidor de TNF-α",
     regra: { tipo: "suspender_intervalo_dose", numeroIntervalos: 1 },
@@ -339,7 +441,7 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
   {
     id: "anakinra",
     nomeGenerico: "Anakinra",
-    nomesComerciais: ["Kineret"],
+    nomesComerciais: NOMES_COMERCIAIS_REUMATOLOGICO_HIV["Anakinra"] ?? [],
     classe: "reumatologico-hiv",
     subclasse: "Inibidor de IL-1",
     regra: { tipo: "suspender_intervalo_dose", numeroIntervalos: 1 },
@@ -352,7 +454,7 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
   {
     id: "canakinumabe",
     nomeGenerico: "Canakinumabe",
-    nomesComerciais: ["Ilaris"],
+    nomesComerciais: NOMES_COMERCIAIS_REUMATOLOGICO_HIV["Canakinumabe"] ?? [],
     classe: "reumatologico-hiv",
     subclasse: "Inibidor de IL-1",
     regra: { tipo: "suspender_intervalo_dose", numeroIntervalos: 1 },
@@ -366,7 +468,7 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
   {
     id: "rilonacepte",
     nomeGenerico: "Rilonacepte",
-    nomesComerciais: ["Arcalyst"],
+    nomesComerciais: NOMES_COMERCIAIS_REUMATOLOGICO_HIV["Rilonacepte"] ?? [],
     classe: "reumatologico-hiv",
     subclasse: "Inibidor de IL-1",
     regra: { tipo: "suspender_intervalo_dose", numeroIntervalos: 1 },
@@ -379,7 +481,7 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
   {
     id: "tocilizumabe",
     nomeGenerico: "Tocilizumabe",
-    nomesComerciais: ["Actemra"],
+    nomesComerciais: NOMES_COMERCIAIS_REUMATOLOGICO_HIV["Tocilizumabe"] ?? [],
     classe: "reumatologico-hiv",
     subclasse: "Inibidor de IL-6",
     regra: { tipo: "suspender_intervalo_dose", numeroIntervalos: 1 },
@@ -393,7 +495,7 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
   {
     id: "sarilumabe",
     nomeGenerico: "Sarilumabe",
-    nomesComerciais: ["Kevzara"],
+    nomesComerciais: NOMES_COMERCIAIS_REUMATOLOGICO_HIV["Sarilumabe"] ?? [],
     classe: "reumatologico-hiv",
     subclasse: "Inibidor de IL-6",
     regra: { tipo: "suspender_intervalo_dose", numeroIntervalos: 1 },
@@ -407,7 +509,7 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
   {
     id: "secukinumabe",
     nomeGenerico: "Secukinumabe",
-    nomesComerciais: ["Cosentyx"],
+    nomesComerciais: NOMES_COMERCIAIS_REUMATOLOGICO_HIV["Secukinumabe"] ?? [],
     classe: "reumatologico-hiv",
     subclasse: "Inibidor de IL-17",
     regra: { tipo: "suspender_intervalo_dose", numeroIntervalos: 1 },
@@ -420,7 +522,7 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
   {
     id: "brodalumabe",
     nomeGenerico: "Brodalumabe",
-    nomesComerciais: ["Siliq"],
+    nomesComerciais: NOMES_COMERCIAIS_REUMATOLOGICO_HIV["Brodalumabe"] ?? [],
     classe: "reumatologico-hiv",
     subclasse: "Inibidor de IL-17",
     regra: { tipo: "suspender_intervalo_dose", numeroIntervalos: 1 },
@@ -433,7 +535,7 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
   {
     id: "ixekizumabe",
     nomeGenerico: "Ixekizumabe",
-    nomesComerciais: ["Taltz"],
+    nomesComerciais: NOMES_COMERCIAIS_REUMATOLOGICO_HIV["Ixekizumabe"] ?? [],
     classe: "reumatologico-hiv",
     subclasse: "Inibidor de IL-17",
     regra: { tipo: "suspender_intervalo_dose", numeroIntervalos: 1 },
@@ -446,7 +548,7 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
   {
     id: "ustequinumabe",
     nomeGenerico: "Ustequinumabe",
-    nomesComerciais: ["Stelara"],
+    nomesComerciais: NOMES_COMERCIAIS_REUMATOLOGICO_HIV["Ustequinumabe"] ?? [],
     classe: "reumatologico-hiv",
     subclasse: "Inibidor de IL-12/23",
     regra: { tipo: "suspender_intervalo_dose", numeroIntervalos: 1 },
@@ -459,7 +561,7 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
   {
     id: "guselcumabe",
     nomeGenerico: "Guselcumabe",
-    nomesComerciais: ["Tremfya"],
+    nomesComerciais: NOMES_COMERCIAIS_REUMATOLOGICO_HIV["Guselcumabe"] ?? [],
     classe: "reumatologico-hiv",
     subclasse: "Inibidor de IL-23",
     regra: { tipo: "suspender_intervalo_dose", numeroIntervalos: 1 },
@@ -472,7 +574,7 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
   {
     id: "risanquizumabe",
     nomeGenerico: "Risanquizumabe",
-    nomesComerciais: ["Skyrizi"],
+    nomesComerciais: NOMES_COMERCIAIS_REUMATOLOGICO_HIV["Risanquizumabe"] ?? [],
     classe: "reumatologico-hiv",
     subclasse: "Inibidor de IL-23",
     regra: { tipo: "suspender_intervalo_dose", numeroIntervalos: 1 },
@@ -485,7 +587,7 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
   {
     id: "abatacepte",
     nomeGenerico: "Abatacepte",
-    nomesComerciais: ["Orencia"],
+    nomesComerciais: NOMES_COMERCIAIS_REUMATOLOGICO_HIV["Abatacepte"] ?? [],
     classe: "reumatologico-hiv",
     subclasse: "Bloqueador de coestimulação",
     regra: { tipo: "suspender_intervalo_dose", numeroIntervalos: 1 },
@@ -499,7 +601,7 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
   {
     id: "rituximabe",
     nomeGenerico: "Rituximabe",
-    nomesComerciais: ["Rituxan"],
+    nomesComerciais: NOMES_COMERCIAIS_REUMATOLOGICO_HIV["Rituximabe"] ?? [],
     classe: "reumatologico-hiv",
     subclasse: "Agente anti-célula B",
     indicacoes: [
@@ -525,7 +627,7 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
   {
     id: "belimumabe",
     nomeGenerico: "Belimumabe",
-    nomesComerciais: ["Benlysta"],
+    nomesComerciais: NOMES_COMERCIAIS_REUMATOLOGICO_HIV["Belimumabe"] ?? [],
     classe: "reumatologico-hiv",
     subclasse: "Agente anti-célula B",
     indicacoes: [
@@ -551,7 +653,7 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
   {
     id: "anifrolumabe",
     nomeGenerico: "Anifrolumabe",
-    nomesComerciais: ["Saphnelo"],
+    nomesComerciais: NOMES_COMERCIAIS_REUMATOLOGICO_HIV["Anifrolumabe"] ?? [],
     classe: "reumatologico-hiv",
     subclasse: "Agente anti-interferon",
     regra: { tipo: "suspender_intervalo_dose", numeroIntervalos: 1 },
@@ -565,7 +667,7 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
   {
     id: "baricitinibe",
     nomeGenerico: "Baricitinibe",
-    nomesComerciais: ["Olumiant"],
+    nomesComerciais: NOMES_COMERCIAIS_REUMATOLOGICO_HIV["Baricitinibe"] ?? [],
     classe: "reumatologico-hiv",
     subclasse: "Inibidor de Janus quinase (JAK)",
     regra: { tipo: "suspender_periodo_fixo", valor: 3, unidade: "dias" },
@@ -579,7 +681,7 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
   {
     id: "tofacitinibe",
     nomeGenerico: "Tofacitinibe",
-    nomesComerciais: ["Xeljanz"],
+    nomesComerciais: NOMES_COMERCIAIS_REUMATOLOGICO_HIV["Tofacitinibe"] ?? [],
     classe: "reumatologico-hiv",
     subclasse: "Inibidor de Janus quinase (JAK)",
     regra: { tipo: "suspender_periodo_fixo", valor: 3, unidade: "dias" },
@@ -593,7 +695,7 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
   {
     id: "upadacitinibe",
     nomeGenerico: "Upadacitinibe",
-    nomesComerciais: ["Rinvoq"],
+    nomesComerciais: NOMES_COMERCIAIS_REUMATOLOGICO_HIV["Upadacitinibe"] ?? [],
     classe: "reumatologico-hiv",
     subclasse: "Inibidor de Janus quinase (JAK)",
     regra: { tipo: "suspender_periodo_fixo", valor: 3, unidade: "dias" },
@@ -607,7 +709,7 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
   {
     id: "abacavir",
     nomeGenerico: "Abacavir (ABC)",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_REUMATOLOGICO_HIV["Abacavir (ABC)"] ?? [],
     classe: "reumatologico-hiv",
     subclasse: "Antirretroviral — NRTI",
     regra: { tipo: "continuar" },
@@ -621,7 +723,7 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
   {
     id: "didanosina",
     nomeGenerico: "Didanosina (ddI)",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_REUMATOLOGICO_HIV["Didanosina (ddI)"] ?? [],
     classe: "reumatologico-hiv",
     subclasse: "Antirretroviral — NRTI",
     regra: { tipo: "continuar" },
@@ -635,7 +737,7 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
   {
     id: "emtricitabina",
     nomeGenerico: "Emtricitabina (FTC)",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_REUMATOLOGICO_HIV["Emtricitabina (FTC)"] ?? [],
     classe: "reumatologico-hiv",
     subclasse: "Antirretroviral — NRTI",
     regra: { tipo: "continuar" },
@@ -649,7 +751,7 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
   {
     id: "estavudina",
     nomeGenerico: "Estavudina (d4T)",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_REUMATOLOGICO_HIV["Estavudina (d4T)"] ?? [],
     classe: "reumatologico-hiv",
     subclasse: "Antirretroviral — NRTI",
     regra: { tipo: "continuar" },
@@ -663,7 +765,7 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
   {
     id: "lamivudina",
     nomeGenerico: "Lamivudina (3TC)",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_REUMATOLOGICO_HIV["Lamivudina (3TC)"] ?? [],
     classe: "reumatologico-hiv",
     subclasse: "Antirretroviral — NRTI",
     regra: { tipo: "continuar" },
@@ -677,7 +779,7 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
   {
     id: "tenofovir_alafenamida",
     nomeGenerico: "Tenofovir alafenamida (TAF)",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_REUMATOLOGICO_HIV["Tenofovir alafenamida (TAF)"] ?? [],
     classe: "reumatologico-hiv",
     subclasse: "Antirretroviral — NRTI",
     regra: { tipo: "continuar" },
@@ -691,7 +793,7 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
   {
     id: "tenofovir_disoproxila_fumarato",
     nomeGenerico: "Tenofovir disoproxila fumarato (TDF)",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_REUMATOLOGICO_HIV["Tenofovir disoproxila fumarato (TDF)"] ?? [],
     classe: "reumatologico-hiv",
     subclasse: "Antirretroviral — NRTI",
     regra: { tipo: "continuar" },
@@ -705,7 +807,7 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
   {
     id: "zidovudina",
     nomeGenerico: "Zidovudina (AZT)",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_REUMATOLOGICO_HIV["Zidovudina (AZT)"] ?? [],
     classe: "reumatologico-hiv",
     subclasse: "Antirretroviral — NRTI",
     regra: { tipo: "continuar" },
@@ -719,7 +821,7 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
   {
     id: "epzicom_kivexa",
     nomeGenerico: "Epzicom/Kivexa",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_REUMATOLOGICO_HIV["Epzicom/Kivexa"] ?? [],
     classe: "reumatologico-hiv",
     subclasse: "Antirretroviral — NRTI",
     regra: { tipo: "continuar" },
@@ -733,7 +835,7 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
   {
     id: "trizivir",
     nomeGenerico: "Trizivir",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_REUMATOLOGICO_HIV["Trizivir"] ?? [],
     classe: "reumatologico-hiv",
     subclasse: "Antirretroviral — NRTI",
     regra: { tipo: "continuar" },
@@ -747,7 +849,7 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
   {
     id: "descovy",
     nomeGenerico: "Descovy",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_REUMATOLOGICO_HIV["Descovy"] ?? [],
     classe: "reumatologico-hiv",
     subclasse: "Antirretroviral — NRTI",
     regra: { tipo: "continuar" },
@@ -761,7 +863,7 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
   {
     id: "truvada",
     nomeGenerico: "Truvada",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_REUMATOLOGICO_HIV["Truvada"] ?? [],
     classe: "reumatologico-hiv",
     subclasse: "Antirretroviral — NRTI",
     regra: { tipo: "continuar" },
@@ -775,7 +877,7 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
   {
     id: "combivir",
     nomeGenerico: "Combivir",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_REUMATOLOGICO_HIV["Combivir"] ?? [],
     classe: "reumatologico-hiv",
     subclasse: "Antirretroviral — NRTI",
     regra: { tipo: "continuar" },
@@ -789,7 +891,7 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
   {
     id: "delavirdina",
     nomeGenerico: "Delavirdina (DLV)",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_REUMATOLOGICO_HIV["Delavirdina (DLV)"] ?? [],
     classe: "reumatologico-hiv",
     subclasse: "Antirretroviral — NNRTI",
     regra: { tipo: "continuar" },
@@ -803,7 +905,7 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
   {
     id: "doravirina",
     nomeGenerico: "Doravirina (DOR)",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_REUMATOLOGICO_HIV["Doravirina (DOR)"] ?? [],
     classe: "reumatologico-hiv",
     subclasse: "Antirretroviral — NNRTI",
     regra: { tipo: "continuar" },
@@ -817,7 +919,7 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
   {
     id: "efavirenz",
     nomeGenerico: "Efavirenz (EFV)",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_REUMATOLOGICO_HIV["Efavirenz (EFV)"] ?? [],
     classe: "reumatologico-hiv",
     subclasse: "Antirretroviral — NNRTI",
     regra: { tipo: "continuar" },
@@ -831,7 +933,7 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
   {
     id: "etravirina",
     nomeGenerico: "Etravirina (ETR)",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_REUMATOLOGICO_HIV["Etravirina (ETR)"] ?? [],
     classe: "reumatologico-hiv",
     subclasse: "Antirretroviral — NNRTI",
     regra: { tipo: "continuar" },
@@ -845,7 +947,7 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
   {
     id: "nevirapina",
     nomeGenerico: "Nevirapina (NVP)",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_REUMATOLOGICO_HIV["Nevirapina (NVP)"] ?? [],
     classe: "reumatologico-hiv",
     subclasse: "Antirretroviral — NNRTI",
     regra: { tipo: "continuar" },
@@ -859,7 +961,7 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
   {
     id: "rilpivirina",
     nomeGenerico: "Rilpivirina (RPV)",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_REUMATOLOGICO_HIV["Rilpivirina (RPV)"] ?? [],
     classe: "reumatologico-hiv",
     subclasse: "Antirretroviral — NNRTI",
     regra: { tipo: "continuar" },
@@ -873,7 +975,7 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
   {
     id: "delstrigo",
     nomeGenerico: "Delstrigo",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_REUMATOLOGICO_HIV["Delstrigo"] ?? [],
     classe: "reumatologico-hiv",
     subclasse: "Antirretroviral — NNRTI",
     regra: { tipo: "continuar" },
@@ -887,7 +989,7 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
   {
     id: "atripla",
     nomeGenerico: "Atripla",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_REUMATOLOGICO_HIV["Atripla"] ?? [],
     classe: "reumatologico-hiv",
     subclasse: "Antirretroviral — NNRTI",
     regra: { tipo: "continuar" },
@@ -901,7 +1003,7 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
   {
     id: "odefsey",
     nomeGenerico: "Odefsey",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_REUMATOLOGICO_HIV["Odefsey"] ?? [],
     classe: "reumatologico-hiv",
     subclasse: "Antirretroviral — NNRTI",
     regra: { tipo: "continuar" },
@@ -915,7 +1017,7 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
   {
     id: "complera",
     nomeGenerico: "Complera",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_REUMATOLOGICO_HIV["Complera"] ?? [],
     classe: "reumatologico-hiv",
     subclasse: "Antirretroviral — NNRTI",
     regra: { tipo: "continuar" },
@@ -929,7 +1031,7 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
   {
     id: "amprenavir",
     nomeGenerico: "Amprenavir (APV)",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_REUMATOLOGICO_HIV["Amprenavir (APV)"] ?? [],
     classe: "reumatologico-hiv",
     subclasse: "Antirretroviral — inibidor de protease",
     regra: { tipo: "continuar" },
@@ -943,7 +1045,7 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
   {
     id: "atazanavir",
     nomeGenerico: "Atazanavir (ATV)",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_REUMATOLOGICO_HIV["Atazanavir (ATV)"] ?? [],
     classe: "reumatologico-hiv",
     subclasse: "Antirretroviral — inibidor de protease",
     regra: { tipo: "continuar" },
@@ -957,7 +1059,7 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
   {
     id: "darunavir",
     nomeGenerico: "Darunavir (DRV)",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_REUMATOLOGICO_HIV["Darunavir (DRV)"] ?? [],
     classe: "reumatologico-hiv",
     subclasse: "Antirretroviral — inibidor de protease",
     regra: { tipo: "continuar" },
@@ -971,7 +1073,7 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
   {
     id: "fosamprenavir",
     nomeGenerico: "Fosamprenavir (FPV)",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_REUMATOLOGICO_HIV["Fosamprenavir (FPV)"] ?? [],
     classe: "reumatologico-hiv",
     subclasse: "Antirretroviral — inibidor de protease",
     regra: { tipo: "continuar" },
@@ -985,7 +1087,7 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
   {
     id: "indinavir",
     nomeGenerico: "Indinavir (IDV)",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_REUMATOLOGICO_HIV["Indinavir (IDV)"] ?? [],
     classe: "reumatologico-hiv",
     subclasse: "Antirretroviral — inibidor de protease",
     regra: { tipo: "continuar" },
@@ -999,7 +1101,7 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
   {
     id: "nelfinavir",
     nomeGenerico: "Nelfinavir (NFV)",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_REUMATOLOGICO_HIV["Nelfinavir (NFV)"] ?? [],
     classe: "reumatologico-hiv",
     subclasse: "Antirretroviral — inibidor de protease",
     regra: { tipo: "continuar" },
@@ -1013,7 +1115,7 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
   {
     id: "ritonavir",
     nomeGenerico: "Ritonavir (RTV)",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_REUMATOLOGICO_HIV["Ritonavir (RTV)"] ?? [],
     classe: "reumatologico-hiv",
     subclasse: "Antirretroviral — inibidor de protease",
     regra: { tipo: "continuar" },
@@ -1027,7 +1129,7 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
   {
     id: "saquinavir",
     nomeGenerico: "Saquinavir (SQV)",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_REUMATOLOGICO_HIV["Saquinavir (SQV)"] ?? [],
     classe: "reumatologico-hiv",
     subclasse: "Antirretroviral — inibidor de protease",
     regra: { tipo: "continuar" },
@@ -1041,7 +1143,7 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
   {
     id: "tipranavir",
     nomeGenerico: "Tipranavir (TPV)",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_REUMATOLOGICO_HIV["Tipranavir (TPV)"] ?? [],
     classe: "reumatologico-hiv",
     subclasse: "Antirretroviral — inibidor de protease",
     regra: { tipo: "continuar" },
@@ -1055,7 +1157,7 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
   {
     id: "evotaz",
     nomeGenerico: "Evotaz",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_REUMATOLOGICO_HIV["Evotaz"] ?? [],
     classe: "reumatologico-hiv",
     subclasse: "Antirretroviral — inibidor de protease",
     regra: { tipo: "continuar" },
@@ -1069,7 +1171,7 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
   {
     id: "prezcobix",
     nomeGenerico: "Prezcobix",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_REUMATOLOGICO_HIV["Prezcobix"] ?? [],
     classe: "reumatologico-hiv",
     subclasse: "Antirretroviral — inibidor de protease",
     regra: { tipo: "continuar" },
@@ -1083,7 +1185,7 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
   {
     id: "symtuza",
     nomeGenerico: "Symtuza",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_REUMATOLOGICO_HIV["Symtuza"] ?? [],
     classe: "reumatologico-hiv",
     subclasse: "Antirretroviral — inibidor de protease",
     regra: { tipo: "continuar" },
@@ -1097,7 +1199,7 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
   {
     id: "kaletra",
     nomeGenerico: "Kaletra",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_REUMATOLOGICO_HIV["Kaletra"] ?? [],
     classe: "reumatologico-hiv",
     subclasse: "Antirretroviral — inibidor de protease",
     regra: { tipo: "continuar" },
@@ -1111,7 +1213,7 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
   {
     id: "cabotegravir",
     nomeGenerico: "Cabotegravir (CAB)",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_REUMATOLOGICO_HIV["Cabotegravir (CAB)"] ?? [],
     classe: "reumatologico-hiv",
     subclasse: "Antirretroviral — inibidor de integrase",
     regra: { tipo: "continuar" },
@@ -1125,7 +1227,7 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
   {
     id: "dolutegravir",
     nomeGenerico: "Dolutegravir (DTG)",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_REUMATOLOGICO_HIV["Dolutegravir (DTG)"] ?? [],
     classe: "reumatologico-hiv",
     subclasse: "Antirretroviral — inibidor de integrase",
     regra: { tipo: "continuar" },
@@ -1139,7 +1241,7 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
   {
     id: "elvitegravir",
     nomeGenerico: "Elvitegravir (EVG)",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_REUMATOLOGICO_HIV["Elvitegravir (EVG)"] ?? [],
     classe: "reumatologico-hiv",
     subclasse: "Antirretroviral — inibidor de integrase",
     regra: { tipo: "continuar" },
@@ -1153,7 +1255,7 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
   {
     id: "raltegravir",
     nomeGenerico: "Raltegravir (RAL)",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_REUMATOLOGICO_HIV["Raltegravir (RAL)"] ?? [],
     classe: "reumatologico-hiv",
     subclasse: "Antirretroviral — inibidor de integrase",
     regra: { tipo: "continuar" },
@@ -1167,7 +1269,7 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
   {
     id: "biktarvy",
     nomeGenerico: "Biktarvy",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_REUMATOLOGICO_HIV["Biktarvy"] ?? [],
     classe: "reumatologico-hiv",
     subclasse: "Antirretroviral — inibidor de integrase",
     regra: { tipo: "continuar" },
@@ -1181,7 +1283,7 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
   {
     id: "cabenuva",
     nomeGenerico: "Cabenuva",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_REUMATOLOGICO_HIV["Cabenuva"] ?? [],
     classe: "reumatologico-hiv",
     subclasse: "Antirretroviral — inibidor de integrase",
     regra: { tipo: "continuar" },
@@ -1195,7 +1297,7 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
   {
     id: "triumeq",
     nomeGenerico: "Triumeq",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_REUMATOLOGICO_HIV["Triumeq"] ?? [],
     classe: "reumatologico-hiv",
     subclasse: "Antirretroviral — inibidor de integrase",
     regra: { tipo: "continuar" },
@@ -1209,7 +1311,7 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
   {
     id: "dovato",
     nomeGenerico: "Dovato",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_REUMATOLOGICO_HIV["Dovato"] ?? [],
     classe: "reumatologico-hiv",
     subclasse: "Antirretroviral — inibidor de integrase",
     regra: { tipo: "continuar" },
@@ -1223,7 +1325,7 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
   {
     id: "juluca",
     nomeGenerico: "Juluca",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_REUMATOLOGICO_HIV["Juluca"] ?? [],
     classe: "reumatologico-hiv",
     subclasse: "Antirretroviral — inibidor de integrase",
     regra: { tipo: "continuar" },
@@ -1237,7 +1339,7 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
   {
     id: "genvoya",
     nomeGenerico: "Genvoya",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_REUMATOLOGICO_HIV["Genvoya"] ?? [],
     classe: "reumatologico-hiv",
     subclasse: "Antirretroviral — inibidor de integrase",
     regra: { tipo: "continuar" },
@@ -1251,7 +1353,7 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
   {
     id: "stribild",
     nomeGenerico: "Stribild",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_REUMATOLOGICO_HIV["Stribild"] ?? [],
     classe: "reumatologico-hiv",
     subclasse: "Antirretroviral — inibidor de integrase",
     regra: { tipo: "continuar" },
@@ -1265,7 +1367,7 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
   {
     id: "enfuvirtida",
     nomeGenerico: "Enfuvirtida (Fuzeon)",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_REUMATOLOGICO_HIV["Enfuvirtida (Fuzeon)"] ?? [],
     classe: "reumatologico-hiv",
     subclasse: "Antirretroviral — inibidor de entrada",
     regra: { tipo: "continuar" },
@@ -1279,7 +1381,7 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
   {
     id: "fostemsavir",
     nomeGenerico: "Fostemsavir (Rukobia)",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_REUMATOLOGICO_HIV["Fostemsavir (Rukobia)"] ?? [],
     classe: "reumatologico-hiv",
     subclasse: "Antirretroviral — inibidor de entrada",
     regra: { tipo: "continuar" },
@@ -1293,7 +1395,7 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
   {
     id: "maraviroque",
     nomeGenerico: "Maraviroque (Selzentry)",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_REUMATOLOGICO_HIV["Maraviroque (Selzentry)"] ?? [],
     classe: "reumatologico-hiv",
     subclasse: "Antirretroviral — inibidor de entrada",
     regra: { tipo: "continuar" },
@@ -1307,7 +1409,7 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
   {
     id: "ibalizumabe",
     nomeGenerico: "Ibalizumabe",
-    nomesComerciais: ["Trogarzo"],
+    nomesComerciais: NOMES_COMERCIAIS_REUMATOLOGICO_HIV["Ibalizumabe"] ?? [],
     classe: "reumatologico-hiv",
     subclasse: "Antirretroviral — inibidor de pós-fixação em CD4",
     regra: { tipo: "continuar" },
@@ -1321,7 +1423,7 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
   {
     id: "diclofenaco",
     nomeGenerico: "Diclofenaco",
-    nomesComerciais: ["Cataflam", "Voltaren-XR", "Dyloject", "Cambia", "Zipsor", "Zorvolex"],
+    nomesComerciais: NOMES_COMERCIAIS_REUMATOLOGICO_HIV["Diclofenaco"] ?? [],
     classe: "analgesicos",
     subclasse: "AINE não seletivo (inibidor de COX-1/COX-2)",
     regra: { tipo: "suspender_periodo_fixo", valor: 1, unidade: "dias" },
@@ -1335,7 +1437,7 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
   {
     id: "diflunisal",
     nomeGenerico: "Diflunisal",
-    nomesComerciais: ["Dolobid"],
+    nomesComerciais: NOMES_COMERCIAIS_REUMATOLOGICO_HIV["Diflunisal"] ?? [],
     classe: "analgesicos",
     subclasse: "AINE não seletivo (inibidor de COX-1/COX-2)",
     regra: { tipo: "suspender_periodo_fixo", valor: 3, unidade: "dias" },
@@ -1349,7 +1451,7 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
   {
     id: "etodolaco",
     nomeGenerico: "Etodolaco",
-    nomesComerciais: ["Lodine"],
+    nomesComerciais: NOMES_COMERCIAIS_REUMATOLOGICO_HIV["Etodolaco"] ?? [],
     classe: "analgesicos",
     subclasse: "AINE não seletivo (inibidor de COX-1/COX-2)",
     regra: { tipo: "suspender_periodo_fixo", valor: 2, unidade: "dias" },
@@ -1363,7 +1465,7 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
   {
     id: "fenoprofeno",
     nomeGenerico: "Fenoprofeno",
-    nomesComerciais: ["Nalfon"],
+    nomesComerciais: NOMES_COMERCIAIS_REUMATOLOGICO_HIV["Fenoprofeno"] ?? [],
     classe: "analgesicos",
     subclasse: "AINE não seletivo (inibidor de COX-1/COX-2)",
     regra: { tipo: "suspender_periodo_fixo", valor: 1, unidade: "dias" },
@@ -1377,7 +1479,7 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
   {
     id: "flurbiprofeno",
     nomeGenerico: "Flurbiprofeno",
-    nomesComerciais: ["Ansaid", "Ocufen", "Strepfen"],
+    nomesComerciais: NOMES_COMERCIAIS_REUMATOLOGICO_HIV["Flurbiprofeno"] ?? [],
     classe: "analgesicos",
     subclasse: "AINE não seletivo (inibidor de COX-1/COX-2)",
     regra: { tipo: "suspender_periodo_fixo", valor: 2, unidade: "dias" },
@@ -1391,7 +1493,7 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
   {
     id: "ibuprofeno",
     nomeGenerico: "Ibuprofeno",
-    nomesComerciais: ["Brufen", "Advil", "Motrin", "Nurofen"],
+    nomesComerciais: NOMES_COMERCIAIS_REUMATOLOGICO_HIV["Ibuprofeno"] ?? [],
     classe: "analgesicos",
     subclasse: "AINE não seletivo (inibidor de COX-1/COX-2)",
     regra: { tipo: "suspender_periodo_fixo", valor: 1, unidade: "dias" },
@@ -1405,7 +1507,7 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
   {
     id: "indometacina",
     nomeGenerico: "Indometacina",
-    nomesComerciais: ["Indocin", "Indocid"],
+    nomesComerciais: NOMES_COMERCIAIS_REUMATOLOGICO_HIV["Indometacina"] ?? [],
     classe: "analgesicos",
     subclasse: "AINE não seletivo (inibidor de COX-1/COX-2)",
     regra: { tipo: "suspender_periodo_fixo", valor: 1, unidade: "dias" },
@@ -1419,7 +1521,7 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
   {
     id: "cetoprofeno",
     nomeGenerico: "Cetoprofeno",
-    nomesComerciais: ["Orudis", "Oruvail"],
+    nomesComerciais: NOMES_COMERCIAIS_REUMATOLOGICO_HIV["Cetoprofeno"] ?? [],
     classe: "analgesicos",
     subclasse: "AINE não seletivo (inibidor de COX-1/COX-2)",
     regra: { tipo: "suspender_periodo_fixo", valor: 1, unidade: "dias" },
@@ -1433,7 +1535,7 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
   {
     id: "cetorolaco",
     nomeGenerico: "Cetorolaco",
-    nomesComerciais: ["Toradol"],
+    nomesComerciais: NOMES_COMERCIAIS_REUMATOLOGICO_HIV["Cetorolaco"] ?? [],
     classe: "analgesicos",
     subclasse: "AINE não seletivo (inibidor de COX-1/COX-2)",
     regra: { tipo: "suspender_periodo_fixo", valor: 1, unidade: "dias" },
@@ -1447,7 +1549,7 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
   {
     id: "meloxicam",
     nomeGenerico: "Meloxicam",
-    nomesComerciais: ["Mobic"],
+    nomesComerciais: NOMES_COMERCIAIS_REUMATOLOGICO_HIV["Meloxicam"] ?? [],
     classe: "analgesicos",
     subclasse: "AINE não seletivo (inibidor de COX-1/COX-2)",
     regra: { tipo: "suspender_periodo_fixo", valor: 4, unidade: "dias" },
@@ -1461,7 +1563,7 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
   {
     id: "nabumetona",
     nomeGenerico: "Nabumetona",
-    nomesComerciais: ["Relafen"],
+    nomesComerciais: NOMES_COMERCIAIS_REUMATOLOGICO_HIV["Nabumetona"] ?? [],
     classe: "analgesicos",
     subclasse: "AINE não seletivo (inibidor de COX-1/COX-2)",
     regra: { tipo: "suspender_periodo_fixo", valor: 6, unidade: "dias" },
@@ -1475,7 +1577,7 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
   {
     id: "naproxeno",
     nomeGenerico: "Naproxeno",
-    nomesComerciais: ["Aleve", "Naprosyn"],
+    nomesComerciais: NOMES_COMERCIAIS_REUMATOLOGICO_HIV["Naproxeno"] ?? [],
     classe: "analgesicos",
     subclasse: "AINE não seletivo (inibidor de COX-1/COX-2)",
     regra: { tipo: "suspender_periodo_fixo", valor: 4, unidade: "dias" },
@@ -1489,7 +1591,7 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
   {
     id: "oxaprozina",
     nomeGenerico: "Oxaprozina",
-    nomesComerciais: ["Daypro"],
+    nomesComerciais: NOMES_COMERCIAIS_REUMATOLOGICO_HIV["Oxaprozina"] ?? [],
     classe: "analgesicos",
     subclasse: "AINE não seletivo (inibidor de COX-1/COX-2)",
     regra: { tipo: "suspender_periodo_fixo", valor: 10, unidade: "dias" },
@@ -1503,7 +1605,7 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
   {
     id: "piroxicam",
     nomeGenerico: "Piroxicam",
-    nomesComerciais: ["Feldene"],
+    nomesComerciais: NOMES_COMERCIAIS_REUMATOLOGICO_HIV["Piroxicam"] ?? [],
     classe: "analgesicos",
     subclasse: "AINE não seletivo (inibidor de COX-1/COX-2)",
     regra: { tipo: "suspender_periodo_fixo", valor: 10, unidade: "dias" },
@@ -1517,7 +1619,7 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
   {
     id: "salsalato",
     nomeGenerico: "Salsalato",
-    nomesComerciais: ["Mono-Gesic", "Salflex", "Disalcid", "Salsitab"],
+    nomesComerciais: NOMES_COMERCIAIS_REUMATOLOGICO_HIV["Salsalato"] ?? [],
     classe: "analgesicos",
     subclasse: "AINE não seletivo (inibidor de COX-1/COX-2)",
     regra: { tipo: "suspender_periodo_fixo", valor: 1, unidade: "dias" },
@@ -1531,7 +1633,7 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
   {
     id: "sulindaco",
     nomeGenerico: "Sulindaco",
-    nomesComerciais: ["Clinoril", "Sunil"],
+    nomesComerciais: NOMES_COMERCIAIS_REUMATOLOGICO_HIV["Sulindaco"] ?? [],
     classe: "analgesicos",
     subclasse: "AINE não seletivo (inibidor de COX-1/COX-2)",
     regra: { tipo: "suspender_periodo_fixo", valor: 4, unidade: "dias" },
@@ -1545,7 +1647,7 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
   {
     id: "tolmetina",
     nomeGenerico: "Tolmetina",
-    nomesComerciais: ["Tolectin"],
+    nomesComerciais: NOMES_COMERCIAIS_REUMATOLOGICO_HIV["Tolmetina"] ?? [],
     classe: "analgesicos",
     subclasse: "AINE não seletivo (inibidor de COX-1/COX-2)",
     regra: { tipo: "suspender_periodo_fixo", valor: 2, unidade: "dias" },
@@ -1559,7 +1661,7 @@ export const FARMACOS_REUMATOLOGICO_HIV: Farmaco[] = [
   {
     id: "celecoxibe",
     nomeGenerico: "Celecoxibe",
-    nomesComerciais: ["Celebrex"],
+    nomesComerciais: NOMES_COMERCIAIS_REUMATOLOGICO_HIV["Celecoxibe"] ?? [],
     classe: "analgesicos",
     subclasse: "Inibidor seletivo de COX-2",
     regra: { tipo: "continuar" },

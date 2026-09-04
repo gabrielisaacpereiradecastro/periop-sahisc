@@ -1,6 +1,20 @@
 import { Farmaco } from "@/medperiop/types";
 
 /**
+ * Nomes comerciais (nome genérico -> marcas) verificados um a um via busca
+ * (bulário ANVISA / ConsultaRemédios) em 2026-09 — não é uma tradução
+ * automática do inglês. Nomes de fora do Brasil (ex.: US-only) foram
+ * deliberadamente OMITIDOS em vez de adivinhados. Fármacos sem entrada
+ * aqui (ficam com `?? []`) são os que a busca não encontrou nenhum
+ * registro comercial brasileiro.
+ */
+const NOMES_COMERCIAIS_NEUROLOGICO: Record<string, string[]> = {
+  Prednisona: ["Meticorten"],
+  Prednisolona: ["Predsim"],
+  Metilprednisolona: ["Depo-Medrol", "Solu-Medrol"],
+};
+
+/**
  * Dados extraídos de: Oprea AD, Keshock MC, Cummings KC III, et al.
  * Preoperative Management of Medications for Neurologic Diseases: SPAQI
  * Consensus Statement. Mayo Clin Proc. 2022;97(2):375-396.
@@ -34,7 +48,7 @@ export const FARMACOS_NEUROLOGICO: Farmaco[] = [
   {
     id: "prednisona",
     nomeGenerico: "Prednisona",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_NEUROLOGICO["Prednisona"] ?? [],
     classe: "neurologico",
     subclasse: "Corticosteroides (EM/MG)",
     regra: { tipo: "continuar" },
@@ -48,7 +62,7 @@ export const FARMACOS_NEUROLOGICO: Farmaco[] = [
   {
     id: "prednisolona",
     nomeGenerico: "Prednisolona",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_NEUROLOGICO["Prednisolona"] ?? [],
     classe: "neurologico",
     subclasse: "Corticosteroides (EM/MG)",
     regra: { tipo: "continuar" },
@@ -62,7 +76,7 @@ export const FARMACOS_NEUROLOGICO: Farmaco[] = [
   {
     id: "metilprednisolona",
     nomeGenerico: "Metilprednisolona",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_NEUROLOGICO["Metilprednisolona"] ?? [],
     classe: "neurologico",
     subclasse: "Corticosteroides (EM/MG)",
     regra: { tipo: "continuar" },
