@@ -1,6 +1,83 @@
 import { Farmaco } from "@/medperiop/types";
 
 /**
+ * Nomes comerciais (nome genérico -> marcas) verificados um a um via busca
+ * (bulário ANVISA / ConsultaRemédios) em 2026-09 — não é uma tradução
+ * automática do inglês. Nomes de fora do Brasil (ex.: US-only) foram
+ * deliberadamente OMITIDOS em vez de adivinhados. Fármacos sem entrada
+ * aqui (ficam com `?? []`) são os que a busca não encontrou nenhum
+ * registro comercial brasileiro — por exemplo, por nunca terem sido
+ * comercializados no país (ex.: fenoxibenzamina, moexipril, eprosartana,
+ * quinidina, flecainida — só disponíveis por importação/manipulação) ou
+ * por terem uso hospitalar sem marca própria de mercado. Marcas
+ * descontinuadas mas reais (ex.: Burinax, Loniten, Procamide) foram
+ * mantidas porque ainda ajudam a busca — prescrições/relatos antigos
+ * podem referenciá-las mesmo fora de linha hoje.
+ */
+const NOMES_COMERCIAIS_CARDIOVASCULAR: Record<string, string[]> = {
+  Doxazosina: ["Carduran"],
+  Prazosina: ["Minipress"],
+  Terazosina: ["Hytrin"],
+  Tansulosina: ["Omnic Ocas", "Secotex", "Tamsulon"],
+  Captopril: ["Capoten"],
+  Enalapril: ["Renitec", "Vasopril"],
+  Fosinopril: ["Monopril"],
+  Lisinopril: ["Zestril", "Prinivil"],
+  Quinapril: ["Accupril"],
+  Ramipril: ["Triatec"],
+  Benazepril: ["Lotensin"],
+  Azilsartana: ["Edarbi"],
+  Candesartana: ["Atacand", "Blopress"],
+  Irbesartana: ["Aprovel"],
+  Losartana: ["Cozaar"],
+  Olmesartana: ["Benicar"],
+  Telmisartana: ["Micardis"],
+  Valsartana: ["Diovan"],
+  "Sacubitril/Valsartana": ["Entresto"],
+  Atenolol: ["Atenol", "Ablok"],
+  Bisoprolol: ["Concor"],
+  Carvedilol: ["Coreg"],
+  Metoprolol: ["Selozok", "Lopressor"],
+  Propranolol: ["Inderal"],
+  Sotalol: ["Sotacor"],
+  Amlodipina: ["Norvasc"],
+  Diltiazem: ["Cardizem", "Balcor"],
+  Felodipina: ["Splendil"],
+  Nifedipina: ["Adalat"],
+  Clonidina: ["Atensina"],
+  Guanfacina: ["Tenex", "Intuniv"],
+  Hidralazina: ["Apresolina"],
+  Furosemida: ["Lasix"],
+  Bumetanida: ["Burinax"],
+  Clortalidona: ["Higroton"],
+  Hidroclorotiazida: ["Clorana", "Drenol"],
+  Indapamida: ["Natrilix"],
+  Eplerenona: ["Inspra"],
+  Espironolactona: ["Aldactone"],
+  Ambrisentana: ["Volibris"],
+  Bosentana: ["Tracleer"],
+  Macitentana: ["Opsumit"],
+  Digoxina: ["Lanoxin"],
+  "Dinitrato de isossorbida": ["Isordil"],
+  "Mononitrato de isossorbida": ["Monocordil"],
+  Nitroglicerina: ["Nitradisc", "Nitroderm TTS", "Tridil"],
+  Sildenafila: ["Viagra"],
+  Vardenafila: ["Levitra"],
+  Tadalafila: ["Cialis"],
+  Amiodarona: ["Ancoron", "Atlansil"],
+  Dronedarona: ["Multaq"],
+  Minoxidil: ["Loniten"],
+  Alisquireno: ["Rasilez"],
+  Procainamida: ["Procamide"],
+  Lidocaína: ["Xylocaína"],
+  Propafenona: ["Ritmonorm"],
+  Ranolazina: ["Riscard"],
+  Dapagliflozina: ["Forxiga"],
+  Empagliflozina: ["Jardiance"],
+  Canagliflozina: ["Invokana"],
+};
+
+/**
  * Dados extraídos de: Sahai SK, Balonov K, Bentov N, et al. Preoperative
  * Management of Cardiovascular Medications: A Society for Perioperative
  * Assessment and Quality Improvement (SPAQI) Consensus Statement.
@@ -42,7 +119,7 @@ export const FARMACOS_CARDIOVASCULAR: Farmaco[] = [
   {
     id: "doxazosina",
     nomeGenerico: "Doxazosina",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_CARDIOVASCULAR["Doxazosina"] ?? [],
     classe: "cardiovascular",
     subclasse: "a-Adrenoceptor blockers (alfabloqueadores)",
     regra: { tipo: "continuar" },
@@ -56,7 +133,7 @@ export const FARMACOS_CARDIOVASCULAR: Farmaco[] = [
   {
     id: "fenoxibenzamina",
     nomeGenerico: "Fenoxibenzamina",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_CARDIOVASCULAR["Fenoxibenzamina"] ?? [],
     classe: "cardiovascular",
     subclasse: "a-Adrenoceptor blockers (alfabloqueadores)",
     regra: { tipo: "continuar" },
@@ -70,7 +147,7 @@ export const FARMACOS_CARDIOVASCULAR: Farmaco[] = [
   {
     id: "prazosina",
     nomeGenerico: "Prazosina",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_CARDIOVASCULAR["Prazosina"] ?? [],
     classe: "cardiovascular",
     subclasse: "a-Adrenoceptor blockers (alfabloqueadores)",
     regra: { tipo: "continuar" },
@@ -84,7 +161,7 @@ export const FARMACOS_CARDIOVASCULAR: Farmaco[] = [
   {
     id: "terazosina",
     nomeGenerico: "Terazosina",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_CARDIOVASCULAR["Terazosina"] ?? [],
     classe: "cardiovascular",
     subclasse: "a-Adrenoceptor blockers (alfabloqueadores)",
     regra: { tipo: "continuar" },
@@ -98,7 +175,7 @@ export const FARMACOS_CARDIOVASCULAR: Farmaco[] = [
   {
     id: "tansulosina",
     nomeGenerico: "Tansulosina",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_CARDIOVASCULAR["Tansulosina"] ?? [],
     classe: "cardiovascular",
     subclasse: "a-Adrenoceptor blockers (alfabloqueadores)",
     regra: { tipo: "continuar" },
@@ -128,7 +205,7 @@ export const FARMACOS_CARDIOVASCULAR: Farmaco[] = [
     (nome): Farmaco => ({
       id: nome.toLowerCase(),
       nomeGenerico: nome,
-      nomesComerciais: [],
+      nomesComerciais: NOMES_COMERCIAIS_CARDIOVASCULAR[nome] ?? [],
       classe: "cardiovascular",
       subclasse: "Angiotensin-converting enzyme inhibitors (IECA)",
       regra: { tipo: "suspender_dia_cirurgia" },
@@ -159,7 +236,7 @@ export const FARMACOS_CARDIOVASCULAR: Farmaco[] = [
     (nome): Farmaco => ({
       id: nome.toLowerCase(),
       nomeGenerico: nome,
-      nomesComerciais: [],
+      nomesComerciais: NOMES_COMERCIAIS_CARDIOVASCULAR[nome] ?? [],
       classe: "cardiovascular",
       subclasse: "Angiotensin II receptor blockers (BRA)",
       regra: { tipo: "suspender_dia_cirurgia" },
@@ -178,7 +255,7 @@ export const FARMACOS_CARDIOVASCULAR: Farmaco[] = [
   {
     id: "sacubitril_valsartana",
     nomeGenerico: "Sacubitril/Valsartana",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_CARDIOVASCULAR["Sacubitril/Valsartana"] ?? [],
     classe: "cardiovascular",
     subclasse: "Angiotensin receptor–neprilysin inhibitor (ARNI)",
     regra: { tipo: "suspender_dia_cirurgia" },
@@ -199,7 +276,7 @@ export const FARMACOS_CARDIOVASCULAR: Farmaco[] = [
     (nome): Farmaco => ({
       id: nome.toLowerCase(),
       nomeGenerico: nome,
-      nomesComerciais: [],
+      nomesComerciais: NOMES_COMERCIAIS_CARDIOVASCULAR[nome] ?? [],
       classe: "cardiovascular",
       subclasse: "b-Adrenoceptor blockers (betabloqueadores)",
       regra: { tipo: "continuar" },
@@ -214,7 +291,7 @@ export const FARMACOS_CARDIOVASCULAR: Farmaco[] = [
   {
     id: "sotalol_betabloqueador",
     nomeGenerico: "Sotalol",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_CARDIOVASCULAR["Sotalol"] ?? [],
     classe: "cardiovascular",
     subclasse: "b-Adrenoceptor blockers (betabloqueadores)",
     regra: { tipo: "continuar" },
@@ -233,7 +310,7 @@ export const FARMACOS_CARDIOVASCULAR: Farmaco[] = [
     (nome): Farmaco => ({
       id: nome.toLowerCase(),
       nomeGenerico: nome,
-      nomesComerciais: [],
+      nomesComerciais: NOMES_COMERCIAIS_CARDIOVASCULAR[nome] ?? [],
       classe: "cardiovascular",
       subclasse: "Calcium-channel blockers (bloqueadores de canal de cálcio)",
       regra: { tipo: "continuar" },
@@ -252,7 +329,7 @@ export const FARMACOS_CARDIOVASCULAR: Farmaco[] = [
   {
     id: "clonidina",
     nomeGenerico: "Clonidina",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_CARDIOVASCULAR["Clonidina"] ?? [],
     classe: "cardiovascular",
     subclasse:
       "Centrally acting sympatholytic medications (simpatolíticos de ação central)",
@@ -267,7 +344,7 @@ export const FARMACOS_CARDIOVASCULAR: Farmaco[] = [
   {
     id: "guanabenzo",
     nomeGenerico: "Guanabenzo",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_CARDIOVASCULAR["Guanabenzo"] ?? [],
     classe: "cardiovascular",
     subclasse:
       "Centrally acting sympatholytic medications (simpatolíticos de ação central)",
@@ -282,7 +359,7 @@ export const FARMACOS_CARDIOVASCULAR: Farmaco[] = [
   {
     id: "guanfacina",
     nomeGenerico: "Guanfacina",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_CARDIOVASCULAR["Guanfacina"] ?? [],
     classe: "cardiovascular",
     subclasse:
       "Centrally acting sympatholytic medications (simpatolíticos de ação central)",
@@ -301,7 +378,7 @@ export const FARMACOS_CARDIOVASCULAR: Farmaco[] = [
   {
     id: "hidralazina",
     nomeGenerico: "Hidralazina",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_CARDIOVASCULAR["Hidralazina"] ?? [],
     classe: "cardiovascular",
     subclasse: "Direct-acting vasodilators (vasodilatadores diretos)",
     regra: { tipo: "continuar" },
@@ -320,7 +397,7 @@ export const FARMACOS_CARDIOVASCULAR: Farmaco[] = [
     (nome): Farmaco => ({
       id: nome.toLowerCase(),
       nomeGenerico: nome,
-      nomesComerciais: [],
+      nomesComerciais: NOMES_COMERCIAIS_CARDIOVASCULAR[nome] ?? [],
       classe: "cardiovascular",
       subclasse: "Loop diuretics (diuréticos de alça)",
       regra: { tipo: "suspender_dia_cirurgia" },
@@ -342,7 +419,7 @@ export const FARMACOS_CARDIOVASCULAR: Farmaco[] = [
     (nome): Farmaco => ({
       id: nome.toLowerCase(),
       nomeGenerico: nome,
-      nomesComerciais: [],
+      nomesComerciais: NOMES_COMERCIAIS_CARDIOVASCULAR[nome] ?? [],
       classe: "cardiovascular",
       subclasse: "Thiazide diuretics (diuréticos tiazídicos)",
       regra: { tipo: "continuar" },
@@ -362,7 +439,7 @@ export const FARMACOS_CARDIOVASCULAR: Farmaco[] = [
     (nome): Farmaco => ({
       id: nome.toLowerCase(),
       nomeGenerico: nome,
-      nomesComerciais: [],
+      nomesComerciais: NOMES_COMERCIAIS_CARDIOVASCULAR[nome] ?? [],
       classe: "cardiovascular",
       subclasse: "Potassium-sparing diuretics (diuréticos poupadores de potássio)",
       regra: { tipo: "continuar" },
@@ -382,7 +459,7 @@ export const FARMACOS_CARDIOVASCULAR: Farmaco[] = [
     (nome): Farmaco => ({
       id: nome.toLowerCase(),
       nomeGenerico: nome,
-      nomesComerciais: [],
+      nomesComerciais: NOMES_COMERCIAIS_CARDIOVASCULAR[nome] ?? [],
       classe: "cardiovascular",
       subclasse:
         "Endothelin receptor antagonists (antagonistas do receptor de endotelina)",
@@ -402,7 +479,7 @@ export const FARMACOS_CARDIOVASCULAR: Farmaco[] = [
   {
     id: "digoxina",
     nomeGenerico: "Digoxina",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_CARDIOVASCULAR["Digoxina"] ?? [],
     classe: "cardiovascular",
     subclasse: "Cardiac glycosides (glicosídeos cardíacos)",
     regra: { tipo: "continuar" },
@@ -433,7 +510,7 @@ export const FARMACOS_CARDIOVASCULAR: Farmaco[] = [
     ([id, nome]): Farmaco => ({
       id,
       nomeGenerico: nome,
-      nomesComerciais: [],
+      nomesComerciais: NOMES_COMERCIAIS_CARDIOVASCULAR[nome] ?? [],
       classe: "cardiovascular",
       subclasse: "Nitrodilators (nitrodilatadores)",
       condicaoClinica: {
@@ -465,7 +542,7 @@ export const FARMACOS_CARDIOVASCULAR: Farmaco[] = [
     (nome): Farmaco => ({
       id: nome.toLowerCase(),
       nomeGenerico: nome,
-      nomesComerciais: [],
+      nomesComerciais: NOMES_COMERCIAIS_CARDIOVASCULAR[nome] ?? [],
       classe: "cardiovascular",
       subclasse: "Phosphodiesterase-5 inhibitors (inibidores da fosfodiesterase-5)",
       indicacoes: [
@@ -491,7 +568,7 @@ export const FARMACOS_CARDIOVASCULAR: Farmaco[] = [
   {
     id: "tadalafila",
     nomeGenerico: "Tadalafila",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_CARDIOVASCULAR["Tadalafila"] ?? [],
     classe: "cardiovascular",
     subclasse: "Phosphodiesterase-5 inhibitors (inibidores da fosfodiesterase-5)",
     indicacoes: [
@@ -521,7 +598,7 @@ export const FARMACOS_CARDIOVASCULAR: Farmaco[] = [
     (nome): Farmaco => ({
       id: nome.toLowerCase(),
       nomeGenerico: nome,
-      nomesComerciais: [],
+      nomesComerciais: NOMES_COMERCIAIS_CARDIOVASCULAR[nome] ?? [],
       classe: "cardiovascular",
       subclasse:
         "Class III antiarrhythmic agents (bloqueadores de canal de potássio)",
@@ -537,7 +614,7 @@ export const FARMACOS_CARDIOVASCULAR: Farmaco[] = [
   {
     id: "sotalol_classe_iii",
     nomeGenerico: "Sotalol",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_CARDIOVASCULAR["Sotalol"] ?? [],
     classe: "cardiovascular",
     subclasse: "Class III antiarrhythmic agents (bloqueadores de canal de potássio)",
     regra: { tipo: "continuar" },
@@ -555,7 +632,7 @@ export const FARMACOS_CARDIOVASCULAR: Farmaco[] = [
   {
     id: "minoxidil",
     nomeGenerico: "Minoxidil",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_CARDIOVASCULAR["Minoxidil"] ?? [],
     classe: "cardiovascular",
     subclasse: "Potassium-channel openers (abridores de canal de potássio)",
     regra: { tipo: "continuar" },
@@ -573,7 +650,7 @@ export const FARMACOS_CARDIOVASCULAR: Farmaco[] = [
   {
     id: "alisquireno",
     nomeGenerico: "Alisquireno",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_CARDIOVASCULAR["Alisquireno"] ?? [],
     classe: "cardiovascular",
     subclasse: "Renin inhibitors (inibidores da renina)",
     regra: { tipo: "suspender_dia_cirurgia" },
@@ -596,7 +673,7 @@ export const FARMACOS_CARDIOVASCULAR: Farmaco[] = [
     (nome): Farmaco => ({
       id: nome.toLowerCase(),
       nomeGenerico: nome,
-      nomesComerciais: [],
+      nomesComerciais: NOMES_COMERCIAIS_CARDIOVASCULAR[nome] ?? [],
       classe: "cardiovascular",
       subclasse:
         "Class I antiarrhythmic agents (bloqueadores de canal de sódio — classes Ia, Ib, Ic)",
@@ -618,7 +695,7 @@ export const FARMACOS_CARDIOVASCULAR: Farmaco[] = [
     ([id, nome]): Farmaco => ({
       id,
       nomeGenerico: nome,
-      nomesComerciais: [],
+      nomesComerciais: NOMES_COMERCIAIS_CARDIOVASCULAR[nome] ?? [],
       classe: "cardiovascular",
       subclasse:
         "Class I antiarrhythmic agents (bloqueadores de canal de sódio — classes Ia, Ib, Ic)",
@@ -635,7 +712,7 @@ export const FARMACOS_CARDIOVASCULAR: Farmaco[] = [
     (nome): Farmaco => ({
       id: nome.toLowerCase(),
       nomeGenerico: nome,
-      nomesComerciais: [],
+      nomesComerciais: NOMES_COMERCIAIS_CARDIOVASCULAR[nome] ?? [],
       classe: "cardiovascular",
       subclasse:
         "Class I antiarrhythmic agents (bloqueadores de canal de sódio — classes Ia, Ib, Ic)",
@@ -651,7 +728,7 @@ export const FARMACOS_CARDIOVASCULAR: Farmaco[] = [
   {
     id: "tocainida",
     nomeGenerico: "Tocainida",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_CARDIOVASCULAR["Tocainida"] ?? [],
     classe: "cardiovascular",
     subclasse:
       "Class I antiarrhythmic agents (bloqueadores de canal de sódio — classes Ia, Ib, Ic)",
@@ -673,7 +750,7 @@ export const FARMACOS_CARDIOVASCULAR: Farmaco[] = [
   {
     id: "ranolazina",
     nomeGenerico: "Ranolazina",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_CARDIOVASCULAR["Ranolazina"] ?? [],
     classe: "cardiovascular",
     subclasse: "Sodium-channel blocker (late sodium current) — Ranolazina",
     regra: { tipo: "continuar" },
@@ -692,7 +769,7 @@ export const FARMACOS_CARDIOVASCULAR: Farmaco[] = [
     (nome): Farmaco => ({
       id: nome.toLowerCase(),
       nomeGenerico: nome,
-      nomesComerciais: [],
+      nomesComerciais: NOMES_COMERCIAIS_CARDIOVASCULAR[nome] ?? [],
       classe: "cardiovascular",
       subclasse: "Sodium glucose cotransporter-2 inhibitors (SGLT2i)",
       regra: { tipo: "suspender_periodo_fixo", valor: 3, unidade: "dias" },
@@ -707,7 +784,7 @@ export const FARMACOS_CARDIOVASCULAR: Farmaco[] = [
   {
     id: "ertugliflozina",
     nomeGenerico: "Ertugliflozina",
-    nomesComerciais: [],
+    nomesComerciais: NOMES_COMERCIAIS_CARDIOVASCULAR["Ertugliflozina"] ?? [],
     classe: "cardiovascular",
     subclasse: "Sodium glucose cotransporter-2 inhibitors (SGLT2i)",
     regra: { tipo: "suspender_periodo_fixo", valor: 4, unidade: "dias" },
