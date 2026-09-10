@@ -38,7 +38,7 @@ const NOMES_COMERCIAIS_CARDIOVASCULAR: Record<string, string[]> = {
   Bisoprolol: ["Concor"],
   Carvedilol: ["Coreg"],
   Metoprolol: ["Selozok", "Lopressor"],
-  Propranolol: ["Inderal"],
+  Propranolol: ["Inderal", "Tenadren"],
   Sotalol: ["Sotacor"],
   Amlodipina: ["Norvasc"],
   Diltiazem: ["Cardizem", "Balcor"],

@@ -11,6 +11,7 @@ import { Farmaco } from "@/medperiop/types";
 const NOMES_COMERCIAIS_PSIQUIATRICO: Record<string, string[]> = {
   Estazolam: ["Noctal"],
   Flurazepam: ["Dalmadorm"],
+  Fluoxetina: ["Prozac", "Daforin", "Verotina", "Fluxene", "Psiquial"],
 };
 
 /**
@@ -338,7 +339,7 @@ export const FARMACOS_PSIQUIATRICO: Farmaco[] = [
   {
     id: "fluoxetina",
     nomeGenerico: "Fluoxetina",
-    nomesComerciais: ["Prozac", "Sarafem", "Rapiflux", "Selfemra"],
+    nomesComerciais: NOMES_COMERCIAIS_PSIQUIATRICO["Fluoxetina"] ?? [],
     classe: "psiquiatrico",
     subclasse: "ISRS",
     regra: { tipo: "continuar" },
